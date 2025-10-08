@@ -13,12 +13,12 @@ TagManager:
   - Ground
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - PlayerProjectile
+  - EnemyProjectile
+  - Paredes
+  - Enemigos
+  - EnemyTrigger
   - 
   - 
   - 

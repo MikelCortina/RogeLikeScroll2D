@@ -36,15 +36,18 @@ public class Projectile2D : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // si colisiona con el que lo dispar�, ignorar
         if (owner != null && other.gameObject == owner) return;
 
-        // ejemplo: si choca con un enemigo (tag) le podr�as restar vida
-        // if (other.CompareTag("enemigo")) { /* aplicar da�o */ }
+        // Buscar el EnemyBase incluso en padres
+        EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
+        if (enemy != null)
+        {
+            enemy.TakeContactDamage(damage);
+        }
 
-        // destruir proyectil al colisionar con cualquier cosa (ajusta seg�n necesites)
         Destroy(gameObject);
     }
+
 
     // Si prefieres usar OnCollisionEnter2D (no trigger), cambia el collider y este m�todo en consecuencia.
 }
