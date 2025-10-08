@@ -1,9 +1,3 @@
-// Projectile2D.cs
-// Script sencillo para el prefab del proyectil.
-// Requisitos:
-// - El prefab debe tener Rigidbody2D (BodyType = Dynamic), y un Collider2D (isTrigger opcional).
-// - Este script se encarga de mover el proyectil, destruirlo tras lifetime y notificar colisiones.
-
 using UnityEngine;
 
 public class Projectile2D : MonoBehaviour
@@ -12,13 +6,11 @@ public class Projectile2D : MonoBehaviour
     float speed = 8f;
     Vector2 direction = Vector2.right;
     public float lifeTime = 5f;
-    public int damage = 1;
-    public GameObject owner; // opcional: para no da�ar al que dispara
+    public GameObject owner;
 
-    void Awake()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        // evitar rotaciones raras
         if (rb != null) rb.freezeRotation = true;
         Destroy(gameObject, lifeTime);
     }
@@ -29,7 +21,7 @@ public class Projectile2D : MonoBehaviour
         speed = spd;
         owner = ownerObj;
         if (rb != null) rb.linearVelocity = direction * speed;
-        // rotaci�n visual del proyectil (opcional)
+
         float ang = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, ang);
     }
@@ -38,16 +30,13 @@ public class Projectile2D : MonoBehaviour
     {
         if (owner != null && other.gameObject == owner) return;
 
-        // Buscar el EnemyBase incluso en padres
         EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
         if (enemy != null)
         {
-            enemy.TakeContactDamage(damage);
+            float dmg = StatsManager.Instance.RuntimeStats.projectileDamage;
+            enemy.TakeContactDamage(dmg);
         }
 
         Destroy(gameObject);
     }
-
-
-    // Si prefieres usar OnCollisionEnter2D (no trigger), cambia el collider y este m�todo en consecuencia.
 }

@@ -5,24 +5,14 @@ public class AreaShooter2D : MonoBehaviour
     [Header("Disparo")]
     public Transform firePoint;
     public GameObject projectilePrefab;
-    [Tooltip("Velocidad que recibirá el proyectil.")]
-    public float projectileSpeed = 8f;
-    [Tooltip("Veces por segundo que se dispara a cada enemigo.")]
-    public float fireRate = 1f;
 
     [Header("Detección")]
-    [Tooltip("Radio de detección (Gizmos).")]
-    public float radius = 5f;
-    [Tooltip("Capa de enemigos a detectar.")]
     public LayerMask enemyLayer = ~0;
-
-    [Header("Opciones")]
-    [Tooltip("Tag que deben tener los enemigos.")]
     public string enemyTag = "enemigo";
-    [Tooltip("Dibuja líneas hacia los objetivos en el editor.")]
     public bool drawLinesToTargets = true;
 
     private float cooldown = 0f;
+
 
     void Reset()
     {
@@ -33,28 +23,24 @@ public class AreaShooter2D : MonoBehaviour
     void Update()
     {
         cooldown -= Time.deltaTime;
-
-        // Detectamos todos los enemigos dentro del radio
+        float radius = StatsManager.Instance.RuntimeStats.radius;
         Collider2D[] hits = Physics2D.OverlapCircleAll(firePoint.position, radius, enemyLayer);
 
         foreach (Collider2D c in hits)
         {
-            if (c == null || !c.CompareTag(enemyTag))
-                continue;
+            if (c == null || !c.CompareTag(enemyTag)) continue;
 
-            // Solo disparar si ha pasado el cooldown
             if (cooldown <= 0f)
             {
                 ShootAt(c);
-                cooldown = 1f / Mathf.Max(0.0001f, fireRate);
+                cooldown = 1f / Mathf.Max(0.0001f, StatsManager.Instance.RuntimeStats.fireRate);
             }
         }
     }
 
     void ShootAt(Collider2D target)
     {
-        if (projectilePrefab == null || firePoint == null)
-            return;
+        if (projectilePrefab == null || firePoint == null) return;
 
         Vector2 dir = ((Vector2)target.bounds.center - (Vector2)firePoint.position).normalized;
 
@@ -62,19 +48,24 @@ public class AreaShooter2D : MonoBehaviour
         Projectile2D p = proj.GetComponent<Projectile2D>();
         if (p != null)
         {
+            float projectileSpeed = StatsManager.Instance.RuntimeStats.projectileSpeed;
             p.Initialize(dir, projectileSpeed, gameObject);
         }
         else
         {
             Rigidbody2D rb = proj.GetComponent<Rigidbody2D>();
-            if (rb != null) rb.linearVelocity = dir * projectileSpeed;
+            if (rb != null)
+            {
+                float projectileSpeed = StatsManager.Instance.RuntimeStats.projectileSpeed;
+                rb.linearVelocity = dir * projectileSpeed;
+            }
         }
     }
 
     void OnDrawGizmosSelected()
     {
-        if (firePoint == null)
-            firePoint = transform;
+        float radius = StatsManager.Instance.RuntimeStats.radius;
+        if (firePoint == null) firePoint = transform;
 
         Gizmos.color = Color.yellow;
         Gizmos.DrawSphere(firePoint.position, 0.1f);

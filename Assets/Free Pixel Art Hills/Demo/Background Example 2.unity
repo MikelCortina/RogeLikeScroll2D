@@ -718,8 +718,8 @@ Transform:
   m_GameObject: {fileID: 615704936}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.54605, y: -1.705, z: -0.07992555}
-  m_LocalScale: {x: 11.843033, y: 0.50247175, z: 1}
+  m_LocalPosition: {x: 2.2896, y: -1.705, z: -0.07992555}
+  m_LocalScale: {x: 15.330304, y: 0.50247175, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1607830419}
@@ -1161,6 +1161,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyLevel: 0
+  multiplicadoPorNivel: 1.18
 --- !u!114 &970316337
 MonoBehaviour:
   m_ObjectHideFlags: 0

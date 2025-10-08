@@ -5,7 +5,7 @@ using UnityEngine;
 public class MeleeEnemy : EnemyBase
 {
     [Header("Melee Attack (Trigger-based)")]
-    [SerializeField] private Transform attackPoint; // opcional, solo para gizmos
+    [SerializeField] private Transform attackPofloat; // opcional, solo para gizmos
     [SerializeField] private float attackRadius = 0.5f;
 
     protected override void FixedUpdate()
@@ -27,18 +27,21 @@ public class MeleeEnemy : EnemyBase
             if (dist > stopDistance)
             {
                 MoveTowardsPlayer();
-                if (animator != null) animator.SetBool("IsMoving", true);
+                if (animator != null)
+                    animator.SetBool("IsMoving", true);
             }
             else
             {
                 StopMovement();
-                if (animator != null) animator.SetBool("IsMoving", false);
+                if (animator != null)
+                    animator.SetBool("IsMoving", false);
             }
         }
         else
         {
             StopMovement();
-            if (animator != null) animator.SetBool("IsMoving", false);
+            if (animator != null)
+                animator.SetBool("IsMoving", false);
         }
     }
 
@@ -60,7 +63,7 @@ public class MeleeEnemy : EnemyBase
             var playerHealth = other.GetComponentInParent<PlayerHealth>();
             if (playerHealth != null)
             {
-                int damageToDeal = GetContactDamage(); // usa contactDamage ajustado por nivel del padre
+                float damageToDeal = GetContactDamage(); // usa contactDamage ajustado por nivel del padre
                 Debug.Log($"Trigger hit {playerHealth.name}, applying {damageToDeal} damage");
                 playerHealth.TakeDamage(damageToDeal);
             }
@@ -71,10 +74,10 @@ public class MeleeEnemy : EnemyBase
     {
         base.OnDrawGizmosSelected();
 
-        if (attackPoint != null)
+        if (attackPofloat != null)
         {
             Gizmos.color = Color.magenta;
-            Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
+            Gizmos.DrawWireSphere(attackPofloat.position, attackRadius);
         }
     }
 }

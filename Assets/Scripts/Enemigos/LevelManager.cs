@@ -11,7 +11,8 @@ public class EnemyLevelManager : MonoBehaviour
 
     [Tooltip("Nivel aplicado a todos los enemigos. 0 = sin incremento.")]
     [Min(0)]
-    public int enemyLevel = 0;
+    public float enemyLevel = 0;
+    public float multiplicadoPorNivel;
 
     private void Awake()
     {
@@ -30,16 +31,16 @@ public class EnemyLevelManager : MonoBehaviour
     /// </summary>
     public float GetEnemyMultiplier()
     {
-        return Mathf.Pow(1.01f, enemyLevel);
+        return Mathf.Pow(multiplicadoPorNivel, enemyLevel);
     }
 
     // Métodos de conveniencia para cambiar el nivel en runtime
-    public void SetEnemyLevel(int level)
+    public void SetEnemyLevel(float level)
     {
         enemyLevel = Mathf.Max(0, level);
     }
 
-    public void IncreaseEnemyLevel(int amount = 1)
+    public void IncreaseEnemyLevel(float amount = 1)
     {
         enemyLevel = Mathf.Max(0, enemyLevel + amount);
     }

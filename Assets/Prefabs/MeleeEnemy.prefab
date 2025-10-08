@@ -103,8 +103,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b921a3aa0acaba459f42515ce85e3c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
-  contactDamage: 1
+  maxHealth: 34
+  contactDamage: 5.4
   useLevelScaling: 1
   detectRadius: 8
   playerLayer:
@@ -115,6 +115,11 @@ MonoBehaviour:
   stopDistance: 0
   attackCooldown: 1.2
   animator: {fileID: 0}
+  renderersToFlash:
+  - {fileID: 7474790222286392728}
+  flashDuration: 0.1
+  flashCount: 5
+  healthComponent: {fileID: 0}
   attackPoint: {fileID: 3766110797246970965}
   attackRadius: 0.1
 --- !u!61 &7971373452547378410

@@ -1,13 +1,12 @@
-// EnemyBase.cs
 using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyBase : MonoBehaviour
 {
-    [Header("Stats")]
-    [SerializeField] protected int maxHealth = 10;
-    [SerializeField] protected int contactDamage = 1;
+    [Header("Stats (lvl 0")]
+    [SerializeField] protected float maxHealth;
+    [SerializeField] protected float contactDamage;
 
     [Header("Leveling")]
     [Tooltip("Si está activo, aplica el multiplicador de LevelManager.")]
@@ -34,12 +33,12 @@ public class EnemyBase : MonoBehaviour
 
     protected Rigidbody2D rb;
     protected Transform target;
-    protected int currentHealth;
+    protected float currentHealth;
     protected bool isFacingRight = true;
 
     // valores ajustados por nivel
-    protected int adjustedMaxHealth;
-    protected int adjustedContactDamage;
+    protected float adjustedMaxHealth;
+    protected float adjustedContactDamage;
 
     // Attack control
     protected bool canMove = true;
@@ -48,7 +47,7 @@ public class EnemyBase : MonoBehaviour
     [Header("Flash Settings")]
     [SerializeField] private SpriteRenderer[] renderersToFlash;
     [SerializeField] private float flashDuration = 0.1f; // duración de cada parpadeo
-    [SerializeField] private int flashCount = 5;         // cuántas veces parpadea
+    [SerializeField] private int flashCount = 5; // cuántas veces parpadea
 
     protected virtual void Awake()
     {
@@ -61,7 +60,6 @@ public class EnemyBase : MonoBehaviour
 
         adjustedMaxHealth = Mathf.Max(1, Mathf.RoundToInt(maxHealth * multiplier));
         adjustedContactDamage = Mathf.Max(1, Mathf.CeilToInt(contactDamage * multiplier));
-
         currentHealth = adjustedMaxHealth;
 
         if (animator == null)
@@ -106,22 +104,21 @@ public class EnemyBase : MonoBehaviour
         {
             foreach (var sr in renderersToFlash)
                 sr.enabled = false;
-
             yield return new WaitForSeconds(flashDuration);
 
             foreach (var sr in renderersToFlash)
                 sr.enabled = true;
-
             yield return new WaitForSeconds(flashDuration);
         }
     }
 
+    #region Detection
 
-#region Detection
-protected GameObject FindPlayerByLayerOrTag()
+    protected GameObject FindPlayerByLayerOrTag()
     {
         Collider2D hit = Physics2D.OverlapCircle(transform.position, detectRadius, playerLayer);
         if (hit != null) return hit.gameObject;
+
         GameObject t = GameObject.FindGameObjectWithTag(playerTag);
         return t;
     }
@@ -131,45 +128,40 @@ protected GameObject FindPlayerByLayerOrTag()
         if (target == null) return false;
         return Vector2.Distance(transform.position, target.position) <= detectRadius;
     }
+
     #endregion
 
     #region Health & Damage
-    public void TakeContactDamage(int amount)
+
+    public void TakeContactDamage(float amount)
     {
         currentHealth -= amount;
         Flash(); // parpadea al recibir daño
-
-        if (currentHealth <= 0)
-            Die();
+        if (currentHealth <= 0) Die();
     }
 
     protected virtual void Die()
     {
-        if (animator != null)
-            animator.SetTrigger("Dead");
-
+        if (animator != null) animator.SetTrigger("Dead");
         canMove = false;
         if (rb != null) rb.linearVelocity = Vector2.zero;
+
         Collider2D[] cols = GetComponents<Collider2D>();
         foreach (var c in cols) c.enabled = false;
 
         if (WaveManager.Instance != null)
             WaveManager.Instance.NotifyEnemyKilled(gameObject);
+
         Destroy(gameObject, 1.2f);
     }
 
-    public int GetContactDamage()
-    {
-        return adjustedContactDamage;
-    }
+    public float GetContactDamage() => adjustedContactDamage;
+    public float GetMaxHealth() => adjustedMaxHealth;
 
-    public int GetMaxHealth()
-    {
-        return adjustedMaxHealth;
-    }
     #endregion
 
     #region Movement / Attack Utilities
+
     /// <summary>
     /// Movimiento genérico hacia el objetivo (usa moveSpeed y rb).
     /// </summary>
@@ -179,7 +171,6 @@ protected GameObject FindPlayerByLayerOrTag()
 
         Vector2 direction = (target.position - transform.position);
         float distance = direction.magnitude;
-
         if (distance < 0.1f) // umbral mínimo para no frenar
         {
             StopMovement();
@@ -194,7 +185,6 @@ protected GameObject FindPlayerByLayerOrTag()
         vel.x = horizontal * moveSpeed;
         rb.linearVelocity = vel;
     }
-
 
     /// <summary>
     /// Para el movimiento horizontal.
@@ -214,9 +204,7 @@ protected GameObject FindPlayerByLayerOrTag()
         if (Time.time - lastAttackTime < attackCooldown) return;
 
         lastAttackTime = Time.time;
-
         if (animator != null) animator.SetTrigger("Attack");
-
         PerformAttack();
     }
 
@@ -227,9 +215,11 @@ protected GameObject FindPlayerByLayerOrTag()
     {
         // override en subclase
     }
+
     #endregion
 
     #region Utils & Editor
+
     protected void FlipIfNeeded(float direction)
     {
         if (direction > 0 && !isFacingRight) Flip();
@@ -248,8 +238,10 @@ protected GameObject FindPlayerByLayerOrTag()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectRadius);
+
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, stopDistance);
     }
+
     #endregion
 }
