@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - enemigo
+  - Horse
   layers:
   - Default
   - TransparentFX
@@ -19,7 +20,7 @@ TagManager:
   - Paredes
   - Enemigos
   - EnemyTrigger
-  - 
+  - Rider
   - 
   - 
   - 

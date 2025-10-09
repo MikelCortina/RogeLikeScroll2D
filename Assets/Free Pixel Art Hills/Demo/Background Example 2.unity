@@ -1152,7 +1152,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &970316336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2558,15 +2558,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6072813766791797228, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: m_Constraints
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6072813766791797228, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: m_GravityScale
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6072813766791797228, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7001698827230911412, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7001698827230911412, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: m_TagString
+      value: Horse
+      objectReference: {fileID: 0}
+    - target: {fileID: 7855709122196565549, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: m_Layer
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 8664593450466684495, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: m_Constraints
