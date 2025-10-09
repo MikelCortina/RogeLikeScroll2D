@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,11 +9,16 @@ public class PlayerHealth : MonoBehaviour
 
     public HealthChangedEvent OnHealthChanged;
     public UnityEvent OnDeath;
-
-    private void OnEnable()
+    private IEnumerator Start()
     {
+        yield return new WaitUntil(() => StatsManager.Instance != null);
         StatsManager.Instance.OnHealthChanged += HandleHealthChanged;
         StatsManager.Instance.OnPlayerDied += HandleDeath;
+        Debug.Log("Todo correcto");
+    }
+    private void OnEnable()
+    {
+       StartCoroutine(Start());
     }
 
     private void OnDisable()

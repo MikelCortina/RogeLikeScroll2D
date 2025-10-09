@@ -64,7 +64,6 @@ public class MeleeEnemy : EnemyBase
             if (playerHealth != null)
             {
                 float damageToDeal = GetContactDamage(); // usa contactDamage ajustado por nivel del padre
-                Debug.Log($"Trigger hit {playerHealth.name}, applying {damageToDeal} damage");
                 playerHealth.TakeDamage(damageToDeal);
             }
         }

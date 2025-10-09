@@ -22,6 +22,7 @@ public class AreaShooter2D : MonoBehaviour
 
     void Update()
     {
+        CirculoMostrar();
         cooldown -= Time.deltaTime;
         float radius = StatsManager.Instance.RuntimeStats.radius;
         Collider2D[] hits = Physics2D.OverlapCircleAll(firePoint.position, radius, enemyLayer);
@@ -62,28 +63,39 @@ public class AreaShooter2D : MonoBehaviour
         }
     }
 
-    void OnDrawGizmosSelected()
+    void CirculoMostrar()
     {
+        if (firePoint == null)
+            firePoint = transform;
+
         float radius = StatsManager.Instance.RuntimeStats.radius;
-        if (firePoint == null) firePoint = transform;
 
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(firePoint.position, 0.1f);
+        // --- Dibujar círculo ---
+        int segments = 32;
+        float angleStep = 360f / segments;
+        Vector3 prevPoint = firePoint.position + new Vector3(Mathf.Cos(0), Mathf.Sin(0)) * radius;
 
-        Gizmos.color = new Color(1f, 0.5f, 0f, 0.25f);
-        Gizmos.DrawWireSphere(firePoint.position, radius);
+        for (int i = 1; i <= segments; i++)
+        {
+            float rad = Mathf.Deg2Rad * (i * angleStep);
+            Vector3 newPoint = firePoint.position + new Vector3(Mathf.Cos(rad), Mathf.Sin(rad)) * radius;
+            Debug.DrawLine(prevPoint, newPoint, Color.yellow);
+            prevPoint = newPoint;
+        }
 
-#if UNITY_EDITOR
+        // --- Dibujar líneas a enemigos ---
         if (drawLinesToTargets)
         {
             Collider2D[] hits = Physics2D.OverlapCircleAll(firePoint.position, radius, enemyLayer);
-            Gizmos.color = new Color(1f, 0f, 0f, 0.5f);
             foreach (Collider2D c in hits)
             {
                 if (c != null && c.CompareTag(enemyTag))
-                    Gizmos.DrawLine(firePoint.position, c.bounds.center);
+                    Debug.DrawLine(firePoint.position, c.bounds.center, Color.red);
             }
         }
-#endif
+
+        // --- Punto central ---
+        Debug.DrawRay(firePoint.position, Vector3.up * 0.1f, Color.yellow);
+        Debug.DrawRay(firePoint.position, Vector3.right * 0.1f, Color.yellow);
     }
 }

@@ -136,6 +136,7 @@ public class EnemyBase : MonoBehaviour
     public void TakeContactDamage(float amount)
     {
         currentHealth -= amount;
+        Debug.Log($"{name} took {amount} damage, current health: {currentHealth}/{adjustedMaxHealth}");
         Flash(); // parpadea al recibir daño
         if (currentHealth <= 0) Die();
     }

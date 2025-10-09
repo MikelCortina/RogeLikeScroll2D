@@ -5,14 +5,14 @@ using System;
 public class StatsData
 {
     [Header("HP")]
-    public float maxHP = 100;public float currentHP = 100;
+    public float maxHP; public float currentHP;
     [Header("Projectile")]
-    public float projectileDamage = 10;public float projectileSpeed =8;
-    [Header("Movement")]
-    public float moveForce = 5f; public float jumpForce = 7f; public float maxSpeed = 5f; public float friction = 0.999f;
+    public float projectileDamage;public float projectileSpeed;
+    [Header("Movimiento")]
+    public float moveForce;public float jumpForce;public float maxSpeed;public float friction;
     [Header("FireArm")]
-    public float fireRate = 1f;
-    public float radius = 5f;
+    public float fireRate;
+    public float radius;
 
     public StatsData Clone()
     {
@@ -20,7 +20,14 @@ public class StatsData
         {
             maxHP = this.maxHP,
             currentHP = this.currentHP,
-            projectileDamage = this.projectileDamage
+            projectileDamage = this.projectileDamage,
+            projectileSpeed = this.projectileSpeed,
+            moveForce = this.moveForce,
+            jumpForce = this.jumpForce,
+            maxSpeed = this.maxSpeed,
+            friction = this.friction,
+            fireRate = this.fireRate,
+            radius = this.radius
         };
     }
 }
@@ -74,6 +81,7 @@ public class StatsManager : MonoBehaviour
         if (amount <= 0 || isInvulnerable) return;
 
         RuntimeStats.currentHP = Mathf.Max(0, RuntimeStats.currentHP - amount);
+        Debug.Log($"Player took {amount} damage. Current HP: {RuntimeStats.currentHP}/{RuntimeStats.maxHP}");
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
 
         if (iFrameDuration > 0f) StartCoroutine(InvulnerabilityCoroutine());
@@ -103,8 +111,9 @@ public class StatsManager : MonoBehaviour
 
     public void ModifyProjectileSpeed(float delta)
     {
-        RuntimeStats.projectileDamage = Mathf.Max(0, RuntimeStats.projectileSpeed + delta);
+        RuntimeStats.projectileSpeed = Mathf.Max(0, RuntimeStats.projectileSpeed + delta);
     }
+
 
     // --- Invulnerability Coroutine ---
     private System.Collections.IEnumerator InvulnerabilityCoroutine()
