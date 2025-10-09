@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -9,12 +10,13 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask Ground;
 
     private Rigidbody2D rb;
-    private bool isGrounded;
+    public bool isGrounded;
     private float moveInput;
-    private bool jumpPressed;
+    public bool jumpPressed;
+    public bool dobleSalto;
 
     public GameObject riderPrefab; // asignar prefab del jinete en el Inspector
-    private bool riderSpawned = false;
+    public RiderController rider1;
 
     void Start()
     {
@@ -29,14 +31,15 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetButtonDown("Jump"))
         {
-            if (IsGrounded())
+            if (IsGrounded()&&rider1.isAttached)
             {
                 jumpPressed = true;
             }
-           /*else if (!riderSpawned)
-            {
-                riderSpawned = true;
-            }*/
+
+        }
+        if (isGrounded)
+        {
+            dobleSalto = false;
         }
     }
 
@@ -69,6 +72,7 @@ public class PlayerMovement : MonoBehaviour
             // reset de la velocidad vertical para saltos consistentes
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            StartCoroutine(DobleSalto());
             jumpPressed = false;
         }
     }
@@ -85,14 +89,10 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(groundCheck.position, groundRadius);
     }
-    void SpawnRider()
+  
+    private IEnumerator DobleSalto()
     {
-        GameObject rider = Instantiate(riderPrefab);
-        RiderController riderController = rider.GetComponent<RiderController>();
-
-        // Sacar el jumpForce del StatsManager para sincronizar
-        riderController.jumpForce = StatsManager.Instance.RuntimeStats.jumpForce;
-
-        riderController.Init(transform); // pasar el transform del caballo
+        yield return new WaitForSeconds(0.1f);
+        dobleSalto = true;
     }
 }
