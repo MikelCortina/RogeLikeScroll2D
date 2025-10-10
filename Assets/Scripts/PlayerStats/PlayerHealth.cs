@@ -14,7 +14,7 @@ public class PlayerHealth : MonoBehaviour
         yield return new WaitUntil(() => StatsManager.Instance != null);
         StatsManager.Instance.OnHealthChanged += HandleHealthChanged;
         StatsManager.Instance.OnPlayerDied += HandleDeath;
-        Debug.Log("Todo correcto");
+        //Debug.Log("Todo correcto");
     }
     private void OnEnable()
     {

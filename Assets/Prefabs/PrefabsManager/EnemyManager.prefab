@@ -74,4 +74,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyLevel: 0
-  multiplicadoPorNivel: 1.18
+  multiplicadoPorNivel: 1.05

@@ -41,7 +41,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6959890658855805926}
   - component: {fileID: 5076988797446205399}
-  - component: {fileID: 6294311635224130037}
   - component: {fileID: 73822119067335309}
   - component: {fileID: 7728351046413196590}
   - component: {fileID: 4315381702673546838}
@@ -88,27 +87,8 @@ MonoBehaviour:
   isGrounded: 0
   jumpPressed: 0
   dobleSalto: 0
-  riderPrefab: {fileID: 1643793879268539974, guid: 978f7f6d5a84dbd429a0f1a0126d9738, type: 3}
-  rider1: {fileID: 2344080137513587142, guid: 978f7f6d5a84dbd429a0f1a0126d9738, type: 3}
---- !u!114 &6294311635224130037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2519349346738342829}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 100d17b673a810947b46683e4a3fcdbc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  firePoint: {fileID: 0}
-  projectilePrefab: {fileID: 847502903425083811, guid: d7ef14995020a5844969446b3d836db4, type: 3}
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  enemyTag: enemigo
-  drawLinesToTargets: 1
+  riderPrefab: {fileID: 709477410786537509, guid: e6f0001951453cd45bf24504b6700102, type: 3}
+  rider1: {fileID: 4580341518737383333, guid: e6f0001951453cd45bf24504b6700102, type: 3}
 --- !u!212 &73822119067335309
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -139,7 +139,7 @@ public class EnemyBase : MonoBehaviour
     public void TakeContactDamage(float amount)
     {
         currentHealth -= amount;
-        Debug.Log($"{name} took {amount} damage, current health: {currentHealth}/{adjustedMaxHealth}");
+        //Debug.Log($"{name} took {amount} damage, current health: {currentHealth}/{adjustedMaxHealth}");
         Flash(); // parpadea al recibir daño
         if (currentHealth <= 0) Die();
     }
@@ -157,6 +157,7 @@ public class EnemyBase : MonoBehaviour
             WaveManager.Instance.NotifyEnemyKilled(gameObject);
 
         float xpGained = StatsManager.Instance.GetXPForEnemy(enemyLevel, baseXP);
+        Debug.Log($"Enemy Level: {enemyLevel}, Base XP: {baseXP}, XP Gained: {xpGained}");
         StatsManager.Instance.GainXP(xpGained);
 
         Destroy(gameObject, 1.2f);

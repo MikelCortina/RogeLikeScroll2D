@@ -51,8 +51,10 @@ public class StatsManager : MonoBehaviour
     [Header("Leveling System")]
     public int playerLevel = 1;
     public float currentXP = 0;
-    public float baseXPToLevel = 100f;
-    public float xpMultiplierPerLevel = 1.2f;
+
+    float baseXPToLevel = 100f;
+    float xpMultiplierPerLevel = 1.15f; // crecimiento moderado
+
 
     [Header("Player Invulnerability")]
     [SerializeField] public float iFrameDuration = 0.8f;
@@ -94,22 +96,29 @@ public class StatsManager : MonoBehaviour
     // --- Experiencia ---
     public void GainXP(float xp)
     {
+        // Mostramos cuánta XP se gana
+        Debug.Log($"Gained {xp} XP");
+
         currentXP += xp;
-        Debug.Log($"Gained {xp} XP. Current XP: {currentXP}/{baseXPToLevel * Mathf.Pow(xpMultiplierPerLevel, playerLevel - 1)}");
+
+        // Mostramos XP actual y lo que falta para subir de nivel
         float xpToLevel = baseXPToLevel * Mathf.Pow(xpMultiplierPerLevel, playerLevel - 1);
+        Debug.Log($"Current XP: {currentXP}/{xpToLevel}");
 
         while (currentXP >= xpToLevel)
         {
             currentXP -= xpToLevel;
             LevelUp();
             xpToLevel = baseXPToLevel * Mathf.Pow(xpMultiplierPerLevel, playerLevel - 1);
+            Debug.Log($"Leveled up! New Level: {playerLevel}, XP remaining: {currentXP}/{xpToLevel}");
         }
     }
+
 
     private void LevelUp()
     {
         playerLevel++;
-        Debug.Log($"¡Subiste al nivel {playerLevel}!");
+     //   Debug.Log($"¡Subiste al nivel {playerLevel}!");
         OnLevelUp?.Invoke(playerLevel);
         // Aquí puedes abrir UI de selección de 3 upgrades
         UpgradeManager.Instance.ShowUpgradeOptions(3);
@@ -117,9 +126,10 @@ public class StatsManager : MonoBehaviour
 
     public float GetXPForEnemy(int enemyLevel, float baseXP)
     {
-        // Experiencia que da un enemigo depende del multiplicador del jugador y nivel del enemigo
-        return baseXP * (1 + enemyLevel * 0.1f) * GetXPMultiplier();
-    }
+        // Escalamos de forma exponencial o lineal suave según el nivel del enemigo
+        float enemyXP = baseXP * Mathf.Pow(1.15f, enemyLevel - 1);
+        return enemyXP * GetXPMultiplier();
+    } 
 
     public float GetXPMultiplier()
     {

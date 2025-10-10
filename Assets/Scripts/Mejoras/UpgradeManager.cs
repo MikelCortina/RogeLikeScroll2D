@@ -23,15 +23,15 @@ public class UpgradeManager : MonoBehaviour
         }
 
         // Aquí abres la UI para que el jugador seleccione uno
-        Debug.Log("Mostrando opciones de mejoras:");
+       /*Debug.Log("Mostrando opciones de mejoras:");
         foreach (var up in options)
-            Debug.Log(up.upgradeName);
+            Debug.Log(up.upgradeName);*/
     }
 
     public void ApplyUpgrade(Upgrade upgrade)
     {
         upgrade.Apply(StatsManager.Instance);
-        Debug.Log($"Se aplicó la mejora: {upgrade.upgradeName}");
+      //  Debug.Log($"Se aplicó la mejora: {upgrade.upgradeName}");
     }
 
     public List<Upgrade> GetRandomUpgrades(int count)

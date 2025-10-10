@@ -111,13 +111,13 @@ public class RiderController : MonoBehaviour
         {
             float impulseNeeded = mass * deltaV; // N·s
             rb.AddForce(Vector2.up * impulseNeeded, ForceMode2D.Impulse);
-            Debug.Log("[Rider] Salto ejecutado (impulso aplicado = " + impulseNeeded + ").");
+            //Debug.Log("[Rider] Salto ejecutado (impulso aplicado = " + impulseNeeded + ").");
         }
         else
         {
             // Si deltaV <= 0 significa que ya tenemos una velocidad vertical igual o superior al objetivo.
             // No aplicamos nada (si quieres sobrescribir la velocidad, usa la opción 1).
-            Debug.Log("[Rider] No se aplicó impulso (deltaV <= 0).");
+           // Debug.Log("[Rider] No se aplicó impulso (deltaV <= 0).");
         }
     }
 
@@ -127,6 +127,14 @@ public class RiderController : MonoBehaviour
         if (!isAttached && (other.CompareTag("Horse") || other.CompareTag("Player")))
         {
             ReattachToHorse(other.transform);
+        }
+        if (!isAttached && (other.CompareTag("Horse") || other.CompareTag("Player")))
+        {
+            // Comprobamos si el rider está más abajo que el caballo
+            if (transform.position.y < other.transform.position.y)
+            {
+                ReattachToHorse(other.transform);
+            }
         }
     }
 
@@ -146,6 +154,6 @@ public class RiderController : MonoBehaviour
         transform.position = horseTransform.position;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
-        Debug.Log("[Rider] Re-enganchado al caballo.");
+       // Debug.Log("[Rider] Re-enganchado al caballo.");
     }
 }

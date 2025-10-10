@@ -66,7 +66,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9bd33b73c8fecb459c4e74c183691d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  upgradePanel: {fileID: 0}
+  upgradePanel: {fileID: 3841837984246944135, guid: 9010ab588011b8d41afa57b19c978b4b, type: 3}
   upgradeButtons:
   - {fileID: 0}
   - {fileID: 0}

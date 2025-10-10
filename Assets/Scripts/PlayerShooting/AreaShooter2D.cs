@@ -20,7 +20,7 @@ public class AreaShooter2D : MonoBehaviour
             firePoint = transform;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         CirculoMostrar();
         cooldown -= Time.deltaTime;

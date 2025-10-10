@@ -96,18 +96,12 @@ public class WaveManager : MonoBehaviour
     /// </summary>
     private int CalculateEnemiesForWave(int wave)
     {
-        if (wave <= 0) return 0;
+        if (wave <= 4) return wave * (wave + 1) / 2;
 
-        if (wave <= 4)
-        {
-            return wave * (wave + 1) / 2; // 1,3,6,10
-        }
-        else
-        {
-            int baseFourth = 4 * (4 + 1) / 2; // 10
-            float scaled = baseFourth * Mathf.Pow(1.2f, wave - 4);
-            return Mathf.Max(1, Mathf.CeilToInt(scaled));
-        }
+        int baseFourth = 10;
+        float exponentBase = 1.05f; // más suave que 1.2
+        float scaled = baseFourth * Mathf.Pow(exponentBase, wave - 4);
+        return Mathf.CeilToInt(scaled);
     }
 
     private IEnumerator SpawnWaveRoutine(int waveNumber, int totalToSpawn)
@@ -178,26 +172,27 @@ public class WaveManager : MonoBehaviour
     private void SpawnOneEnemy()
     {
         if (enemyPrefabs == null || enemyPrefabs.Length == 0)
-        {
-            Debug.LogWarning("[WaveManager] No enemyPrefabs asignados.");
             return;
-        }
 
         GameObject prefab = enemyPrefabs[UnityEngine.Random.Range(0, enemyPrefabs.Length)];
         Vector3 spawnPos = GetRandomSpawnPosition();
         GameObject go = Instantiate(prefab, spawnPos, Quaternion.identity);
 
-        // Si tiene Rigidbody2D, limpiar velocidades residuales
-        var rb2d = go.GetComponent<Rigidbody2D>();
+        // Asignar nivel al enemigo
+        EnemyBase enemy = go.GetComponent<EnemyBase>();
+        if (enemy != null && EnemyLevelManager.Instance != null)
+        {
+            // Nivel global actual
+            enemy.enemyLevel = Mathf.RoundToInt(EnemyLevelManager.Instance.enemyLevel);
+        }
+
+        // Reiniciar velocidades
+        Rigidbody2D rb2d = go.GetComponent<Rigidbody2D>();
         if (rb2d != null) rb2d.linearVelocity = Vector2.zero;
 
         enemiesAlive++;
         OnEnemySpawned?.Invoke(go);
-
-        // Opcional: si el enemigo no notifica su muerte al WaveManager, podemos agregar un helper automático
-        // pero preferimos que el propio enemigo llame a WaveManager.Instance.NotifyEnemyKilled(this.gameObject)
     }
-
     private Vector3 GetRandomSpawnPosition()
     {
         Vector2 offset = UnityEngine.Random.insideUnitCircle * spawnRandomRadius;

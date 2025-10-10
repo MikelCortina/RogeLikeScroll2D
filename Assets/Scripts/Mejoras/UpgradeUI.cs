@@ -31,7 +31,7 @@ public class UpgradeUI : MonoBehaviour
     /// </summary>
     public void ShowUpgrades(int level)
     {
-        Debug.Log("ShowUpgrades llamado desde OnLevelUp con nivel: " + level);
+        //Debug.Log("ShowUpgrades llamado desde OnLevelUp con nivel: " + level);
         if (upgradePanel == null || upgradeButtons.Length != 3)
         {
             Debug.LogError("UpgradeUI no está configurada correctamente");
