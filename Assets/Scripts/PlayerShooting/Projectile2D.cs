@@ -33,7 +33,7 @@ public class Projectile2D : MonoBehaviour
         EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
         if (enemy != null)
         {
-            float dmg = StatsManager.Instance.RuntimeStats.projectileDamage;
+            float dmg = StatsManager.Instance.RuntimeStats.projectileDamage; // StatsManager.Instance.RuntimeStats.damagePercentage / 100f;
             enemy.TakeContactDamage(dmg);
         }
 

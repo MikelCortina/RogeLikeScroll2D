@@ -13,6 +13,12 @@ public class StatsData
     [Header("FireArm")]
     public float fireRate;
     public float radius;
+    [Header("Damage")]
+    public float damagePercentage;
+    [Header("Armor")]
+    public float armorPercentage;
+    public float armorAmount;
+
 
     public StatsData Clone()
     {
@@ -27,7 +33,10 @@ public class StatsData
             maxSpeed = this.maxSpeed,
             friction = this.friction,
             fireRate = this.fireRate,
-            radius = this.radius
+            radius = this.radius,
+            damagePercentage = this.damagePercentage,
+            armorPercentage = this.armorPercentage,
+            armorAmount = this.armorAmount,
         };
     }
 }
@@ -39,6 +48,12 @@ public class StatsManager : MonoBehaviour
     [Header("Template Stats")]
     [SerializeField] private StatsData templateStats = new StatsData();
 
+    [Header("Leveling System")]
+    public int playerLevel = 1;
+    public float currentXP = 0;
+    public float baseXPToLevel = 100f;
+    public float xpMultiplierPerLevel = 1.2f;
+
     [Header("Player Invulnerability")]
     [SerializeField] public float iFrameDuration = 0.8f;
     [SerializeField] public float flashfloaterval = 0.08f;
@@ -49,6 +64,7 @@ public class StatsManager : MonoBehaviour
     public StatsData RuntimeStats { get; private set; }
 
     public event Action<float, float> OnHealthChanged;
+    public event Action<int> OnLevelUp; // Notifica el nivel alcanzado
     public event Action OnPlayerDied;
 
     private bool isInvulnerable = false;
@@ -75,6 +91,42 @@ public class StatsManager : MonoBehaviour
         }
     }
 
+    // --- Experiencia ---
+    public void GainXP(float xp)
+    {
+        currentXP += xp;
+        Debug.Log($"Gained {xp} XP. Current XP: {currentXP}/{baseXPToLevel * Mathf.Pow(xpMultiplierPerLevel, playerLevel - 1)}");
+        float xpToLevel = baseXPToLevel * Mathf.Pow(xpMultiplierPerLevel, playerLevel - 1);
+
+        while (currentXP >= xpToLevel)
+        {
+            currentXP -= xpToLevel;
+            LevelUp();
+            xpToLevel = baseXPToLevel * Mathf.Pow(xpMultiplierPerLevel, playerLevel - 1);
+        }
+    }
+
+    private void LevelUp()
+    {
+        playerLevel++;
+        Debug.Log($"¡Subiste al nivel {playerLevel}!");
+        OnLevelUp?.Invoke(playerLevel);
+        // Aquí puedes abrir UI de selección de 3 upgrades
+        UpgradeManager.Instance.ShowUpgradeOptions(3);
+    }
+
+    public float GetXPForEnemy(int enemyLevel, float baseXP)
+    {
+        // Experiencia que da un enemigo depende del multiplicador del jugador y nivel del enemigo
+        return baseXP * (1 + enemyLevel * 0.1f) * GetXPMultiplier();
+    }
+
+    public float GetXPMultiplier()
+    {
+        // Por ahora multiplicador simple, se puede mejorar
+        return 1f;
+    }
+
     // --- Player Health Methods ---
     public void DamagePlayer(float amount)
     {
@@ -97,21 +149,35 @@ public class StatsManager : MonoBehaviour
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
     }
 
-    public void ModifyMaxHP(float delta)
+    public void AddMaxHP(float delta)
     {
         RuntimeStats.maxHP = Mathf.Max(1, RuntimeStats.maxHP + delta);
         RuntimeStats.currentHP = Mathf.Min(RuntimeStats.currentHP, RuntimeStats.maxHP);
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
     }
 
-    public void ModifyProjectileDamage(float delta)
+    public void AddProjectileDamage(float delta)
     {
         RuntimeStats.projectileDamage = Mathf.Max(0, RuntimeStats.projectileDamage + delta);
     }
 
-    public void ModifyProjectileSpeed(float delta)
+    public void AddDamagePercentage(float delta)
+    {
+        RuntimeStats.damagePercentage = Mathf.Max(0, RuntimeStats.damagePercentage + delta);
+    }
+
+    public void AddProjectileSpeed(float delta)
     {
         RuntimeStats.projectileSpeed = Mathf.Max(0, RuntimeStats.projectileSpeed + delta);
+    }
+    
+    public void AddRadiusToGun(float delta)
+    {
+        RuntimeStats.radius = Mathf.Max(0, RuntimeStats.radius + delta);
+    }
+    public void AddArmor(float delta)
+    {
+        RuntimeStats.armorAmount = Mathf.Max(0, RuntimeStats.armorAmount + delta);
     }
 
 

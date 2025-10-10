@@ -1,3 +1,4 @@
+using System.Buffers.Text;
 using System.Collections;
 using UnityEngine;
 
@@ -23,6 +24,8 @@ public class EnemyBase : MonoBehaviour
     [Header("Movement")]
     [SerializeField] protected float moveSpeed = 3f;
     [SerializeField] protected float stopDistance = 0.6f;
+    [SerializeField] protected ParallaxController parallaxController;
+
 
     [Header("Attack (general)")]
     [Tooltip("Cooldown genérico que pueden usar las subclases")]
@@ -44,10 +47,15 @@ public class EnemyBase : MonoBehaviour
     protected bool canMove = true;
     protected float lastAttackTime = -999f;
 
+    public int enemyLevel = 0; // nivel individual del enemigo (para XP)
+    public EnemyLevelManager enemyLevelManager; // referencia opcional al LevelManager
+    public float baseXP = 25f; // XP base que da este enemigo (se multiplica por nivel)
+
     [Header("Flash Settings")]
     [SerializeField] private SpriteRenderer[] renderersToFlash;
     [SerializeField] private float flashDuration = 0.1f; // duración de cada parpadeo
     [SerializeField] private int flashCount = 5; // cuántas veces parpadea
+
 
     protected virtual void Awake()
     {
@@ -71,11 +79,6 @@ public class EnemyBase : MonoBehaviour
         GameObject playerObj = FindPlayerByLayerOrTag();
         if (playerObj != null)
             target = playerObj.transform;
-    }
-
-    protected virtual void FixedUpdate()
-    {
-        // comportamiento por defecto: nada — las subclases deciden
     }
 
     private void OnValidate()
@@ -153,6 +156,9 @@ public class EnemyBase : MonoBehaviour
         if (WaveManager.Instance != null)
             WaveManager.Instance.NotifyEnemyKilled(gameObject);
 
+        float xpGained = StatsManager.Instance.GetXPForEnemy(enemyLevel, baseXP);
+        StatsManager.Instance.GainXP(xpGained);
+
         Destroy(gameObject, 1.2f);
     }
 
@@ -168,24 +174,31 @@ public class EnemyBase : MonoBehaviour
     /// </summary>
     protected void MoveTowardsPlayer()
     {
-        if (target == null || !canMove) return;
+        if (target == null || !canMove)
+            return;
 
+        // Dirección hacia el jugador
         Vector2 direction = (target.position - transform.position);
         float distance = direction.magnitude;
-        if (distance < 0.1f) // umbral mínimo para no frenar
+
+        if (distance < 0.1f)
         {
             StopMovement();
             return;
         }
 
         direction.Normalize();
-        float horizontal = direction.x;
-        FlipIfNeeded(horizontal);
+        FlipIfNeeded(direction.x);
 
-        Vector2 vel = rb.linearVelocity;
-        vel.x = horizontal * moveSpeed;
-        rb.linearVelocity = vel;
+        // Compensar la velocidad del mundo
+        float worldSpeed = parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier;
+
+        // Aplicar movimiento en X compensando el mundo
+        Vector2 velocity = rb.linearVelocity;
+        velocity.x = direction.x * moveSpeed - worldSpeed; // restamos para neutralizar movimiento del mundo
+        rb.linearVelocity = velocity;
     }
+
 
     /// <summary>
     /// Para el movimiento horizontal.

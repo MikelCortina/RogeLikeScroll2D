@@ -8,9 +8,8 @@ public class MeleeEnemy : EnemyBase
     [SerializeField] private Transform attackPofloat; // opcional, solo para gizmos
     [SerializeField] private float attackRadius = 0.5f;
 
-    protected override void FixedUpdate()
+    protected void FixedUpdate()
     {
-        base.FixedUpdate();
 
         if (target == null)
         {

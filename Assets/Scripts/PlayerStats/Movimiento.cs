@@ -13,30 +13,45 @@ public class PlayerMovement : MonoBehaviour
     public bool isGrounded;
     private float moveInput;
     public bool jumpPressed;
-    public bool dobleSalto;
 
-    public GameObject riderPrefab; // asignar prefab del jinete en el Inspector
-    public RiderController rider1;
+    // Ventana para permitir que el jinete haga su double jump
+    public bool dobleSalto; // expuesto por si quieres ver en inspector
+
+    [Header("Referencias")]
+    public GameObject riderPrefab; // asignar prefab del jinete en el Inspector (si lo spawneas)
+    public RiderController rider1; // referencia al jinete (mejor asignar en inspector)
 
     void Start()
     {
-       // SpawnRider();
         rb = GetComponent<Rigidbody2D>();
+     
     }
 
     void Update()
     {
-        // Leer entrada en Update
+        // leer input en Update
         moveInput = Input.GetAxisRaw("Horizontal");
 
+        // salto: primer caso: suelo -> salto del jugador
         if (Input.GetButtonDown("Jump"))
         {
-            if (IsGrounded()&&rider1.isAttached)
+            if (IsGrounded())
             {
                 jumpPressed = true;
+                
             }
-
+            if (!IsGrounded())
+            {
+                // Si el jugador pulsa salto en el aire pedimos al rider que encole su salto al apex
+                if (rider1 != null)
+                {
+                    rider1.RequestJump();
+                }
+            }
         }
+
+        // mantener flag en false cuando estamos en suelo
+        isGrounded = IsGrounded();
         if (isGrounded)
         {
             dobleSalto = false;
@@ -45,34 +60,31 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        // COMPRUEBA valores en StatsManager aquí (cada FixedUpdate, sincronizado con física)
+        // Valores desde StatsManager (sin cambiar)
         float jumpForce = StatsManager.Instance.RuntimeStats.jumpForce;
         float moveForce = StatsManager.Instance.RuntimeStats.moveForce;
         float maxSpeed = StatsManager.Instance.RuntimeStats.maxSpeed;
         float friction = StatsManager.Instance.RuntimeStats.friction;
 
-        // Aplicar movimiento horizontal con AddForce (mejor en FixedUpdate)
+        // movimiento horizontal
         if (moveInput != 0f)
         {
             rb.AddForce(Vector2.right * moveInput * moveForce, ForceMode2D.Force);
         }
         else
         {
-            // Si no hay input, aplicar fricción
             rb.linearVelocity = new Vector2(rb.linearVelocity.x * friction, rb.linearVelocity.y);
         }
 
-        // Limitar velocidad horizontal
+        // limitar velocidad
         float clampedX = Mathf.Clamp(rb.linearVelocity.x, -maxSpeed, maxSpeed);
         rb.linearVelocity = new Vector2(clampedX, rb.linearVelocity.y);
 
         // Salto: aplicar impulso una vez
         if (jumpPressed)
         {
-            // reset de la velocidad vertical para saltos consistentes
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            StartCoroutine(DobleSalto());
             jumpPressed = false;
         }
     }
@@ -89,10 +101,6 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(groundCheck.position, groundRadius);
     }
-  
-    private IEnumerator DobleSalto()
-    {
-        yield return new WaitForSeconds(0.1f);
-        dobleSalto = true;
+
     }
-}
+
