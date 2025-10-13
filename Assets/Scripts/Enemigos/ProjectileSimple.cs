@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile2D : MonoBehaviour
+public class Projectile2DEnemy : MonoBehaviour
 {
     Rigidbody2D rb;
     float speed = 8f;
@@ -102,19 +102,19 @@ public class Projectile2D : MonoBehaviour
         string otherLayerName = LayerMask.LayerToName(other.gameObject.layer);
         if (ignoreLayerNames.Contains(otherLayerName))
             return;
-        // --------------------------------------------
+    
 
-        // Daño a enemigos
-        EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
-        if (enemy != null)
+        // Daño al jugador
+        PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
+        if (playerHealth != null)
         {
-            float dmg = StatsManager.Instance.RuntimeStats.projectileDamage;
-            enemy.TakeContactDamage(dmg);
+            float damageToDeal = owner.GetComponentInParent<EnemyBase>()?.GetContactDamage() ?? 0f;
+            playerHealth.TakeDamage(damageToDeal);
             Destroy(gameObject);
-            return;   
+            return;
         }
+
         // Si choca con cualquier otra cosa sólida, se destruye
         Destroy(gameObject);
     }
 }
-

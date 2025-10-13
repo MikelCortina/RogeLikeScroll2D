@@ -30,21 +30,24 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    //Cuando un enemigo golpea al jugador, este metodo es llamado para reducir la vida del jugador
     public void TakeDamage(float amount)
     {
         StatsManager.Instance.DamagePlayer(amount);
     }
 
+    //Cuando te curas se llama a este metodo, desde habilidades, items en el suelo etc.
     public void Heal(float amount)
     {
         StatsManager.Instance.HealPlayer(amount);
     }
 
+    // Maneja el evento de cambio de salud
     private void HandleHealthChanged(float current, float max)
     {
         OnHealthChanged?.Invoke(current, max);
     }
-
+    // Maneja el evento de muerte del jugador
     private void HandleDeath()
     {
         OnDeath?.Invoke();

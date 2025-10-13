@@ -20,9 +20,9 @@ TagManager:
   - Paredes
   - Enemigos
   - EnemyTrigger
-  - Rider
-  - 
-  - 
+  - Horse
+  - SueloAltoLayer
+  - SueloAltoLayerChecker
   - 
   - 
   - 

@@ -11,8 +11,8 @@ public class EnemyLevelManager : MonoBehaviour
 
     [Tooltip("Nivel aplicado a todos los enemigos. 0 = sin incremento.")]
     [Min(0)]
-    public float enemyLevel = 0;
-    public float multiplicadoPorNivel;
+    public float enemyLevel = 0; //El primer nivel es 1,pq al instanciar la primera ola sube a 1
+    public float multiplicadoPorNivel;//Cuanto mejoran las estadisticas del enemigo por nivel
 
     private void Awake()
     {

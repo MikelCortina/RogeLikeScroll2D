@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -8,10 +9,19 @@ public class RiderController : MonoBehaviour
     [Header("Estado")]
     public bool isAttached = true;
     private bool jumpRequested = false;
-    private int requestToken = -1;
+    public bool soloMove;
+    public bool jumpPressed;
 
     [Header("Referencias")]
-    public Transform horseTransform;    // asignar o con Init()
+    public Transform horseTransform; // asignar o con Init()
+
+    public PlataformaChecker platCheck;   // referencia al script de comprobación de suelo alto
+
+
+    public bool canMove = false; // se activa tras tocar suelo
+    private float moveInput;
+    private bool hasTouchedGround = false;
+
 
     void Awake()
     {
@@ -24,7 +34,6 @@ public class RiderController : MonoBehaviour
         horseTransform = horse;
         isAttached = true;
         jumpRequested = false;
-        requestToken = -1;
         if (horseTransform != null) transform.position = horseTransform.position;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
@@ -39,32 +48,87 @@ public class RiderController : MonoBehaviour
 
     void Update()
     {
-        if (horseTransform == null) return;
 
+        // leer input en Update
+        moveInput = Input.GetAxisRaw("Horizontal");
+
+        // Guardamos la intención de salto
+        if (Input.GetButtonDown("Jump")&&platCheck.isGrounded)
+        {
+            jumpPressed = true;
+        }
+        
         if (isAttached)
         {
             // forzar misma coordenada exacta mientras está enganchado
             transform.position = horseTransform.position;
             rb.linearVelocity = Vector2.zero;
             rb.gravityScale = 0f;
+            soloMove = false;
         }
-        else
+        else if (!hasTouchedGround && !isAttached)
         {
             // en aire: forzar X, dejar Y a física
             Vector3 p = transform.position;
             p.x = horseTransform.position.x;
             transform.position = p;
-            rb.gravityScale = 1f;
+            rb.gravityScale = 0.9f;           
+        }
+        if (hasTouchedGround)
+        {
+            rb.gravityScale = 0.9f;
         }
     }
 
     void FixedUpdate()
     {
-        float jumpImpulse = StatsManager.Instance.RuntimeStats.jumpForce;
+        // Stats
+        float jumpForce = StatsManager.Instance.RuntimeStats.jumpForce;
+        float moveForce = StatsManager.Instance.RuntimeStats.moveForce;
+        float maxSpeed = StatsManager.Instance.RuntimeStats.maxSpeed;
+        float friction = StatsManager.Instance.RuntimeStats.friction;
+
+        bool grounded = platCheck.isGrounded;
+
+        // --- DETECCIÓN DE TOQUE DE SUELO ---
+        if (grounded)
+            hasTouchedGround = true;
+
+        // --- LÓGICA DE CONTROL ---
+        // Si ya tocó el suelo al menos una vez, puede moverse mientras no esté attached
+        canMove = (((hasTouchedGround && !isAttached)));
+
+        // --- MOVIMIENTO HORIZONTAL ---
+        if (canMove && moveInput != 0f)
+        {
+            rb.AddForce(Vector2.right * moveInput * moveForce, ForceMode2D.Force);
+        }
+        else if (canMove && moveInput == 0f)
+        {
+            // aplicar fricción cuando no hay input horizontal
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x * friction, rb.linearVelocity.y);
+        }
+
+        // --- SALTO NORMAL ---
+        if (jumpPressed && grounded)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            jumpPressed = false;
+        }
+
+        // --- SALTO DEL RIDER ---
         if (jumpRequested && isAttached)
         {
             jumpRequested = false;
             ExecuteRiderJump_ApplyComputedImpulse();
+        }
+
+        // --- SI VUELVE A ESTAR ATTACHED ---
+        if (isAttached)
+        {
+            // resetear el estado: no puede moverse solo hasta que vuelva a tocar suelo
+            hasTouchedGround = false;
         }
     }
 
@@ -72,6 +136,7 @@ public class RiderController : MonoBehaviour
     private void ExecuteRiderJump_SetVelocity()
     {
         float jumpImpulse = StatsManager.Instance.RuntimeStats.jumpForce;
+
         isAttached = false;
         transform.SetParent(null);
 
@@ -93,18 +158,18 @@ public class RiderController : MonoBehaviour
     }
 
     // === Opción 2 (alternativa): aplicar impulso calculado ===
-   
     private void ExecuteRiderJump_ApplyComputedImpulse()
     {
         float jumpImpulse = StatsManager.Instance.RuntimeStats.jumpForce;
+
         isAttached = false;
         transform.SetParent(null);
-        rb.gravityScale = 1f;
+
+        rb.gravityScale = 0.9f;
 
         float mass = rb.mass;
         float vObjetivo = mass > 0f ? jumpImpulse / mass : 0f;
         float vActual = rb.linearVelocity.y;
-
         float deltaV = vObjetivo - vActual;
 
         if (deltaV > 0f)
@@ -117,7 +182,7 @@ public class RiderController : MonoBehaviour
         {
             // Si deltaV <= 0 significa que ya tenemos una velocidad vertical igual o superior al objetivo.
             // No aplicamos nada (si quieres sobrescribir la velocidad, usa la opción 1).
-           // Debug.Log("[Rider] No se aplicó impulso (deltaV <= 0).");
+            // Debug.Log("[Rider] No se aplicó impulso (deltaV <= 0).");
         }
     }
 
@@ -128,6 +193,7 @@ public class RiderController : MonoBehaviour
         {
             ReattachToHorse(other.transform);
         }
+
         if (!isAttached && (other.CompareTag("Horse") || other.CompareTag("Player")))
         {
             // Comprobamos si el rider está más abajo que el caballo
@@ -154,6 +220,6 @@ public class RiderController : MonoBehaviour
         transform.position = horseTransform.position;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
-       // Debug.Log("[Rider] Re-enganchado al caballo.");
+        // Debug.Log("[Rider] Re-enganchado al caballo.");
     }
 }

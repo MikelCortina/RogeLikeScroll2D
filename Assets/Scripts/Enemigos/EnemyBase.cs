@@ -10,7 +10,7 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] protected float contactDamage;
 
     [Header("Leveling")]
-    [Tooltip("Si está activo, aplica el multiplicador de LevelManager.")]
+    [Tooltip("Si está activo, aplica el multiplicador de LevelManager.")] //Util para bosses por ejemplo
     [SerializeField] protected bool useLevelScaling = true;
 
     [Header("Detection")]
@@ -68,6 +68,7 @@ public class EnemyBase : MonoBehaviour
 
         adjustedMaxHealth = Mathf.Max(1, Mathf.RoundToInt(maxHealth * multiplier));
         adjustedContactDamage = Mathf.Max(1, Mathf.CeilToInt(contactDamage * multiplier));
+
         currentHealth = adjustedMaxHealth;
 
         if (animator == null)

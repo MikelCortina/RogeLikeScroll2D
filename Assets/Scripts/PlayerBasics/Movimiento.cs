@@ -21,10 +21,11 @@ public class PlayerMovement : MonoBehaviour
     public GameObject riderPrefab; // asignar prefab del jinete en el Inspector (si lo spawneas)
     public RiderController rider1; // referencia al jinete (mejor asignar en inspector)
 
+    public PlataformaChecker platCheck;   // referencia al script de comprobación de suelo alto
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-     
     }
 
     void Update()
@@ -38,8 +39,8 @@ public class PlayerMovement : MonoBehaviour
             if (IsGrounded())
             {
                 jumpPressed = true;
-                
             }
+
             if (!IsGrounded())
             {
                 // Si el jugador pulsa salto en el aire pedimos al rider que encole su salto al apex
@@ -67,21 +68,28 @@ public class PlayerMovement : MonoBehaviour
         float friction = StatsManager.Instance.RuntimeStats.friction;
 
         // movimiento horizontal
-        if (moveInput != 0f)
+        if (moveInput != 0f && !rider1.canMove)
         {
             rb.AddForce(Vector2.right * moveInput * moveForce, ForceMode2D.Force);
         }
-        else
+        else if (!rider1.canMove)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x * friction, rb.linearVelocity.y);
         }
+        else if (rider1.canMove)
+        {
+            // en aire: forzar X, dejar Y a física
+            Vector3 p = transform.position;
+            p.x = riderPrefab.transform.position.x;
+            transform.position = p;
+        }
 
-        // limitar velocidad
-        float clampedX = Mathf.Clamp(rb.linearVelocity.x, -maxSpeed, maxSpeed);
+            // limitar velocidad
+            float clampedX = Mathf.Clamp(rb.linearVelocity.x, -maxSpeed, maxSpeed);
         rb.linearVelocity = new Vector2(clampedX, rb.linearVelocity.y);
 
         // Salto: aplicar impulso una vez
-        if (jumpPressed)
+        if (jumpPressed && rider1.isAttached)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
@@ -101,6 +109,4 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(groundCheck.position, groundRadius);
     }
-
-    }
-
+}

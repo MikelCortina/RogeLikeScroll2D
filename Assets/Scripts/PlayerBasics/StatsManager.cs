@@ -18,6 +18,8 @@ public class StatsData
     [Header("Armor")]
     public float armorPercentage;
     public float armorAmount;
+    [Header("XP")]
+    public float xpMultiplier;
 
 
     public StatsData Clone()
@@ -37,6 +39,7 @@ public class StatsData
             damagePercentage = this.damagePercentage,
             armorPercentage = this.armorPercentage,
             armorAmount = this.armorAmount,
+            xpMultiplier = this.xpMultiplier
         };
     }
 }
@@ -45,29 +48,28 @@ public class StatsManager : MonoBehaviour
 {
     public static StatsManager Instance { get; private set; }
 
-    [Header("Template Stats")]
+    [Header("Template Stats")] //Estadisticas base de esta run, siempre las mismas, se reinician
     [SerializeField] private StatsData templateStats = new StatsData();
+    public StatsData RuntimeStats { get; private set; }
 
     [Header("Leveling System")]
     public int playerLevel = 1;
     public float currentXP = 0;
+    float baseXPToLevel = 100f; // XP necesaria para subir del nivel 1 al 2
+    float xpMultiplierPerLevel = 1.15f; // crecimiento moderado de XP necesaria por nivel
 
-    float baseXPToLevel = 100f;
-    float xpMultiplierPerLevel = 1.15f; // crecimiento moderado
 
-
-    [Header("Player Invulnerability")]
+    [Header("Player Invulnerability")] // Parpadeo e invulnerabilidad tras recibir daño
     [SerializeField] public float iFrameDuration = 0.8f;
     [SerializeField] public float flashfloaterval = 0.08f;
 
-    [Header("Player Renderers")]
+    [Header("Player Renderers")] // Renderers que parpadean al recibir daño
     [SerializeField] public SpriteRenderer[] renderersToFlash;
 
-    public StatsData RuntimeStats { get; private set; }
-
-    public event Action<float, float> OnHealthChanged;
+    //NOTIFICAN A OBSERVERS
+    public event Action<float, float> OnHealthChanged; // Notifica el HP actual y maximo
     public event Action<int> OnLevelUp; // Notifica el nivel alcanzado
-    public event Action OnPlayerDied;
+    public event Action OnPlayerDied; // Notifica la muerte del jugador
 
     private bool isInvulnerable = false;
 
@@ -93,7 +95,7 @@ public class StatsManager : MonoBehaviour
         }
     }
 
-    // --- Experiencia ---
+    // --- Este es el metodo que finalmente otorga al jugador la experiencia total que ganara por eliminar el enemigo---
     public void GainXP(float xp)
     {
         // Mostramos cuánta XP se gana
@@ -114,7 +116,7 @@ public class StatsManager : MonoBehaviour
         }
     }
 
-
+    // Este metodo maneja el proceso de subir de nivel
     private void LevelUp()
     {
         playerLevel++;
@@ -124,20 +126,18 @@ public class StatsManager : MonoBehaviour
         UpgradeManager.Instance.ShowUpgradeOptions(3);
     }
 
+    //Este metodo calcula la experiencia que se otorga por eliminar un enemigo segun su nivel, la base de XP que da cada enemigo y el multiplicador de XP actual del jugador
     public float GetXPForEnemy(int enemyLevel, float baseXP)
     {
         // Escalamos de forma exponencial o lineal suave según el nivel del enemigo
-        float enemyXP = baseXP * Mathf.Pow(1.15f, enemyLevel - 1);
-        return enemyXP * GetXPMultiplier();
-    } 
-
-    public float GetXPMultiplier()
-    {
-        // Por ahora multiplicador simple, se puede mejorar
-        return 1f;
+        float enemyXP = baseXP * Mathf.Pow(1, enemyLevel - 1);
+        return enemyXP * RuntimeStats.xpMultiplier;
     }
 
+
     // --- Player Health Methods ---
+
+             // Aplica daño al jugador, considerando la invulnerabilidad temporal
     public void DamagePlayer(float amount)
     {
         if (amount <= 0 || isInvulnerable) return;
@@ -152,6 +152,7 @@ public class StatsManager : MonoBehaviour
             PlayerDeath();
     }
 
+    // --- Player Escalado Methods ---
     public void HealPlayer(float amount)
     {
         if (amount <= 0) return;

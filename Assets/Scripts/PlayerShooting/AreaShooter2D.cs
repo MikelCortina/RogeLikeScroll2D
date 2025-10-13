@@ -13,7 +13,6 @@ public class AreaShooter2D : MonoBehaviour
 
     private float cooldown = 0f;
 
-
     void Reset()
     {
         if (firePoint == null)
@@ -41,19 +40,20 @@ public class AreaShooter2D : MonoBehaviour
 
     void ShootAt(Collider2D target)
     {
-        if (projectilePrefab == null || firePoint == null) return;
-
-        Vector2 dir = ((Vector2)target.bounds.center - (Vector2)firePoint.position).normalized;
+        if (projectilePrefab == null || firePoint == null || target == null) return;
 
         GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
         Projectile2D p = proj.GetComponent<Projectile2D>();
         if (p != null)
         {
             float projectileSpeed = StatsManager.Instance.RuntimeStats.projectileSpeed;
-            p.Initialize(dir, projectileSpeed, gameObject);
+            // Le pasamos la transform del objetivo para homing
+            p.Initialize(target.transform, projectileSpeed, gameObject);
         }
         else
         {
+            // Si el prefab no tiene Projectile2D, lo lanzamos a la posición actual del objetivo (fallback)
+            Vector2 dir = ((Vector2)target.bounds.center - (Vector2)firePoint.position).normalized;
             Rigidbody2D rb = proj.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
@@ -63,6 +63,7 @@ public class AreaShooter2D : MonoBehaviour
         }
     }
 
+    //Simplemente muestra el radio de alcance del arma en la escena
     void CirculoMostrar()
     {
         if (firePoint == null)
