@@ -55,6 +55,8 @@ MonoBehaviour:
   - Enemigos
   - EnemyTrigger
   - EnemyProjectile
+  - Horse
+  - PlayerProjectile
 --- !u!212 &591329429073423599
 SpriteRenderer:
   m_ObjectHideFlags: 0

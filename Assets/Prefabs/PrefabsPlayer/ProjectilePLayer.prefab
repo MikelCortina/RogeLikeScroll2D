@@ -169,6 +169,7 @@ MonoBehaviour:
   owner: {fileID: 2962280322261411938, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
   isHoming: 1
   turningSpeed: 720
+  effectSpawner: {fileID: 0}
   ignoreLayerNames:
   - PlayerProjectile
   - EnemyProjectile

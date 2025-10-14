@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.ProBuilder;
 
 public class Projectile2DEnemy : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class Projectile2DEnemy : MonoBehaviour
     Vector2 direction = Vector2.right;
     public float lifeTime = 5f;
     public GameObject owner;
+    public float damageToDeal = 0f;
 
     // Homing
     Transform target;
@@ -22,6 +24,7 @@ public class Projectile2DEnemy : MonoBehaviour
 
     private void Awake()
     {
+       
         rb = GetComponent<Rigidbody2D>();
         if (rb != null) rb.freezeRotation = true;
         Destroy(gameObject, lifeTime);
@@ -108,10 +111,14 @@ public class Projectile2DEnemy : MonoBehaviour
         PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
         if (playerHealth != null)
         {
-            float damageToDeal = owner.GetComponentInParent<EnemyBase>()?.GetContactDamage() ?? 0f;
+            float damageToDeal = (owner != null && owner.TryGetComponent<EnemyFlyingShooter>(out var shooter))
+     ? shooter.GetContactDamage()
+     : 0f;
+            Debug.Log("Proyectil enemigo golpea al jugador" + damageToDeal);
             playerHealth.TakeDamage(damageToDeal);
             Destroy(gameObject);
             return;
+
         }
 
         // Si choca con cualquier otra cosa sólida, se destruye

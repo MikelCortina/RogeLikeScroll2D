@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.ProBuilder;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyFlyingShooter : EnemyBase
@@ -17,7 +18,7 @@ public class EnemyFlyingShooter : EnemyBase
     [SerializeField] private float burstDelay = 0.12f;
     [SerializeField] private int burstCount = 1;
 
-    // internal
+    // Internal
     private float hoverOffset = 0f;
     private float baseY = 0f;
 
@@ -27,7 +28,6 @@ public class EnemyFlyingShooter : EnemyBase
         if (rb != null)
             rb.gravityScale = 0f;
 
-        // Guardar la Y base para aplicar hover sin acumular errores
         baseY = transform.position.y;
     }
 
@@ -35,7 +35,6 @@ public class EnemyFlyingShooter : EnemyBase
     {
         base.Start();
 
-        // si firePoint no está asignado, intenta buscar uno hijo llamado "FirePoint"
         if (firePoint == null)
         {
             var fp = transform.Find("FirePoint");
@@ -55,7 +54,6 @@ public class EnemyFlyingShooter : EnemyBase
 
         float distToTarget = Vector2.Distance(transform.position, target.position);
 
-        // Si fuera necesario, asegúrate de que detectRadius viene de la base y tiene valor lógico
         if (distToTarget <= detectRadius)
         {
             if (distToTarget > fireRange)
@@ -65,35 +63,38 @@ public class EnemyFlyingShooter : EnemyBase
             else
             {
                 canMove = false;
-                // Aseguramos detener la física
                 StopMovementPhysics();
                 TryAttack();
             }
         }
         else
         {
-            // fuera de detección: quizá patrullar o quedarse quieto
             canMove = false;
         }
-
-        // Hover logic (visual). Usamos baseY + offset (no multiplicar por deltaTime).
-        hoverOffset = Mathf.Sin(Time.time * hoverFrequency) * hoverAmplitude;
-        var p = transform.position;
-        transform.position = new Vector3(p.x, baseY + hoverOffset, p.z);
     }
 
     private void FixedUpdate()
     {
         if (target == null) return;
+
+        // Hover
+        hoverOffset = Mathf.Sin(Time.time * hoverFrequency) * hoverAmplitude;
+        float targetY = baseY + hoverOffset;
+
         if (canMove)
         {
-            FlyTowardsTarget();
+            FlyTowardsTarget(targetY);
+        }
+        else
+        {
+            // Solo hover
+            rb.MovePosition(new Vector2(transform.position.x, targetY));
         }
     }
 
-    private void FlyTowardsTarget()
+    private void FlyTowardsTarget(float targetY)
     {
-        Vector2 direction = ((Vector2)target.position - (Vector2)transform.position);
+        Vector2 direction = (Vector2)target.position - (Vector2)transform.position;
         float distance = direction.magnitude;
         if (distance < 0.05f)
         {
@@ -104,15 +105,17 @@ public class EnemyFlyingShooter : EnemyBase
         direction.Normalize();
         FlipIfNeeded(direction.x);
 
-        float worldSpeed = 0f;
-        if (parallaxController != null)
-            worldSpeed = parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier;
+        float worldSpeed = parallaxController != null
+            ? parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier
+            : 0f;
 
-        Vector2 desired = direction * flyingSpeed;
-        desired.x -= worldSpeed;
+        Vector2 desiredVelocity = direction * flyingSpeed;
+        desiredVelocity.x -= worldSpeed;
 
-        // !!! CORRECCIÓN: usar rb.velocity (no existe linearVelocity en Rigidbody2D)
-        rb.linearVelocity = desired;
+        // Mantener hover suavemente
+        desiredVelocity.y = (targetY - transform.position.y) / Time.fixedDeltaTime;
+
+        rb.linearVelocity = desiredVelocity;
     }
 
     protected override void PerformAttack()
@@ -120,13 +123,9 @@ public class EnemyFlyingShooter : EnemyBase
         if (projectilePrefab == null || firePoint == null || target == null) return;
 
         if (burstCount <= 1)
-        {
             ShootOne();
-        }
         else
-        {
             StartCoroutine(ShootBurst());
-        }
     }
 
     private IEnumerator ShootBurst()
@@ -146,14 +145,18 @@ public class EnemyFlyingShooter : EnemyBase
 
         GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
 
+        Projectile2DEnemy projScript = proj.GetComponent<Projectile2DEnemy>();
+        if (projScript != null)
+        {
+            projScript.owner = this.gameObject;
+        }
+
         Rigidbody2D prb = proj.GetComponent<Rigidbody2D>();
         if (prb != null)
         {
-            // !!! CORRECCIÓN: usar velocity
             prb.linearVelocity = aimDir * projectileSpeed;
         }
 
-        // Opcional: rotar el proyectil para que apunte a aimDir (2D)
         float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
         proj.transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
@@ -175,4 +178,3 @@ public class EnemyFlyingShooter : EnemyBase
             Gizmos.DrawSphere(firePoint.position, 0.05f);
     }
 }
-

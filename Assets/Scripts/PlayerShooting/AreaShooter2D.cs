@@ -22,19 +22,35 @@ public class AreaShooter2D : MonoBehaviour
     void FixedUpdate()
     {
         CirculoMostrar();
-        cooldown -= Time.deltaTime;
+
+        // Usar fixedDeltaTime porque estamos en FixedUpdate
+        cooldown -= Time.fixedDeltaTime;
+
         float radius = StatsManager.Instance.RuntimeStats.radius;
         Collider2D[] hits = Physics2D.OverlapCircleAll(firePoint.position, radius, enemyLayer);
+
+        // Buscar el objetivo más cercano
+        Collider2D closest = null;
+        float minDistSqr = Mathf.Infinity;
+        Vector2 origin = firePoint.position;
 
         foreach (Collider2D c in hits)
         {
             if (c == null || !c.CompareTag(enemyTag)) continue;
 
-            if (cooldown <= 0f)
+            Vector2 toTarget = (Vector2)c.bounds.center - origin;
+            float distSqr = toTarget.sqrMagnitude;
+            if (distSqr < minDistSqr)
             {
-                ShootAt(c);
-                cooldown = 1f / Mathf.Max(0.0001f, StatsManager.Instance.RuntimeStats.fireRate);
+                minDistSqr = distSqr;
+                closest = c;
             }
+        }
+
+        if (closest != null && cooldown <= 0f)
+        {
+            ShootAt(closest);
+            cooldown = 1f / Mathf.Max(0.0001f, StatsManager.Instance.RuntimeStats.fireRate);
         }
     }
 

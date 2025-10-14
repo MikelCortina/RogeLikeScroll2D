@@ -5,22 +5,24 @@ using System;
 public class StatsData
 {
     [Header("HP")]
-    public float maxHP; public float currentHP;
+    public float maxHP; public float currentHP;public float harvester;
     [Header("Projectile")]
-    public float projectileDamage;public float projectileSpeed;
+    public float projectileSpeed;
     [Header("Movimiento")]
     public float moveForce;public float jumpForce;public float maxSpeed;public float friction;
     [Header("FireArm")]
-    public float fireRate;
-    public float radius;
+    public float fireRate; public float radius;
     [Header("Damage")]
-    public float damagePercentage;
+    public float criticalChance; public float baseDamage;// Currently unused
     [Header("Armor")]
-    public float armorPercentage;
-    public float armorAmount;
+    public float armor;
     [Header("XP")]
-    public float xpMultiplier;
-
+    public float xpGainMultiplier;
+    [Header("Dodge")]
+    public float dodgeChance; // Currently unused
+    [Header("Jinete")]
+    public float riderMuliplier; // Currently unused
+    public float runnerMuliplier; // Currently unused
 
     public StatsData Clone()
     {
@@ -28,7 +30,7 @@ public class StatsData
         {
             maxHP = this.maxHP,
             currentHP = this.currentHP,
-            projectileDamage = this.projectileDamage,
+            baseDamage = this.baseDamage,
             projectileSpeed = this.projectileSpeed,
             moveForce = this.moveForce,
             jumpForce = this.jumpForce,
@@ -36,10 +38,13 @@ public class StatsData
             friction = this.friction,
             fireRate = this.fireRate,
             radius = this.radius,
-            damagePercentage = this.damagePercentage,
-            armorPercentage = this.armorPercentage,
-            armorAmount = this.armorAmount,
-            xpMultiplier = this.xpMultiplier
+            armor = this.armor,
+            xpGainMultiplier = this.xpGainMultiplier,
+            harvester = this.harvester,
+            criticalChance = this.criticalChance,
+            dodgeChance = this.dodgeChance,
+            riderMuliplier = this.riderMuliplier,
+            runnerMuliplier = this.runnerMuliplier
         };
     }
 }
@@ -53,7 +58,7 @@ public class StatsManager : MonoBehaviour
     public StatsData RuntimeStats { get; private set; }
 
     [Header("Leveling System")]
-    public int playerLevel = 1;
+    public int playerCurrentLevel = 1;
     public float currentXP = 0;
     float baseXPToLevel = 100f; // XP necesaria para subir del nivel 1 al 2
     float xpMultiplierPerLevel = 1.15f; // crecimiento moderado de XP necesaria por nivel
@@ -104,24 +109,24 @@ public class StatsManager : MonoBehaviour
         currentXP += xp;
 
         // Mostramos XP actual y lo que falta para subir de nivel
-        float xpToLevel = baseXPToLevel * Mathf.Pow(xpMultiplierPerLevel, playerLevel - 1);
+        float xpToLevel = baseXPToLevel * Mathf.Pow(xpMultiplierPerLevel, playerCurrentLevel - 1);
         Debug.Log($"Current XP: {currentXP}/{xpToLevel}");
 
         while (currentXP >= xpToLevel)
         {
             currentXP -= xpToLevel;
             LevelUp();
-            xpToLevel = baseXPToLevel * Mathf.Pow(xpMultiplierPerLevel, playerLevel - 1);
-            Debug.Log($"Leveled up! New Level: {playerLevel}, XP remaining: {currentXP}/{xpToLevel}");
+            xpToLevel = baseXPToLevel * Mathf.Pow(xpMultiplierPerLevel, playerCurrentLevel - 1);
+            Debug.Log($"Leveled up! New Level: {playerCurrentLevel}, XP remaining: {currentXP}/{xpToLevel}");
         }
     }
 
     // Este metodo maneja el proceso de subir de nivel
     private void LevelUp()
     {
-        playerLevel++;
+        playerCurrentLevel++;
      //   Debug.Log($"¡Subiste al nivel {playerLevel}!");
-        OnLevelUp?.Invoke(playerLevel);
+        OnLevelUp?.Invoke(playerCurrentLevel);
         // Aquí puedes abrir UI de selección de 3 upgrades
         UpgradeManager.Instance.ShowUpgradeOptions(3);
     }
@@ -131,7 +136,7 @@ public class StatsManager : MonoBehaviour
     {
         // Escalamos de forma exponencial o lineal suave según el nivel del enemigo
         float enemyXP = baseXP * Mathf.Pow(1, enemyLevel - 1);
-        return enemyXP * RuntimeStats.xpMultiplier;
+        return enemyXP * RuntimeStats.xpGainMultiplier;
     }
 
 
@@ -167,14 +172,14 @@ public class StatsManager : MonoBehaviour
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
     }
 
-    public void AddProjectileDamage(float delta)
+    public void AddbaseDamage(float delta)
     {
-        RuntimeStats.projectileDamage = Mathf.Max(0, RuntimeStats.projectileDamage + delta);
+        RuntimeStats.baseDamage = Mathf.Max(0, RuntimeStats.baseDamage + delta);
     }
 
     public void AddDamagePercentage(float delta)
     {
-        RuntimeStats.damagePercentage = Mathf.Max(0, RuntimeStats.damagePercentage + delta);
+        RuntimeStats.baseDamage += (RuntimeStats.baseDamage * (delta/100));
     }
 
     public void AddProjectileSpeed(float delta)
@@ -188,7 +193,7 @@ public class StatsManager : MonoBehaviour
     }
     public void AddArmor(float delta)
     {
-        RuntimeStats.armorAmount = Mathf.Max(0, RuntimeStats.armorAmount + delta);
+        RuntimeStats.armor = Mathf.Max(0, RuntimeStats.armor + delta);
     }
 
 

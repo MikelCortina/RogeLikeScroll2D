@@ -89,7 +89,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   playerTag: Player
-  moveSpeed: 3
+  moveSpeed: 0
   stopDistance: 0.6
   parallaxController: {fileID: 5779312947448505574, guid: 22950df0fd825a6409441d687ace09f5, type: 3}
   attackCooldown: 1.2
@@ -101,13 +101,13 @@ MonoBehaviour:
   - {fileID: 7474790222286392728}
   flashDuration: 0.1
   flashCount: 5
-  flyingSpeed: 7
+  flyingSpeed: 1
   hoverAmplitude: 0.125
   hoverFrequency: 1.2
   projectilePrefab: {fileID: 847502903425083811, guid: be4fd9c0788596c448c1ef3a7d42d5d1, type: 3}
   firePoint: {fileID: 4374116530489601792}
   fireRange: 1
-  projectileSpeed: 2.5
+  projectileSpeed: 1.5
   burstDelay: 0.12
   burstCount: 1
 --- !u!114 &3979893125059676651

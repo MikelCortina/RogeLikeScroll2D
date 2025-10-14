@@ -1,0 +1,88 @@
+﻿using UnityEngine;
+
+public class StatsCommunicator : MonoBehaviour
+{
+    public static StatsCommunicator Instance { get; private set; }
+
+    private StatsManager statsManager => StatsManager.Instance;
+
+    // Buffs temporales, multiplicadores, etc.
+    private float projectileDamageMultiplier = 1f;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this) Destroy(gameObject);
+        else Instance = this;
+    }
+
+    // --- Métodos de acceso ---
+    public float GetCurrentHP() => statsManager.RuntimeStats.currentHP;
+    public float GetMaxHP() => statsManager.RuntimeStats.maxHP;
+    public float GetProjectileDamage() => statsManager.RuntimeStats.baseDamage * projectileDamageMultiplier;
+
+    // --- Métodos para modificar estadísticas ---
+
+    //Calcular el daino final recibido por el jugador, teniendo en cuenta armadura y dodge
+    public float CalculateTakenDamage(float incomingDamage)
+    {
+        if (incomingDamage <= 0) return 0f;
+
+        StatsData stats = statsManager.RuntimeStats;
+
+        // 1️⃣ Verificar dodge
+        float dodgeRoll = Random.value; // entre 0 y 1
+        if (dodgeRoll < stats.dodgeChance)
+        {
+            Debug.Log("Player dodged the attack!");
+            return 0f;
+        }
+
+        // 2️⃣ Aplicar reducción de daño por armadura
+        if (stats.armor > 0)
+        {
+            float damageAfterArmor = incomingDamage - incomingDamage * (stats.armor/100);
+            //Debug.Log($"Incoming damage {incomingDamage} Player took {damageAfterArmor} damage after armor reduction of {stats.armor}%");
+            damageAfterArmor = Mathf.Max(0f, damageAfterArmor); // No puede ser negativo
+            return damageAfterArmor;
+        }
+        else
+        {
+            return incomingDamage;
+
+        }
+        
+    }
+
+    //Calcular el daino final que hace el jugador, teniendo en cuenta crítico y porcentaje de daino
+    public float CalculateDamage()
+    {
+        StatsData stats = statsManager.RuntimeStats;
+
+        float baseDamage = stats.baseDamage;
+
+        if (baseDamage <= 0) return 0f;
+
+        // 1️⃣ Verificar dodge
+        if (Random.value < stats.dodgeChance)
+        {
+            Debug.Log("Player dodged the attack!");
+            return 0f;
+        }
+
+        float damage = baseDamage;
+
+        // 2️⃣ Verificar crítico
+        if (Random.value < stats.criticalChance)
+        {
+            damage *= 2f; // crítico x2, puedes ajustar
+            Debug.Log("Critical hit!");
+        }
+
+
+        return damage;
+    }
+
+
+    public void HealPlayer(float amount) => statsManager.HealPlayer(amount);
+    public void DamagePlayer(float amount) => statsManager.DamagePlayer(amount);
+}

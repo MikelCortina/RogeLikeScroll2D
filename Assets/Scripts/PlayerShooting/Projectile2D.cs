@@ -15,9 +15,13 @@ public class Projectile2D : MonoBehaviour
     // Si quieres que gire m�s lento en lugar de apuntar instant�neamente, usa turningSpeed > 0 (grados por segundo)
     public float turningSpeed = 720f; // 0 = giro instant�neo, mayor = giro m�s r�pido
 
+    public EffectSpawner effectSpawner;
+
     [Header("Colisión")]
     [Tooltip("Capas que el proyectil debe ignorar al colisionar.")]
     [SerializeField] private List<string> ignoreLayerNames = new List<string>();
+
+
 
 
     private void Awake()
@@ -98,22 +102,39 @@ public class Projectile2D : MonoBehaviour
     {
         if (owner != null && other.gameObject == owner) return;
 
-        // --- IGNORAR CAPAS DEFINIDAS EN LA LISTA ---
         string otherLayerName = LayerMask.LayerToName(other.gameObject.layer);
         if (ignoreLayerNames.Contains(otherLayerName))
             return;
-        // --------------------------------------------
 
-        // Daño a enemigos
         EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
         if (enemy != null)
         {
-            float dmg = StatsManager.Instance.RuntimeStats.projectileDamage;
+            float dmg = StatsCommunicator.Instance.CalculateDamage();
             enemy.TakeContactDamage(dmg);
-            Destroy(gameObject);
-            return;   
         }
-        // Si choca con cualquier otra cosa sólida, se destruye
+
+        // --- AQUI VIENE LA CLAVE ---
+        if (effectSpawner != null && RunEffectManager.Instance != null)
+        {
+            // Recorremos los efectos activos globales
+            foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
+            {
+                // Solo si este proyectil permite ese efecto (intersección)
+                if (effectSpawner.effects.Contains(activeEffect))
+                {
+                    if (activeEffect is IEffect ie)
+                    {
+                        ie.Execute(transform.position, owner);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"El ScriptableObject {activeEffect.name} no implementa IEffect.");
+                    }
+                }
+            }
+
+          
+        }
         Destroy(gameObject);
     }
 }

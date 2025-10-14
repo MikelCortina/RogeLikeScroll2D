@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8149587154431416546}
+  - component: {fileID: 8526457706435576763}
   - component: {fileID: -5799996338508550085}
   - component: {fileID: 5533706791342859661}
   - component: {fileID: 6510442914046145241}
@@ -40,6 +41,18 @@ Transform:
   - {fileID: 7440873838471050573}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8526457706435576763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709477410786537509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28fd4579499aeed4ab723bc2ba4035f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &-5799996338508550085
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55,7 +68,7 @@ MonoBehaviour:
   templateStats:
     maxHP: 100
     currentHP: 100
-    projectileDamage: 10
+    harvester: 0
     projectileSpeed: 1.75
     moveForce: 10
     jumpForce: 3.5
@@ -64,9 +77,15 @@ MonoBehaviour:
     fireRate: 1
     radius: 2
     damagePercentage: 1
+    criticalChance: 0
+    baseDamage: 10
     armorPercentage: 0
     armorAmount: 0
-  playerLevel: 1
+    xpGainMultiplier: 0
+    dodgeChance: 0
+    riderMuliplier: 0
+    runnerMuliplier: 0
+  playerCurrentLevel: 1
   currentXP: 0
   iFrameDuration: 0.8
   flashfloaterval: 0.08
@@ -122,7 +141,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAttached: 1
+  soloMove: 0
+  jumpPressed: 0
   horseTransform: {fileID: 6959890658855805926, guid: fb4bfe03602368042ae2c6c98bb15702, type: 3}
+  platCheck: {fileID: 0}
+  canMove: 0
 --- !u!212 &8192167398263660715
 SpriteRenderer:
   m_ObjectHideFlags: 0

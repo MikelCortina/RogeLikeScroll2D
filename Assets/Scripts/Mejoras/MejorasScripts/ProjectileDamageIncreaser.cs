@@ -7,6 +7,6 @@ public class ProjectileDamageUpgrade : Upgrade
 
     public override void Apply(StatsManager statsManager)
     {
-        statsManager.AddProjectileDamage(extraDamage);
+        statsManager.AddbaseDamage(extraDamage);
     }
 }
