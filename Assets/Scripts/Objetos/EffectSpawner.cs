@@ -9,7 +9,7 @@ public class EffectSpawner : MonoBehaviour
     public void TriggerEffects(Vector2 position, GameObject owner = null)
     {
         foreach (var effectObj in effects)
-        {
+        {    
             if (effectObj is IEffect effect)
             {
                 effect.Execute(position, owner);

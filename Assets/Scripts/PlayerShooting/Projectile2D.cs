@@ -22,6 +22,8 @@ public class Projectile2D : MonoBehaviour
     [SerializeField] private List<string> ignoreLayerNames = new List<string>();
 
 
+    private HashSet<EnemyBase> damagedEnemies = new HashSet<EnemyBase>();
+
 
 
     private void Awake()
@@ -98,6 +100,7 @@ public class Projectile2D : MonoBehaviour
         }
     }
 
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (owner != null && other.gameObject == owner) return;
@@ -107,19 +110,18 @@ public class Projectile2D : MonoBehaviour
             return;
 
         EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
-        if (enemy != null)
+        if (enemy != null && !damagedEnemies.Contains(enemy))
         {
             float dmg = StatsCommunicator.Instance.CalculateDamage();
             enemy.TakeContactDamage(dmg);
+            damagedEnemies.Add(enemy);
         }
 
         // --- AQUI VIENE LA CLAVE ---
         if (effectSpawner != null && RunEffectManager.Instance != null)
         {
-            // Recorremos los efectos activos globales
             foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
             {
-                // Solo si este proyectil permite ese efecto (intersección)
                 if (effectSpawner.effects.Contains(activeEffect))
                 {
                     if (activeEffect is IEffect ie)
@@ -132,10 +134,10 @@ public class Projectile2D : MonoBehaviour
                     }
                 }
             }
-
-          
         }
+
         Destroy(gameObject);
     }
+
 }
 

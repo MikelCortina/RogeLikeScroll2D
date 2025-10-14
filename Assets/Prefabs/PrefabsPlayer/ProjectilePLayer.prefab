@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -4313122925935100773}
   - component: {fileID: 3753190625761520321}
   - component: {fileID: 3379583950647405027}
+  - component: {fileID: 312572203072155370}
   m_Layer: 7
   m_Name: ProjectilePLayer
   m_TagString: Untagged
@@ -169,8 +170,22 @@ MonoBehaviour:
   owner: {fileID: 2962280322261411938, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
   isHoming: 1
   turningSpeed: 720
-  effectSpawner: {fileID: 0}
+  effectSpawner: {fileID: 312572203072155370}
   ignoreLayerNames:
   - PlayerProjectile
   - EnemyProjectile
   - Player
+--- !u!114 &312572203072155370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847502903425083811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab656f502ff264f43a8a1c822c9f80cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effects:
+  - {fileID: 11400000, guid: 0a0969c6e553def4ea738686ba6a5964, type: 2}

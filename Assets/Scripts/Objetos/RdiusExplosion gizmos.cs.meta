@@ -1,11 +1,10 @@
 fileFormatVersion: 2
-guid: 788225860bc83ab408582f986469749d
+guid: 83c60be2343c792419578873ad362907
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - vfxPrefab: {instanceID: 0}
-  - radiusPreviewPrefab: {fileID: 847502903425083811, guid: be4fd9c0788596c448c1ef3a7d42d5d1, type: 3}
+  - explosionEffect: {fileID: 11400000, guid: 0a0969c6e553def4ea738686ba6a5964, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
