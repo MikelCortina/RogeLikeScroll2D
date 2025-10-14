@@ -136,7 +136,7 @@ public class StatsManager : MonoBehaviour
     {
         // Escalamos de forma exponencial o lineal suave según el nivel del enemigo
         float enemyXP = baseXP * Mathf.Pow(1, enemyLevel - 1);
-        return enemyXP * RuntimeStats.xpGainMultiplier;
+        return (enemyXP + enemyXP * (RuntimeStats.xpGainMultiplier/100));
     }
 
 

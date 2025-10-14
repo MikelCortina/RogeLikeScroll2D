@@ -62,13 +62,6 @@ public class StatsCommunicator : MonoBehaviour
 
         if (baseDamage <= 0) return 0f;
 
-        // 1️⃣ Verificar dodge
-        if (Random.value < stats.dodgeChance)
-        {
-            Debug.Log("Player dodged the attack!");
-            return 0f;
-        }
-
         float damage = baseDamage;
 
         // 2️⃣ Verificar crítico
