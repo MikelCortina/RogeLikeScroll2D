@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8149587154431416546}
   - component: {fileID: 8526457706435576763}
   - component: {fileID: -5799996338508550085}
+  - component: {fileID: 301901825584352197}
   - component: {fileID: 5533706791342859661}
   - component: {fileID: 6510442914046145241}
   - component: {fileID: 4580341518737383333}
@@ -70,18 +71,16 @@ MonoBehaviour:
     currentHP: 100
     harvester: 0
     projectileSpeed: 1.75
-    moveForce: 10
-    jumpForce: 3.5
-    maxSpeed: 5
+    moveForce: 5
+    jumpForce: 3
+    maxSpeed: 3
     friction: 0.95
     fireRate: 1
     radius: 2
-    damagePercentage: 1
     criticalChance: 0
     baseDamage: 10
-    armorPercentage: 0
-    armorAmount: 0
-    xpGainMultiplier: 0
+    armor: 10
+    xpGainMultiplier: 1
     dodgeChance: 0
     riderMuliplier: 0
     runnerMuliplier: 0
@@ -91,6 +90,21 @@ MonoBehaviour:
   flashfloaterval: 0.08
   renderersToFlash:
   - {fileID: 8192167398263660715}
+--- !u!114 &301901825584352197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709477410786537509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab3adcce6df12f14a84092f73aad8a64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseDecayPerSecond: 1
+  damageMultiplier: 2
+  maxHPRecoverPerKill: 10
 --- !u!114 &5533706791342859661
 MonoBehaviour:
   m_ObjectHideFlags: 0

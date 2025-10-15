@@ -160,6 +160,8 @@ public class EnemyBase : MonoBehaviour
         float xpGained = StatsManager.Instance.GetXPForEnemy(enemyLevel, baseXP);
         Debug.Log($"Enemy Level: {enemyLevel}, Base XP: {baseXP}, XP Gained: {xpGained}");
         StatsManager.Instance.GainXP(xpGained);
+        ScoreManager.Instance.EnemyDied();
+
 
         Destroy(gameObject, 1.2f);
     }

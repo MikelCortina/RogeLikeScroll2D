@@ -75,8 +75,10 @@ public class StatsManager : MonoBehaviour
     public event Action<float, float> OnHealthChanged; // Notifica el HP actual y maximo
     public event Action<int> OnLevelUp; // Notifica el nivel alcanzado
     public event Action OnPlayerDied; // Notifica la muerte del jugador
+    public event Action<float> OnTakeDamage;
 
     private bool isInvulnerable = false;
+
 
     private void Awake()
     {
@@ -152,6 +154,18 @@ public class StatsManager : MonoBehaviour
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
 
         if (iFrameDuration > 0f) StartCoroutine(InvulnerabilityCoroutine());
+
+        if (RuntimeStats.currentHP <= 0)
+            PlayerDeath();
+    }
+    public void DamagePlayerDecay(float amount)
+    {
+        if (amount <= 0 || isInvulnerable) return;
+
+        RuntimeStats.currentHP = Mathf.Max(0, RuntimeStats.currentHP - amount);
+        Debug.Log($"Player took {amount} damage. Current HP: {RuntimeStats.currentHP}/{RuntimeStats.maxHP}");
+        OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
+        OnTakeDamage?.Invoke(amount);
 
         if (RuntimeStats.currentHP <= 0)
             PlayerDeath();
@@ -238,6 +252,10 @@ public class StatsManager : MonoBehaviour
     {
         OnPlayerDied?.Invoke();
         Debug.Log("Jugador muri�");
+    }
+    public void NotifyHealthChanged()
+    {
+        OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
     }
 
     // --- Reset para nueva run ---

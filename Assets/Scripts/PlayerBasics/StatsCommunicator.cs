@@ -20,6 +20,8 @@ public class StatsCommunicator : MonoBehaviour
     public float GetMaxHP() => statsManager.RuntimeStats.maxHP;
     public float GetProjectileDamage() => statsManager.RuntimeStats.baseDamage * projectileDamageMultiplier;
 
+  
+
     // --- Métodos para modificar estadísticas ---
 
     //Calcular el daino final recibido por el jugador, teniendo en cuenta armadura y dodge
