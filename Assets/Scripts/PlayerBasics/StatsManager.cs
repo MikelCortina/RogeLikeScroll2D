@@ -5,7 +5,7 @@ using System;
 public class StatsData
 {
     [Header("HP")]
-    public float maxHP; public float currentHP;public float harvester;
+    public float maxHP; public float currentHP;public float harvester, currentMaxHP;
     [Header("Projectile")]
     public float projectileSpeed;
     [Header("Movimiento")]
@@ -30,6 +30,7 @@ public class StatsData
         {
             maxHP = this.maxHP,
             currentHP = this.currentHP,
+            currentMaxHP = this.currentMaxHP,
             baseDamage = this.baseDamage,
             projectileSpeed = this.projectileSpeed,
             moveForce = this.moveForce,
@@ -87,7 +88,6 @@ public class StatsManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
@@ -99,7 +99,9 @@ public class StatsManager : MonoBehaviour
             var sr = GetComponentInChildren<SpriteRenderer>();
             if (sr != null)
                 renderersToFlash = new SpriteRenderer[] { sr };
+
         }
+        RuntimeStats.currentMaxHP= RuntimeStats.maxHP;
     }
 
     // --- Este es el metodo que finalmente otorga al jugador la experiencia total que ganara por eliminar el enemigo---
@@ -150,32 +152,20 @@ public class StatsManager : MonoBehaviour
         if (amount <= 0 || isInvulnerable) return;
 
         RuntimeStats.currentHP = Mathf.Max(0, RuntimeStats.currentHP - amount);
-        Debug.Log($"Player took {amount} damage. Current HP: {RuntimeStats.currentHP}/{RuntimeStats.maxHP}");
-        OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
+        Debug.Log($"Player took {amount} damage. Current HP: {RuntimeStats.currentHP}/{RuntimeStats.currentMaxHP}");
+        OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.currentMaxHP);
 
         if (iFrameDuration > 0f) StartCoroutine(InvulnerabilityCoroutine());
 
         if (RuntimeStats.currentHP <= 0)
             PlayerDeath();
     }
-    public void DamagePlayerDecay(float amount)
-    {
-        if (amount <= 0 || isInvulnerable) return;
-
-        RuntimeStats.currentHP = Mathf.Max(0, RuntimeStats.currentHP - amount);
-        Debug.Log($"Player took {amount} damage. Current HP: {RuntimeStats.currentHP}/{RuntimeStats.maxHP}");
-        OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
-        OnTakeDamage?.Invoke(amount);
-
-        if (RuntimeStats.currentHP <= 0)
-            PlayerDeath();
-    }
-
+   
     // --- Player Escalado Methods ---
     public void HealPlayer(float amount)
     {
         if (amount <= 0) return;
-        RuntimeStats.currentHP = Mathf.Min(RuntimeStats.maxHP, RuntimeStats.currentHP + amount);
+        RuntimeStats.currentHP = Mathf.Min(RuntimeStats.currentMaxHP, RuntimeStats.currentHP + amount);
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
     }
 
@@ -185,6 +175,15 @@ public class StatsManager : MonoBehaviour
         RuntimeStats.currentHP = Mathf.Min(RuntimeStats.currentHP, RuntimeStats.maxHP);
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
     }
+    public void AddCurrentMaxHP(float delta)
+    {
+        RuntimeStats.currentMaxHP = Mathf.Max(1, RuntimeStats.currentMaxHP + delta);
+        RuntimeStats.currentHP += delta;
+        RuntimeStats.currentHP = Mathf.Min(RuntimeStats.currentHP, RuntimeStats.currentMaxHP);
+
+        OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.currentMaxHP);
+    }
+
 
     public void AddbaseDamage(float delta)
     {

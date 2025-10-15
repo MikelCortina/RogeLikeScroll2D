@@ -161,6 +161,7 @@ public class EnemyBase : MonoBehaviour
         Debug.Log($"Enemy Level: {enemyLevel}, Base XP: {baseXP}, XP Gained: {xpGained}");
         StatsManager.Instance.GainXP(xpGained);
         ScoreManager.Instance.EnemyDied();
+        HealthDecay.Instance.GetBackHP();
 
 
         Destroy(gameObject, 1.2f);

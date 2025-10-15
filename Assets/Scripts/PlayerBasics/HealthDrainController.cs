@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
 public class HealthDecay : MonoBehaviour
@@ -57,42 +58,43 @@ public class HealthDecay : MonoBehaviour
             int decayInt = Mathf.FloorToInt(accumulatedDecay);
             accumulatedDecay -= decayInt;
 
-            statsManager.DamagePlayerDecay(decayInt);
-            statsManager.AddMaxHP(-decayInt); // También resta de maxHP
+           // statsManager.DamagePlayerDecay(decayInt);
+            statsManager.AddCurrentMaxHP(-decayInt); // También resta de maxHP
             statsManager.NotifyHealthChanged();
         }
 
+       
+    }
+
+    private void OnTakeDamage(float damage)
+    {
+        baseDecayPerSecond += 0.1f;
+    }
+    private void ResetDecay()
+    {
         // DecaySpeed vuelve gradualmente a baseDecayPerSecond
         if (decaySpeed > baseDecayPerSecond)
             decaySpeed -= damageMultiplier * Time.deltaTime; // ajuste suave
         decaySpeed = Mathf.Max(baseDecayPerSecond, decaySpeed);
     }
 
-    private void OnTakeDamage(float damage)
-    {
-        // Aumentar temporalmente la velocidad de decay
-        decaySpeed += damageMultiplier;
-    }
-
     // Llamar desde EnemyBase.Die()
-    public void EnemyDie()
+    public void GetBackHP()
     {
+        Debug.Log(" recuperada");
         if (statsManager == null) return;
 
         float baseMaxHP = statsManager.RuntimeStats.maxHP;
-        float currentMaxHP = statsManager.RuntimeStats.maxHP;
+        float currentMaxHP = statsManager.RuntimeStats.currentMaxHP;
 
         if (currentMaxHP < baseMaxHP)
         {
             float newMaxHP = Mathf.Min(currentMaxHP + maxHPRecoverPerKill, baseMaxHP);
-            statsManager.RuntimeStats.maxHP = newMaxHP;
-
-            // También recuperamos algo de vida actual
-            statsManager.RuntimeStats.currentHP = Mathf.Min(
-                statsManager.RuntimeStats.currentHP + maxHPRecoverPerKill, newMaxHP
-            );
+            statsManager.RuntimeStats.currentMaxHP = newMaxHP;
+            Debug.Log($"GetBackHP called. baseMaxHP: {baseMaxHP}, currentMaxHP: {currentMaxHP}, recover: {maxHPRecoverPerKill}");
 
             statsManager.NotifyHealthChanged();
         }
     }
 }
+
