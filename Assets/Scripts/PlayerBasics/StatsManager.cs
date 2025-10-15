@@ -64,11 +64,11 @@ public class StatsManager : MonoBehaviour
     float xpMultiplierPerLevel = 1.15f; // crecimiento moderado de XP necesaria por nivel
 
 
-    [Header("Player Invulnerability")] // Parpadeo e invulnerabilidad tras recibir daño
+    [Header("Player Invulnerability")] // Parpadeo e invulnerabilidad tras recibir daï¿½o
     [SerializeField] public float iFrameDuration = 0.8f;
     [SerializeField] public float flashfloaterval = 0.08f;
 
-    [Header("Player Renderers")] // Renderers que parpadean al recibir daño
+    [Header("Player Renderers")] // Renderers que parpadean al recibir daï¿½o
     [SerializeField] public SpriteRenderer[] renderersToFlash;
 
     //NOTIFICAN A OBSERVERS
@@ -103,7 +103,7 @@ public class StatsManager : MonoBehaviour
     // --- Este es el metodo que finalmente otorga al jugador la experiencia total que ganara por eliminar el enemigo---
     public void GainXP(float xp)
     {
-        // Mostramos cuánta XP se gana
+        // Mostramos cuï¿½nta XP se gana
         Debug.Log($"Gained {xp} XP");
 
         currentXP += xp;
@@ -125,16 +125,16 @@ public class StatsManager : MonoBehaviour
     private void LevelUp()
     {
         playerCurrentLevel++;
-     //   Debug.Log($"¡Subiste al nivel {playerLevel}!");
+     //   Debug.Log($"ï¿½Subiste al nivel {playerLevel}!");
         OnLevelUp?.Invoke(playerCurrentLevel);
-        // Aquí puedes abrir UI de selección de 3 upgrades
+        // Aquï¿½ puedes abrir UI de selecciï¿½n de 3 upgrades
         UpgradeManager.Instance.ShowUpgradeOptions(3);
     }
 
     //Este metodo calcula la experiencia que se otorga por eliminar un enemigo segun su nivel, la base de XP que da cada enemigo y el multiplicador de XP actual del jugador
     public float GetXPForEnemy(int enemyLevel, float baseXP)
     {
-        // Escalamos de forma exponencial o lineal suave según el nivel del enemigo
+        // Escalamos de forma exponencial o lineal suave segï¿½n el nivel del enemigo
         float enemyXP = baseXP * Mathf.Pow(1, enemyLevel - 1);
         return (enemyXP + enemyXP * (RuntimeStats.xpGainMultiplier/100));
     }
@@ -142,7 +142,7 @@ public class StatsManager : MonoBehaviour
 
     // --- Player Health Methods ---
 
-             // Aplica daño al jugador, considerando la invulnerabilidad temporal
+             // Aplica daï¿½o al jugador, considerando la invulnerabilidad temporal
     public void DamagePlayer(float amount)
     {
         if (amount <= 0 || isInvulnerable) return;
@@ -176,10 +176,13 @@ public class StatsManager : MonoBehaviour
     {
         RuntimeStats.baseDamage = Mathf.Max(0, RuntimeStats.baseDamage + delta);
     }
-
     public void AddDamagePercentage(float delta)
     {
         RuntimeStats.baseDamage += (RuntimeStats.baseDamage * (delta/100));
+    }
+    public void AddCriticalPercentage(float delta)
+    {
+        RuntimeStats.criticalChance += (RuntimeStats.criticalChance * (delta/100));
     }
 
     public void AddProjectileSpeed(float delta)
@@ -194,6 +197,14 @@ public class StatsManager : MonoBehaviour
     public void AddArmor(float delta)
     {
         RuntimeStats.armor = Mathf.Max(0, RuntimeStats.armor + delta);
+    }
+    public void XpGainMultiplier(float delta)
+    {
+        RuntimeStats.xpGainMultiplier = Mathf.Max(0,(RuntimeStats.xpGainMultiplier + delta));
+    }
+    public void dodgeChanceIncreaser(float delta)
+    {
+        RuntimeStats.dodgeChance += (RuntimeStats.dodgeChance * (delta/100));
     }
 
 
@@ -226,7 +237,7 @@ public class StatsManager : MonoBehaviour
     private void PlayerDeath()
     {
         OnPlayerDied?.Invoke();
-        Debug.Log("Jugador murió");
+        Debug.Log("Jugador muriï¿½");
     }
 
     // --- Reset para nueva run ---

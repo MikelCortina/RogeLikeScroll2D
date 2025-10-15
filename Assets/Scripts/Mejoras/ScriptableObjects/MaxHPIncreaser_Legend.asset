@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc2833e6281fa0a4c8e02c97aadd32ed, type: 3}
-  m_Name: MaxHPIncreaser
+  m_Name: MaxHPIncreaser_Legend
   m_EditorClassIdentifier: 
-  upgradeName: Max Hp Increase
+  upgradeName: Max Hp Increase_Legend
   description: Aumenta tu vida maxima en 20
   hpIncrease: 20
