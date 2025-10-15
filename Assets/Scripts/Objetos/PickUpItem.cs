@@ -23,13 +23,16 @@ public class PickupEffectItem : MonoBehaviour
     private IEnumerator ShowEffectNamesAndActivate()
     {
         float elapsed = 0f;
-        int index = 0;
+        int index = Random.Range(0, effectList.Length); // empezar en un índice aleatorio
 
         while (elapsed < displayDuration)
         {
             textObjectPanel.SetActive(true);
             effectTextUI.text = effectList[index].name;
+
+            // pasar al siguiente, con wrap-around
             index = (index + 1) % effectList.Length;
+
             yield return new WaitForSecondsRealtime(nameChangeInterval);
             elapsed += nameChangeInterval;
         }

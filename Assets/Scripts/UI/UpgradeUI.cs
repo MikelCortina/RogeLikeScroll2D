@@ -11,6 +11,11 @@ public class UpgradeUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] upgradeNameTexts; // Texto para el nombre de cada mejora
     [SerializeField] private TextMeshProUGUI[] upgradeDescriptionTexts; // Texto para la descripción
 
+    [Header("Colores según rareza")]
+    [SerializeField] private Color rareColor = Color.blue;
+    [SerializeField] private Color epicColor = new Color(0.5f, 0f, 1f); // morado
+    [SerializeField] private Color legendaryColor = Color.yellow;
+
     private List<Upgrade> currentUpgrades;
 
     private void Awake()
@@ -31,7 +36,6 @@ public class UpgradeUI : MonoBehaviour
     /// </summary>
     public void ShowUpgrades(int level)
     {
-        //Debug.Log("ShowUpgrades llamado desde OnLevelUp con nivel: " + level);
         if (upgradePanel == null || upgradeButtons.Length != 3)
         {
             Debug.LogError("UpgradeUI no está configurada correctamente");
@@ -49,13 +53,30 @@ public class UpgradeUI : MonoBehaviour
             if (upgradeNameTexts.Length > i) upgradeNameTexts[i].text = upgrade.upgradeName;
             if (upgradeDescriptionTexts.Length > i) upgradeDescriptionTexts[i].text = upgrade.description;
 
+            // Cambiar color del fondo según rareza
+            Image buttonImage = upgradeButtons[i].GetComponent<Image>();
+            if (buttonImage != null)
+            {
+                switch (upgrade.quality)
+                {
+                    case UpgradeQuality.Rare:
+                        buttonImage.color = rareColor;
+                        break;
+                    case UpgradeQuality.Epic:
+                        buttonImage.color = epicColor;
+                        break;
+                    case UpgradeQuality.Legendary:
+                        buttonImage.color = legendaryColor;
+                        break;
+                }
+            }
+
             // Remover listeners antiguos y asignar el nuevo
             int index = i; // captura local para lambda
             upgradeButtons[i].onClick.RemoveAllListeners();
             upgradeButtons[i].onClick.AddListener(() => SelectUpgrade(index));
         }
 
-        Debug.Log("ShowUpgrades llamado");
         if (upgradePanel != null)
             upgradePanel.SetActive(true);
 
@@ -80,4 +101,3 @@ public class UpgradeUI : MonoBehaviour
         Time.timeScale = 1f;
     }
 }
-    

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b9f3da517f145247aaa7c7909289e8e, type: 3}
   m_Name: CriticalChanceIncreaser_Epic
   m_EditorClassIdentifier: 
-  upgradeName: CriticalChanceIncreaser_Epic
+  upgradeName: CriticalChanceIncreaser_epic
   description: 4% + de posibilidad de critico
+  quality: 1
   CriticalChance: 4

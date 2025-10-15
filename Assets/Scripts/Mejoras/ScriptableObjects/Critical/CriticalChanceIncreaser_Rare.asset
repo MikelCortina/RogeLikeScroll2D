@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b9f3da517f145247aaa7c7909289e8e, type: 3}
   m_Name: CriticalChanceIncreaser_Rare
   m_EditorClassIdentifier: 
-  upgradeName: CriticalChanceIncreaser_Rare
+  upgradeName: CriticalChanceIncreaser_rare
   description: +2% de probabilidad de critico
+  quality: 0
   CriticalChance: 2

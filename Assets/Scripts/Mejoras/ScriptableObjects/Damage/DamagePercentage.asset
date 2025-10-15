@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e4048414a0da324295782cf1bdc37dc, type: 3}
   m_Name: DamagePercentage
   m_EditorClassIdentifier: 
-  upgradeName: +10% DamagePercentage
+  upgradeName: +10% DamagePercentage_legend
   description: "Ganas un 10% de da\xF1o"
+  quality: 2
   extraDamage: 10

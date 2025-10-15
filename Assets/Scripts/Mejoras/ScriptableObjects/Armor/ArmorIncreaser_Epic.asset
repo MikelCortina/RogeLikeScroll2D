@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e138d6a7582406244930d0ac98254a6e, type: 3}
   m_Name: ArmorIncreaser_Epic
   m_EditorClassIdentifier: 
-  upgradeName: Aumento de armadura
+  upgradeName: Aumento de armadura_epic
   description: Aumenta en 4 tu armadura
+  quality: 1
   extraArmor: 4

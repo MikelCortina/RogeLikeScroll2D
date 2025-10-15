@@ -8,9 +8,10 @@ public class HealthDecay : MonoBehaviour
     private StatsManager statsManager;
 
     [Header("Decay Settings")]
-    public float baseDecayPerSecond = 1f;    // Vida que baja por segundo
-    public float damageMultiplier = 2f;      // Aumento temporal del decay al recibir daño
-    public float maxHPRecoverPerKill = 0.5f; // Vida máxima que se recupera al matar enemigos
+    public float baseDecayPerSecond;    // Vida que baja por segundo
+    private float damageMultiplier = 2f;      // Aumento temporal del decay al recibir daño
+    public float maxHPRecoverPerKill; // Vida máxima que se recupera al matar enemigos
+    public float velocidadDecayTrasDaino;
 
     private float decaySpeed;
     private float accumulatedDecay = 0f;
@@ -35,16 +36,6 @@ public class HealthDecay : MonoBehaviour
         // Si por algún motivo statsManager aún es null
         if (statsManager == null)
             statsManager = StatsManager.Instance;
-
-        // Suscribirse al evento de recibir daño
-        if (statsManager != null)
-            statsManager.OnTakeDamage += OnTakeDamage;
-    }
-
-    private void OnDestroy()
-    {
-        if (statsManager != null)
-            statsManager.OnTakeDamage -= OnTakeDamage;
     }
 
     private void Update()
@@ -66,9 +57,9 @@ public class HealthDecay : MonoBehaviour
        
     }
 
-    private void OnTakeDamage(float damage)
+    public void OnTakeDamage()
     {
-        baseDecayPerSecond += 0.1f;
+        decaySpeed += velocidadDecayTrasDaino;
     }
     private void ResetDecay()
     {

@@ -76,7 +76,6 @@ public class StatsManager : MonoBehaviour
     public event Action<float, float> OnHealthChanged; // Notifica el HP actual y maximo
     public event Action<int> OnLevelUp; // Notifica el nivel alcanzado
     public event Action OnPlayerDied; // Notifica la muerte del jugador
-    public event Action<float> OnTakeDamage;
 
     private bool isInvulnerable = false;
 
@@ -156,6 +155,8 @@ public class StatsManager : MonoBehaviour
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.currentMaxHP);
 
         if (iFrameDuration > 0f) StartCoroutine(InvulnerabilityCoroutine());
+
+        HealthDecay.Instance.OnTakeDamage();
 
         if (RuntimeStats.currentHP <= 0)
             PlayerDeath();

@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 8192167398263660715}
   - component: {fileID: 3502520487130433508}
   - component: {fileID: 7652821434241836277}
+  - component: {fileID: 3503966475829720182}
   m_Layer: 6
   m_Name: Rider
   m_TagString: Untagged
@@ -70,6 +71,7 @@ MonoBehaviour:
     maxHP: 100
     currentHP: 100
     harvester: 0
+    currentMaxHP: 0
     projectileSpeed: 1.75
     moveForce: 5
     jumpForce: 3
@@ -103,8 +105,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseDecayPerSecond: 1
-  damageMultiplier: 2
-  maxHPRecoverPerKill: 10
+  damageMultiplier: 10
+  maxHPRecoverPerKill: 1
 --- !u!114 &5533706791342859661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,6 +290,24 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &3503966475829720182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709477410786537509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35d03cbf171243c4c80c781aa26e1bda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundCheckPoint: {fileID: 0}
+  groundCheckRadius: 0.04
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8192
+  isGrounded: 0
 --- !u!1 &2481570677749617751
 GameObject:
   m_ObjectHideFlags: 0

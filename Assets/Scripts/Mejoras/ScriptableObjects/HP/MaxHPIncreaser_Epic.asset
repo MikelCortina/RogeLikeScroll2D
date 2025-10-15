@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeName: Max Hp Increase_Epic
   description: Aumenta tu vida maxima en 10
+  quality: 1
   hpIncrease: 10

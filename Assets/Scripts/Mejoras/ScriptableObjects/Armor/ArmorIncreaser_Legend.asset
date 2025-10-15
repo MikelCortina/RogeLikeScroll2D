@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e138d6a7582406244930d0ac98254a6e, type: 3}
   m_Name: ArmorIncreaser_Legend
   m_EditorClassIdentifier: 
-  upgradeName: Aumento de armadura
+  upgradeName: Aumento de armadura_legend
   description: Aumenta en 10 tu armadura
+  quality: 2
   extraArmor: 10

@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeName: Max Hp Increase_Legend
   description: Aumenta tu vida maxima en 20
+  quality: 2
   hpIncrease: 20

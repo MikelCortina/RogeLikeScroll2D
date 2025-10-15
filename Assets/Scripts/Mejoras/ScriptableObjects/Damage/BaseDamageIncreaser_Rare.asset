@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85b3fcefac1cf29408b15bc4af30cfab, type: 3}
   m_Name: BaseDamageIncreaser_Rare
   m_EditorClassIdentifier: 
-  upgradeName: BaseDamageIncreaser_Rare
+  upgradeName: BaseDamageIncreaser_epic
   description: "Haces +4 de da\xF1o "
+  quality: 1
   extraDamage: 4

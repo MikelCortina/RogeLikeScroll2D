@@ -12,38 +12,69 @@ public class UpgradeManager : MonoBehaviour
         if (Instance != null && Instance != this) Destroy(gameObject);
         else Instance = this;
     }
+
     public void ShowUpgradeOptions(int count)
     {
-        // Escoge aleatoriamente 'count' upgrades
         List<Upgrade> options = new List<Upgrade>();
-        for (int i = 0; i < count; i++)
+        int attempts = 0;
+
+        while (options.Count < count && attempts < 100)
         {
+            attempts++;
             int index = Random.Range(0, allUpgrades.Count);
-            options.Add(allUpgrades[index]);
+            Upgrade candidate = allUpgrades[index];
+
+            if (RollSpawnByQuality(candidate.quality))
+            {
+                options.Add(candidate); // agregamos el ScriptableObject original, no lo modificamos
+            }
         }
 
         // Aquí abres la UI para que el jugador seleccione uno
-       /*Debug.Log("Mostrando opciones de mejoras:");
+        /*Debug.Log("Mostrando opciones de mejoras:");
         foreach (var up in options)
-            Debug.Log(up.upgradeName);*/
+            Debug.Log($"{up.upgradeName} ({up.quality})");*/
     }
 
     public void ApplyUpgrade(Upgrade upgrade)
     {
         upgrade.Apply(StatsManager.Instance);
-      //  Debug.Log($"Se aplicó la mejora: {upgrade.upgradeName}");
+        // Debug.Log($"Se aplicó la mejora: {upgrade.upgradeName} ({upgrade.quality})");
+    }
+
+    // Método que decide si un upgrade spawnea según su calidad
+    private bool RollSpawnByQuality(UpgradeQuality quality)
+    {
+        float roll = Random.value; // entre 0 y 1
+
+        switch (quality)
+        {
+            case UpgradeQuality.Rare:
+                return roll < 0.6f; // 60% de spawn
+            case UpgradeQuality.Epic:
+                return roll < 0.3f; // 30% de spawn
+            case UpgradeQuality.Legendary:
+                return roll < 0.1f; // 10% de spawn
+            default:
+                return false;
+        }
     }
 
     public List<Upgrade> GetRandomUpgrades(int count)
     {
         List<Upgrade> options = new List<Upgrade>();
-        List<Upgrade> copy = new List<Upgrade>(allUpgrades);
+        int attempts = 0;
 
-        for (int i = 0; i < count && copy.Count > 0; i++)
+        while (options.Count < count && attempts < 200)
         {
-            int index = Random.Range(0, copy.Count);
-            options.Add(copy[index]);
-            copy.RemoveAt(index); // Evita repetidos
+            attempts++;
+            int index = Random.Range(0, allUpgrades.Count);
+            Upgrade candidate = allUpgrades[index];
+
+            if (RollSpawnByQuality(candidate.quality))
+            {
+                options.Add(candidate);
+            }
         }
 
         return options;

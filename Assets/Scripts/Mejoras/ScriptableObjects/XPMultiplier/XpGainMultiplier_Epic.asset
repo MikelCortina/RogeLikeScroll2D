@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeName: XpGainMultiplier_Epic
   description: Aumento de XP ganada +4
+  quality: 1
   xpIncrease: 4
