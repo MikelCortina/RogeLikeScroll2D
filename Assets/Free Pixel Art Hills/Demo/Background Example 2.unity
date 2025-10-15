@@ -927,6 +927,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CofreDeObjetos
       objectReference: {fileID: 0}
+    - target: {fileID: 828654097267498391, guid: ada8f8971647bd844a376273a775dd07, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5268955491738641854, guid: ada8f8971647bd844a376273a775dd07, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.796
@@ -1054,7 +1058,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1386538002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1283,7 +1287,7 @@ GameObject:
   - component: {fileID: 1439415708}
   - component: {fileID: 1439415707}
   m_Layer: 5
-  m_Name: TextObjectPanel
+  m_Name: Sistema De Objeto Aleatorio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2060,7 +2064,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6984263049170736589, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: maxHPRecoverPerKill
-      value: 5
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 6984263049170736589, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: velocidadDecayTrasDaino
