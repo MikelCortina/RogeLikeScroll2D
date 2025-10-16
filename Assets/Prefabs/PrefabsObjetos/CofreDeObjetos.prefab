@@ -101,13 +101,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 322af2b8fba0f1d49a4f2299a64ad802, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  effectToActivate: {fileID: 11400000, guid: 0a0969c6e553def4ea738686ba6a5964, type: 2}
   effectList:
   - {fileID: 11400000, guid: 0a0969c6e553def4ea738686ba6a5964, type: 2}
   - {fileID: 11400000, guid: bb5be3e76f31edd4b98ff1e1378b8ab2, type: 2}
-  effectTextUI: {fileID: 0}
+  effectTextUI: {fileID: 3932377965761796723, guid: 306a9352426ba50458a9e193a977fe92, type: 3}
+  textObjectPanel: {fileID: 1206067504482671654, guid: c1313115e3c58e94589b36d0c7a8a1cb, type: 3}
   displayDuration: 2
   nameChangeInterval: 0.5
+  enemigo: 0
 --- !u!61 &8139518269663704728
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -166,6 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f3ac35dd2019f94d9c87e558796b320, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 80
   lifeTime: 5
   owner: {fileID: 2962280322261411938, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
   isHoming: 1
@@ -189,3 +190,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effects:
   - {fileID: 11400000, guid: 0a0969c6e553def4ea738686ba6a5964, type: 2}
+  - {fileID: 11400000, guid: bb5be3e76f31edd4b98ff1e1378b8ab2, type: 2}

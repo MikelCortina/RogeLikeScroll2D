@@ -1,5 +1,6 @@
 using System.Buffers.Text;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -163,8 +164,24 @@ public class EnemyBase : MonoBehaviour
         ScoreManager.Instance.EnemyDied();
         HealthDecay.Instance.GetBackHP();
 
+        if(gameObject.GetComponent<PickupEffectItem>() != null)
+        {
+            PickupEffectItem pickup = gameObject.GetComponent<PickupEffectItem>();
+            if (pickup != null)
+            {
 
+                // Ejecutar la coroutine desde este MonoBehaviour activo
+                StartCoroutine(ShowUIFromPickup(pickup));
+            }
+
+        }
         Destroy(gameObject, 1.2f);
+    }
+    private IEnumerator ShowUIFromPickup(PickupEffectItem pickup)
+    {
+        yield return null; // Esperar un frame para que Unity renderice el objeto
+        Time.timeScale = 0f; // Pausar el juego
+        StartCoroutine(pickup.ShowEffectNamesAndActivate());
     }
 
     public float GetContactDamage() => adjustedContactDamage;

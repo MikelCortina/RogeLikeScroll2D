@@ -12,6 +12,7 @@ public class WaveManager : MonoBehaviour
     [Header("Spawning")]
     [Tooltip("Prefabs de enemigos (puedes poner diferentes tipos).")]
     public GameObject[] enemyPrefabs;
+    public GameObject[] alphaEnemyPrefabs;
 
     [Tooltip("Puntos desde donde pueden aparecer enemigos. Si está vacío se usará la posición del WaveManager.")]
     public Transform[] spawnPoints;
@@ -21,6 +22,11 @@ public class WaveManager : MonoBehaviour
 
     [Tooltip("Radio aleatorio alrededor del spawnPoint donde aparece el enemigo.")]
     public float spawnRandomRadius = 0.5f;
+
+    [Header("Alpha Enemy Chance")]
+    [Tooltip("Probabilidad de que aparezca un AlphaEnemy por ola (0..1). Por defecto 0.1 = 1/10).")]
+    [Range(0f, 1f)]
+    public float alphaSpawnChance;
 
     [Header("Waves")]
     [Tooltip("Tiempo antes de comenzar la primera ola (segundos).")]
@@ -106,11 +112,24 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator SpawnWaveRoutine(int waveNumber, int totalToSpawn)
     {
+        alphaSpawnChance = StatsManager.Instance.RuntimeStats.luck / 100; // La suerte afecta a la probabilidad de que salga un AlphaEnemy
         // Aumentar nivel de enemigos si existe el manager correspondiente
         if (EnemyLevelManager.Instance != null)
             EnemyLevelManager.Instance.IncreaseEnemyLevel(1);
 
         OnWaveStarted?.Invoke(waveNumber, totalToSpawn);
+
+        // --- Chequeo 1 entre 10 para spawnear UN AlphaEnemy en esta ola ---
+        if (alphaEnemyPrefabs != null && alphaEnemyPrefabs.Length > 0)
+        {
+            // usando Random.value (0..1) y alphaSpawnChance (por defecto 0.1)
+            if (UnityEngine.Random.value <= alphaSpawnChance)
+            {
+                SpawnAlphaEnemy();
+
+
+            }
+        }
 
         int spawned = 0;
         // Spawn principal
@@ -193,6 +212,33 @@ public class WaveManager : MonoBehaviour
         enemiesAlive++;
         OnEnemySpawned?.Invoke(go);
     }
+
+    private void SpawnAlphaEnemy()
+    {
+        if (alphaEnemyPrefabs == null || alphaEnemyPrefabs.Length == 0)
+            return;
+
+        // CORRECCIÓN: seleccionar a partir de alphaEnemyPrefabs.Length (antes estaba mal)
+        GameObject prefab = alphaEnemyPrefabs[UnityEngine.Random.Range(0, alphaEnemyPrefabs.Length)];
+        Vector3 spawnPos = GetRandomSpawnPosition();
+        GameObject go = Instantiate(prefab, spawnPos, Quaternion.identity);
+
+        // Asignar nivel al enemigo
+        EnemyBase enemy = go.GetComponent<EnemyBase>();
+        if (enemy != null && EnemyLevelManager.Instance != null)
+        {
+            // Nivel global actual
+            enemy.enemyLevel = Mathf.RoundToInt(EnemyLevelManager.Instance.enemyLevel);
+        }
+
+        // Reiniciar velocidades
+        Rigidbody2D rb2d = go.GetComponent<Rigidbody2D>();
+        if (rb2d != null) rb2d.linearVelocity = Vector2.zero;
+
+        enemiesAlive++;
+        OnEnemySpawned?.Invoke(go);
+    }
+
     private Vector3 GetRandomSpawnPosition()
     {
         Vector2 offset = UnityEngine.Random.insideUnitCircle * spawnRandomRadius;

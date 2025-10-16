@@ -23,6 +23,8 @@ public class StatsData
     [Header("Jinete")]
     public float riderMuliplier; // Currently unused
     public float runnerMuliplier; // Currently unused
+    [Header("Suerte")]
+    public float luck; // Currently unused  
 
     public StatsData Clone()
     {
@@ -45,7 +47,8 @@ public class StatsData
             criticalChance = this.criticalChance,
             dodgeChance = this.dodgeChance,
             riderMuliplier = this.riderMuliplier,
-            runnerMuliplier = this.runnerMuliplier
+            runnerMuliplier = this.runnerMuliplier,
+            luck = this.luck
         };
     }
 }

@@ -5,6 +5,7 @@ public class AreaShooter2D : MonoBehaviour
     [Header("Disparo")]
     public Transform firePoint;
     public GameObject projectilePrefab;
+    
 
     [Header("Detección")]
     public LayerMask enemyLayer = ~0;
