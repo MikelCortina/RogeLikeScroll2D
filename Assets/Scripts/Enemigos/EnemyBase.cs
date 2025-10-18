@@ -28,12 +28,16 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] protected ParallaxController parallaxController;
 
 
+
     [Header("Attack (general)")]
     [Tooltip("Cooldown genérico que pueden usar las subclases")]
     [SerializeField] protected float attackCooldown = 1.2f;
 
     [Header("References")]
     [SerializeField] protected Animator animator;
+
+    private Coroutine flashRoutine;
+    private Color[] originalColors;
 
     protected Rigidbody2D rb;
     protected Transform target;
@@ -99,22 +103,44 @@ public class EnemyBase : MonoBehaviour
     public void Flash()
     {
         if (renderersToFlash == null || renderersToFlash.Length == 0) return;
-        StopAllCoroutines(); // para que no se solapen varios flashes
-        StartCoroutine(FlashCoroutine());
+
+        // Guardar colores originales solo la primera vez
+        if (originalColors == null || originalColors.Length != renderersToFlash.Length)
+        {
+            originalColors = new Color[renderersToFlash.Length];
+            for (int i = 0; i < renderersToFlash.Length; i++)
+                originalColors[i] = renderersToFlash[i].color;
+        }
+
+        // Si ya hay un flash en curso, reiniciarlo
+        if (flashRoutine != null)
+            StopCoroutine(flashRoutine);
+
+        flashRoutine = StartCoroutine(FlashCoroutine());
     }
 
     private IEnumerator FlashCoroutine()
     {
+        Color flashColor = new Color(1f, 1f, 1f, 0.7f);
+
         for (int i = 0; i < flashCount; i++)
         {
-            foreach (var sr in renderersToFlash)
-                sr.enabled = false;
+            for (int j = 0; j < renderersToFlash.Length; j++)
+                renderersToFlash[j].color = flashColor;
+
             yield return new WaitForSeconds(flashDuration);
 
-            foreach (var sr in renderersToFlash)
-                sr.enabled = true;
+            for (int j = 0; j < renderersToFlash.Length; j++)
+                renderersToFlash[j].color = originalColors[j];
+
             yield return new WaitForSeconds(flashDuration);
         }
+
+        // Asegurar restauración final
+        for (int j = 0; j < renderersToFlash.Length; j++)
+            renderersToFlash[j].color = originalColors[j];
+
+        flashRoutine = null;
     }
 
     #region Detection
@@ -175,7 +201,7 @@ public class EnemyBase : MonoBehaviour
             }
 
         }
-        Destroy(gameObject, 1.2f);
+        Destroy(gameObject,0.05f);
     }
     private IEnumerator ShowUIFromPickup(PickupEffectItem pickup)
     {

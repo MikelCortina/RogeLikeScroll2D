@@ -163,33 +163,44 @@ public class Projectile2D : MonoBehaviour
             return;
 
         EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
-        if (enemy != null && !damagedEnemies.Contains(enemy))
+       
+
+        // --- AQUI VIENE LA CLAVE ---
+        // Si el proyectil tiene efecto explosivo
+        if (effectSpawner != null && RunEffectManager.Instance != null)
+        {
+            // Determinar radio de explosión
+            float explosionRadius = 2f; // ejemplo
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
+            foreach (var hit in hits)
+            {
+            
+                if (enemy != null && !damagedEnemies.Contains(enemy))
+                {
+                    float dmg = StatsCommunicator.Instance.CalculateDamage();
+                    enemy.TakeContactDamage(dmg);
+                    damagedEnemies.Add(enemy);
+                }
+            }
+
+            // Ejecutar efectos
+            foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
+            {
+                if (effectSpawner.effects.Contains(activeEffect))
+                {
+                    if (activeEffect is IEffect ie)
+                        ie.Execute(transform.position, owner);
+                }
+            }
+        }
+        else if (enemy != null && !damagedEnemies.Contains(enemy))
         {
             float dmg = StatsCommunicator.Instance.CalculateDamage();
             enemy.TakeContactDamage(dmg);
             damagedEnemies.Add(enemy);
         }
 
-        // --- AQUI VIENE LA CLAVE ---
-        if (effectSpawner != null && RunEffectManager.Instance != null)
-        {
-            foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
-            {
-                Debug.Log($"Checking active effect: {activeEffect.name}");
-                if (effectSpawner.effects.Contains(activeEffect))
-                {
-                    if (activeEffect is IEffect ie)
-                    {
-                        ie.Execute(transform.position, owner);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"El ScriptableObject {activeEffect.name} no implementa IEffect.");
-                    }
-                }
-            }
-        }
-
+        // Finalmente destruir proyectil
         Destroy(gameObject);
     }
 

@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: DodgeChanceIncreaser_Rare
   m_EditorClassIdentifier: 
   upgradeName: DodgeIncreaseChance_Rare
-  description: Aumenta la probabilidad de Dodge en +1
-  dodgeIncrease: 1
+  description: Aumenta la probabilidad de Dodge en +2%
+  quality: 0
+  dodgeIncrease: 2

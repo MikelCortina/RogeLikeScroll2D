@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: DodgeChanceIncreaser_Epic
   m_EditorClassIdentifier: 
   upgradeName: DodgeIncreaseChance_Epic
-  description: Aumenta la probabilidad de Dodge +2
+  description: Aumenta la probabilidad de Dodge +4%
   quality: 1
-  dodgeIncrease: 2
+  dodgeIncrease: 4

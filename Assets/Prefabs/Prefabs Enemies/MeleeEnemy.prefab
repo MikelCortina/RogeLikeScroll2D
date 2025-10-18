@@ -136,7 +136,7 @@ MonoBehaviour:
   renderersToFlash:
   - {fileID: 7474790222286392728}
   flashDuration: 0.1
-  flashCount: 5
+  flashCount: 1
   attackPofloat: {fileID: 0}
   attackRadius: 0.1
 --- !u!50 &4813197852411494764

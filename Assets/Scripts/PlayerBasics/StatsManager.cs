@@ -15,7 +15,7 @@ public class StatsData
     [Header("Damage")]
     public float criticalChance; public float baseDamage;// Currently unused
     [Header("Armor")]
-    public float armor;
+    public float armorPercentage;
     [Header("XP")]
     public float xpGainMultiplier;
     [Header("Dodge")]
@@ -24,7 +24,7 @@ public class StatsData
     public float riderMuliplier; // Currently unused
     public float runnerMuliplier; // Currently unused
     [Header("Suerte")]
-    public float luck; // Currently unused  
+    public float luck, wormLuck; // Currently unused  
 
     public StatsData Clone()
     {
@@ -41,14 +41,15 @@ public class StatsData
             friction = this.friction,
             fireRate = this.fireRate,
             radius = this.radius,
-            armor = this.armor,
+            armorPercentage = this.armorPercentage,
             xpGainMultiplier = this.xpGainMultiplier,
             harvester = this.harvester,
             criticalChance = this.criticalChance,
             dodgeChance = this.dodgeChance,
             riderMuliplier = this.riderMuliplier,
             runnerMuliplier = this.runnerMuliplier,
-            luck = this.luck
+            luck = this.luck,
+            wormLuck = this.wormLuck,
         };
     }
 }
@@ -213,7 +214,7 @@ public class StatsManager : MonoBehaviour
     }
     public void AddArmor(float delta)
     {
-        RuntimeStats.armor = Mathf.Max(0, RuntimeStats.armor + delta);
+        RuntimeStats.armorPercentage = Mathf.Max(0, RuntimeStats.armorPercentage + delta);
     }
     public void XpGainMultiplier(float delta)
     {

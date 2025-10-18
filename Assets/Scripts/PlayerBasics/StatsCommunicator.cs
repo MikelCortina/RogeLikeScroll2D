@@ -40,9 +40,9 @@ public class StatsCommunicator : MonoBehaviour
         }
 
         // 2️⃣ Aplicar reducción de daño por armadura
-        if (stats.armor > 0)
+        if (stats.armorPercentage > 0)
         {
-            float damageAfterArmor = incomingDamage - incomingDamage * (stats.armor/100);
+            float damageAfterArmor = incomingDamage - incomingDamage * (stats.armorPercentage / 100);
             //Debug.Log($"Incoming damage {incomingDamage} Player took {damageAfterArmor} damage after armor reduction of {stats.armor}%");
             damageAfterArmor = Mathf.Max(0f, damageAfterArmor); // No puede ser negativo
             return damageAfterArmor;
@@ -59,20 +59,21 @@ public class StatsCommunicator : MonoBehaviour
     public float CalculateDamage()
     {
         StatsData stats = statsManager.RuntimeStats;
-
         float baseDamage = stats.baseDamage;
-
         if (baseDamage <= 0) return 0f;
 
         float damage = baseDamage;
 
-        // 2️⃣ Verificar crítico
-        if (Random.value < stats.criticalChance)
+        float roll = Random.value; // 0..1
+        if (roll < stats.criticalChance)
         {
-            damage *= 2f; // crítico x2, puedes ajustar
-            Debug.Log("Critical hit!");
+            damage *= 2f;
+            Debug.Log($"Critical hit! roll={roll} critChance={stats.criticalChance}");
         }
-
+        else
+        {
+            Debug.Log($"No crit. roll={roll} critChance={stats.criticalChance}");
+        }
 
         return damage;
     }

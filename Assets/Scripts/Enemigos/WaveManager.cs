@@ -4,6 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// Gestión de oleadas (WaveManager) con spawn de enemigos, timeouts y eventos para UI/otros sistemas.
+/// Ahora incluye lógica de spawn de "gusano" (worm) siguiendo las reglas solicitadas.
 /// </summary>
 public class WaveManager : MonoBehaviour
 {
@@ -14,8 +15,14 @@ public class WaveManager : MonoBehaviour
     public GameObject[] enemyPrefabs;
     public GameObject[] alphaEnemyPrefabs;
 
+    [Tooltip("Prefabs de gusano (normalmente un único prefab, pero se acepta array).")]
+    public GameObject[] wormPrefabs; // <-- prefabs para gusano
+
     [Tooltip("Puntos desde donde pueden aparecer enemigos. Si está vacío se usará la posición del WaveManager.")]
     public Transform[] spawnPoints;
+
+    [Tooltip("Puntos exclusivos para spawnear gusanos. Si está vacío se usará spawnPoints o la posición del WaveManager.")]
+    public Transform[] wormSpawnPoints; // <-- puntos separados para gusanos
 
     [Tooltip("Separación entre spawns individuales (segundos).")]
     public float spawnInterval = 0.25f;
@@ -58,6 +65,10 @@ public class WaveManager : MonoBehaviour
 
     private Coroutine runningWaveCoroutine;
 
+    // --- Nuevos campos para control de gusano ---
+    private int roundsSinceLastWorm = 999; // inicia alto para permitir spawn temprano si se desea
+    private const int FORCE_WORM_AFTER_ROUNDS = 10;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -95,11 +106,6 @@ public class WaveManager : MonoBehaviour
         runningWaveCoroutine = StartCoroutine(SpawnWaveRoutine(currentWave, enemiesToSpawnThisWave));
     }
 
-    /// <summary>
-    /// Calcula el número de enemigos de la ola:
-    /// Waves 1..4: triangular (1,3,6,10).
-    /// Wave >=5: toma el valor de la 4 (10) y lo escala por 1.2^(wave-4), redondeando hacia arriba.
-    /// </summary>
     private int CalculateEnemiesForWave(int wave)
     {
         if (wave <= 4) return wave * (wave + 1) / 2;
@@ -112,27 +118,62 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator SpawnWaveRoutine(int waveNumber, int totalToSpawn)
     {
-        alphaSpawnChance = StatsManager.Instance.RuntimeStats.luck / 100; // La suerte afecta a la probabilidad de que salga un AlphaEnemy
+     
+        // alphaSpawnChance sigue basándose en la suerte global (ejemplo)
+        alphaSpawnChance = StatsManager.Instance.RuntimeStats.luck / 100f;
+
         // Aumentar nivel de enemigos si existe el manager correspondiente
         if (EnemyLevelManager.Instance != null)
             EnemyLevelManager.Instance.IncreaseEnemyLevel(1);
 
         OnWaveStarted?.Invoke(waveNumber, totalToSpawn);
 
-        // --- Chequeo 1 entre 10 para spawnear UN AlphaEnemy en esta ola ---
+        // --- Spawn AlphaEnemy (igual que antes) ---
         if (alphaEnemyPrefabs != null && alphaEnemyPrefabs.Length > 0)
         {
-            // usando Random.value (0..1) y alphaSpawnChance (por defecto 0.1)
             if (UnityEngine.Random.value <= alphaSpawnChance)
             {
                 SpawnAlphaEnemy();
-
-
             }
         }
 
+        // --- Lógica de spawn de gusano (worm) SEGÚN reglas solicitadas ---
+        bool wormSpawnedThisWave = false;
+        float wormLuckPercent = GetWormLuckPercent(); // 0..100
+
+        // 1) Si han pasado FORCE_WORM_AFTER_ROUNDS, forzar spawn
+        if (roundsSinceLastWorm >= FORCE_WORM_AFTER_ROUNDS &&currentWave>=10)
+        {
+            if (TrySpawnWorm(force: true))
+                wormSpawnedThisWave = true;
+        }
+        else
+        {
+            // 2) Calcular mínimo de rondas entre gusanos según wormLuck
+            int minRoundsBetween = GetMinRoundsBetweenWorms(wormLuckPercent);
+
+            bool allowedByInterval = roundsSinceLastWorm >= minRoundsBetween;
+
+            // 3) Si la probabilidad es <=50% y no han pasado al menos 5 rondas, prohibir spawn
+            if (wormLuckPercent <= 50f && roundsSinceLastWorm < 5)
+            {
+                allowedByInterval = false;
+            }
+
+            // 4) Intentar spawn según probabilidad si está permitido
+            if (allowedByInterval)
+            {
+                float chance = Mathf.Clamp01(wormLuckPercent / 100f);
+                if (UnityEngine.Random.value <= chance)
+                {
+                    if (TrySpawnWorm(force: false))
+                        wormSpawnedThisWave = true;
+                }
+            }
+        }
+
+        // --- Spawn principal de enemigos (separa al gusano) ---
         int spawned = 0;
-        // Spawn principal
         while (spawned < totalToSpawn)
         {
             SpawnOneEnemy();
@@ -140,13 +181,18 @@ public class WaveManager : MonoBehaviour
             yield return new WaitForSeconds(spawnInterval);
         }
 
-        // Si queremos auto-start de la siguiente ola cuando esté limpia
+        // actualizar contador de rondas sin gusano
+        if (wormSpawnedThisWave)
+            roundsSinceLastWorm = 0;
+        else
+            roundsSinceLastWorm = Mathf.Min(FORCE_WORM_AFTER_ROUNDS, roundsSinceLastWorm + 1);
+
+        // --- Auto-start next wave logic (igual que antes) ---
         if (autoStartNextWaveWhenCleared)
         {
             float timer = 0f;
             bool cleared = false;
 
-            // Espera activa: sale si enemiesAlive == 0 o si timer supera maxWaitAfterSpawn
             while (timer < maxWaitAfterSpawn)
             {
                 if (enemiesAlive <= 0)
@@ -161,7 +207,6 @@ public class WaveManager : MonoBehaviour
 
             if (cleared)
             {
-                // pequeña pausa para animaciones/loot/partículas
                 yield return new WaitForSeconds(gracePeriodAfterClear);
                 OnWaveFinished?.Invoke(waveNumber);
             }
@@ -171,21 +216,89 @@ public class WaveManager : MonoBehaviour
                 OnWaveFinished?.Invoke(waveNumber);
             }
 
-            // limpiar referencia antes de esperar el intervalo para la siguiente ola
             runningWaveCoroutine = null;
-
-            // esperar tiempo entre olas (se respetará la pausa antes de iniciar siguiente ola)
             yield return new WaitForSeconds(timeBetweenWaves);
-
-            // comenzar siguiente ola automáticamente
             StartNextWave();
         }
         else
         {
-            // no auto start: sólo notificar y liberar el coroutine
             OnWaveFinished?.Invoke(waveNumber);
             runningWaveCoroutine = null;
         }
+    }
+
+    private float GetWormLuckPercent()
+    {
+        // Intentar usar RuntimeStats.wormLuck; si no existe, fallback a luck.
+        float percent = 0f;
+        try
+        {
+            // Asumimos que RuntimeStats tiene wormLuck como float o int.
+            percent = StatsManager.Instance.RuntimeStats.wormLuck;
+        }
+        catch
+        {
+            // Fallback
+            percent = StatsManager.Instance.RuntimeStats.luck;
+        }
+        return Mathf.Clamp(percent, 0f, 100f);
+    }
+
+    /// <summary>
+    /// Devuelve el mínimo de rondas entre gusanos según el porcentaje de wormLuck:
+    /// >=70 => 3, >=60 => 4, resto => 5.
+    /// </summary>
+    private int GetMinRoundsBetweenWorms(float wormLuckPercent)
+    {
+        if (wormLuckPercent >= 70f) return 3;
+        if (wormLuckPercent >= 60f) return 4;
+        return 5;
+    }
+
+    private bool TrySpawnWorm(bool force)
+    {
+        if (wormPrefabs == null || wormPrefabs.Length == 0) return false;
+
+        // Si no force y no hay puntos de spawn ni prefabs, abort
+        Vector3 spawnPos = GetRandomWormSpawnPosition();
+        GameObject prefab = wormPrefabs[UnityEngine.Random.Range(0, wormPrefabs.Length)];
+        GameObject go = Instantiate(prefab, spawnPos, Quaternion.identity);
+
+        // Si el gusano hereda de EnemyBase, asignar nivel global (si se desea)
+        EnemyBase enemy = go.GetComponent<EnemyBase>();
+        if (enemy != null && EnemyLevelManager.Instance != null)
+        {
+            // Dejar que la propia clase WormEnemy gestione su incremento de +10 niveles,
+            // pero por seguridad podemos asignar el nivel global actual:
+            enemy.enemyLevel = Mathf.RoundToInt(EnemyLevelManager.Instance.enemyLevel);
+        }
+
+        Rigidbody2D rb2d = go.GetComponent<Rigidbody2D>();
+        if (rb2d != null) rb2d.linearVelocity = Vector2.zero;
+
+        enemiesAlive++;
+        OnEnemySpawned?.Invoke(go);
+        Debug.Log("[WaveManager] Worm spawned (force=" + force + ").");
+        return true;
+    }
+
+    private Vector3 GetRandomWormSpawnPosition()
+    {
+        Vector2 offset = UnityEngine.Random.insideUnitCircle * spawnRandomRadius;
+
+        if (wormSpawnPoints != null && wormSpawnPoints.Length > 0)
+        {
+            Transform sp = wormSpawnPoints[UnityEngine.Random.Range(0, wormSpawnPoints.Length)];
+            return sp.position + (Vector3)offset;
+        }
+        // fallback a spawnPoints
+        if (spawnPoints != null && spawnPoints.Length > 0)
+        {
+            Transform sp = spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)];
+            return sp.position + (Vector3)offset;
+        }
+        // último recurso: posición del WaveManager
+        return transform.position + (Vector3)offset;
     }
 
     private void SpawnOneEnemy()
@@ -218,7 +331,6 @@ public class WaveManager : MonoBehaviour
         if (alphaEnemyPrefabs == null || alphaEnemyPrefabs.Length == 0)
             return;
 
-        // CORRECCIÓN: seleccionar a partir de alphaEnemyPrefabs.Length (antes estaba mal)
         GameObject prefab = alphaEnemyPrefabs[UnityEngine.Random.Range(0, alphaEnemyPrefabs.Length)];
         Vector3 spawnPos = GetRandomSpawnPosition();
         GameObject go = Instantiate(prefab, spawnPos, Quaternion.identity);
@@ -227,7 +339,6 @@ public class WaveManager : MonoBehaviour
         EnemyBase enemy = go.GetComponent<EnemyBase>();
         if (enemy != null && EnemyLevelManager.Instance != null)
         {
-            // Nivel global actual
             enemy.enemyLevel = Mathf.RoundToInt(EnemyLevelManager.Instance.enemyLevel);
         }
 
@@ -278,6 +389,7 @@ public class WaveManager : MonoBehaviour
         currentWave = 0;
         enemiesAlive = 0;
         enemiesToSpawnThisWave = 0;
+        roundsSinceLastWorm = 999;
 
         if (startImmediately)
         {
@@ -285,3 +397,4 @@ public class WaveManager : MonoBehaviour
         }
     }
 }
+

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: DodgeChanceIncreaser_Legend
   m_EditorClassIdentifier: 
   upgradeName: DodgeIncreaseChance_Legend
-  description: Aumenta la probabilidad de Dodge en +10
+  description: Aumenta la probabilidad de Dodge en +10%
   quality: 2
-  dodgeIncrease: 5
+  dodgeIncrease: 10
