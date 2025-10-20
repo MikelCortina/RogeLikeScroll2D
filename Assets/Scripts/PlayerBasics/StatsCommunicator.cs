@@ -65,7 +65,7 @@ public class StatsCommunicator : MonoBehaviour
         float damage = baseDamage;
 
         float roll = Random.value; // 0..1
-        if (roll < stats.criticalChance)
+        if (roll < stats.criticalChance/100)
         {
             damage *= 2f;
             Debug.Log($"Critical hit! roll={roll} critChance={stats.criticalChance}");

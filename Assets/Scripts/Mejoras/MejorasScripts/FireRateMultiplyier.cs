@@ -8,7 +8,7 @@ public class FireRateMultiplyier : Upgrade
 
     public override void Apply(StatsManager statsManager)
     {
-        statsManager.RuntimeStats.projectileSpeed *= fireRateMultiplier;
+        statsManager.RuntimeStats.fireRate *= fireRateMultiplier;
         Debug.Log($"Velocidad de disparo aumentada en un x{fireRateMultiplier}");
     }
 }

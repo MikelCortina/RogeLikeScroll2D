@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 788225860bc83ab408582f986469749d, type: 3}
   m_Name: ProjectileExplosion
   m_EditorClassIdentifier: 
-  radius: 50
-  knockback: 50
+  radius: 0.3
+  knockback: 2
   hittableLayers:
     serializedVersion: 2
     m_Bits: 1024

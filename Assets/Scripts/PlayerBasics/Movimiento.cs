@@ -37,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
     {
         moveInput = Input.GetAxisRaw("Horizontal");
 
-        // Salto
+        // Salto (NO MODIFICADO)
         if (Input.GetButtonDown("Jump"))
         {
             if (IsGrounded())
@@ -81,28 +81,30 @@ public class PlayerMovement : MonoBehaviour
             transform.position = p;
         }
 
-        // Suavizado de pequeños escalones
+        // Ajuste de escalones e inclinación (UNIFICADO)
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, rayLength, Ground);
         if (hit.collider != null)
         {
+            // Ajuste vertical para escalones
             float targetY = hit.point.y + groundCheck.localPosition.y;
             float deltaY = targetY - transform.position.y;
 
             if (deltaY > 0f && deltaY <= stepOffset)
             {
                 float newY = Mathf.Lerp(transform.position.y, targetY, stepSmoothSpeed * Time.fixedDeltaTime);
-                rb.position = new Vector2(rb.position.x, newY);
+                rb.MovePosition(new Vector2(rb.position.x, newY));
             }
 
-            // Inclinación según pendiente
+            // Inclinación suave según pendiente
             float slopeAngle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg - 90f;
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 0, slopeAngle), rotationSpeed * Time.fixedDeltaTime);
+            float newRotation = Mathf.LerpAngle(rb.rotation, slopeAngle, rotationSpeed * Time.fixedDeltaTime);
+            rb.MoveRotation(newRotation);
         }
 
         // Limitar velocidad horizontal
         rb.linearVelocity = new Vector2(Mathf.Clamp(rb.linearVelocity.x, -maxSpeed, maxSpeed), rb.linearVelocity.y);
 
-        // Salto
+        // Salto (NO MODIFICADO)
         if (jumpPressed && rider1.isAttached)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);

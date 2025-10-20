@@ -49,6 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifeTime: 5
   owner: {fileID: 5269551145280685858, guid: 990cc71107c99504f94f606b69eef64d, type: 3}
+  damageToDeal: 0
   isHoming: 1
   turningSpeed: 720
   ignoreLayerNames:

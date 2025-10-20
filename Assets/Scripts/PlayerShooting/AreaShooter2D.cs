@@ -29,7 +29,7 @@ public class AreaShooter2D : MonoBehaviour
         }
     
 
-    void Update()
+    void FixedUpdate()
     {
         cooldown -= Time.deltaTime;
         // Si hay un panel abierto, bloquear sistema de disparo Y mostrar cursor
@@ -47,15 +47,13 @@ public class AreaShooter2D : MonoBehaviour
         if (Cursor.lockState != savedLockState)
             Cursor.lockState = savedLockState;
 
-        // Si el jugador mantiene pulsado el botón izquierdo
-        if (Input.GetMouseButton(0))
-        {
+       
             if (cooldown <= 0f)
             {
                 Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
                 TryShoot(mouseWorldPos);
             }
-        }
+        
     }
 
     void TryShoot(Vector2 mouseWorldPos)
