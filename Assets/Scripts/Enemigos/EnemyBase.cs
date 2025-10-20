@@ -27,6 +27,14 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] protected float stopDistance = 0.6f;
     [SerializeField] protected ParallaxController parallaxController;
 
+    [Header("Terrain Adaptation")]
+    public LayerMask Ground;
+    public float rayLength = 1.0f;
+    public float rotationSpeed = 10f;
+    public float stepOffset = 0.3f;
+    public float stepSmoothSpeed = 10f;
+
+
 
 
     [Header("Attack (general)")]
@@ -239,12 +247,49 @@ public class EnemyBase : MonoBehaviour
         FlipIfNeeded(direction.x);
 
         // Compensar la velocidad del mundo
-        float worldSpeed = parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier;
+        float worldSpeed = parallaxController != null ? parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier : 0f;
 
         // Aplicar movimiento en X compensando el mundo
         Vector2 velocity = rb.linearVelocity;
         velocity.x = direction.x * moveSpeed - worldSpeed; // restamos para neutralizar movimiento del mundo
         rb.linearVelocity = velocity;
+
+        // --- APLICAR INCLINACIÓN Y AJUSTE DE ESCALONES ---
+        ApplyInclinationAndStepSmoothing();
+    }
+
+    /// <summary>
+    /// Aplica el ajuste vertical (step smoothing) y rotación según la pendiente
+    /// usando un raycast hacia abajo desde la posición del enemigo.
+    /// </summary>
+    protected void ApplyInclinationAndStepSmoothing()
+    {
+        Vector2 origin = transform.position;
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayLength, Ground);
+        if (hit.collider != null)
+        {
+            // Ajuste vertical para escalones
+            // No tenemos groundCheck transform aquí, así que usamos un offset de 0
+            float targetY = hit.point.y;
+            float deltaY = targetY - transform.position.y;
+
+            if (deltaY > 0f && deltaY <= stepOffset)
+            {
+                float newY = Mathf.Lerp(transform.position.y, targetY, stepSmoothSpeed * Time.fixedDeltaTime);
+                rb.MovePosition(new Vector2(rb.position.x, newY));
+            }
+
+            // Inclinación suave según pendiente
+            float slopeAngle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg - 90f;
+            float newRotation = Mathf.LerpAngle(rb.rotation, slopeAngle, rotationSpeed * Time.fixedDeltaTime);
+            rb.MoveRotation(newRotation);
+        }
+        else
+        {
+            // Si no hay suelo directamente debajo, suavemente dirigimos la rotación a 0
+            float newRotation = Mathf.LerpAngle(rb.rotation, 0f, rotationSpeed * Time.fixedDeltaTime * 0.5f);
+            rb.MoveRotation(newRotation);
+        }
     }
 
 

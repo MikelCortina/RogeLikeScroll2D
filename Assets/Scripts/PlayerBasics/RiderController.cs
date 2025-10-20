@@ -14,14 +14,19 @@ public class RiderController : MonoBehaviour
 
     [Header("Referencias")]
     public Transform horseTransform; // asignar o con Init()
-
     public PlataformaChecker platCheck;   // referencia al script de comprobación de suelo alto
-
 
     public bool canMove = false; // se activa tras tocar suelo
     private float moveInput;
     private bool hasTouchedGround = false;
 
+    [Header("Inclinación / Step Smoothing")]
+    public LayerMask Ground;
+    public Transform groundCheck; // opcional, para calcular targetY (si está null usa transform)
+    public float rayLength = 1.0f;
+    public float rotationSpeed = 10f;
+    public float stepOffset = 0.3f;
+    public float stepSmoothSpeed = 10f;
 
     void Awake()
     {
@@ -37,6 +42,7 @@ public class RiderController : MonoBehaviour
         if (horseTransform != null) transform.position = horseTransform.position;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
+        rb.SetRotation(0f);
     }
 
     // Llamada externa desde PlayerMovement
@@ -48,16 +54,15 @@ public class RiderController : MonoBehaviour
 
     void Update()
     {
-
         // leer input en Update
         moveInput = Input.GetAxisRaw("Horizontal");
 
         // Guardamos la intención de salto
-        if (Input.GetButtonDown("Jump")&&platCheck.isGrounded)
+        if (Input.GetButtonDown("Jump") && platCheck != null && platCheck.isGrounded)
         {
             jumpPressed = true;
         }
-        
+
         if (isAttached)
         {
             // forzar misma coordenada exacta mientras está enganchado
@@ -65,15 +70,19 @@ public class RiderController : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
             rb.gravityScale = 0f;
             soloMove = false;
+
+            // cuando está attached queremos mantener rotación a 0
+            rb.MoveRotation(Mathf.LerpAngle(rb.rotation, 0f, rotationSpeed * Time.deltaTime));
         }
         else if (!hasTouchedGround && !isAttached)
         {
             // en aire: forzar X, dejar Y a física
             Vector3 p = transform.position;
-            p.x = horseTransform.position.x;
+            if (horseTransform != null) p.x = horseTransform.position.x;
             transform.position = p;
-            rb.gravityScale = 0.9f;           
+            rb.gravityScale = 0.9f;
         }
+
         if (hasTouchedGround)
         {
             rb.gravityScale = 0.9f;
@@ -88,14 +97,13 @@ public class RiderController : MonoBehaviour
         float maxSpeed = StatsManager.Instance.RuntimeStats.maxSpeed;
         float friction = StatsManager.Instance.RuntimeStats.friction;
 
-        bool grounded = platCheck.isGrounded;
+        bool grounded = platCheck != null && platCheck.isGrounded;
 
         // --- DETECCIÓN DE TOQUE DE SUELO ---
         if (grounded)
             hasTouchedGround = true;
 
         // --- LÓGICA DE CONTROL ---
-        // Si ya tocó el suelo al menos una vez, puede moverse mientras no esté attached
         canMove = (((hasTouchedGround && !isAttached)));
 
         // --- MOVIMIENTO HORIZONTAL ---
@@ -105,7 +113,6 @@ public class RiderController : MonoBehaviour
         }
         else if (canMove && moveInput == 0f)
         {
-            // aplicar fricción cuando no hay input horizontal
             rb.linearVelocity = new Vector2(rb.linearVelocity.x * friction, rb.linearVelocity.y);
         }
 
@@ -127,34 +134,14 @@ public class RiderController : MonoBehaviour
         // --- SI VUELVE A ESTAR ATTACHED ---
         if (isAttached)
         {
-            // resetear el estado: no puede moverse solo hasta que vuelva a tocar suelo
             hasTouchedGround = false;
         }
-    }
 
-    // === Opción 1 (recomendada): fijar la velocidad vertical objetivo ===
-    private void ExecuteRiderJump_SetVelocity()
-    {
-        float jumpImpulse = StatsManager.Instance.RuntimeStats.jumpForce;
-
-        isAttached = false;
-        transform.SetParent(null);
-
-        // activar física vertical
-        rb.gravityScale = 1f;
-
-        // velocidad vertical objetivo equivalente al impulso aplicado en apex:
-        // si en tu código usabas rb.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
-        // entonces deltaV_apex = jumpImpulse / masa
-        float mass = rb.mass;
-        float vObjetivo = 0f;
-        if (mass > 0f) vObjetivo = jumpImpulse / mass;
-
-        // Seteamos la velocidad vertical exactamente a vObjetivo (esto reproduce
-        // lo que habría pasado si hubiéramos aplicado el impulso en el apex).
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, vObjetivo);
-
-        Debug.Log("[Rider] Salto ejecutado (velocidad fijada a vObjetivo = " + vObjetivo + ").");
+        // --- APLICAR INCLINACIÓN Y AJUSTE DE ESCALONES (solo cuando NO está attached) ---
+        if (!isAttached)
+        {
+            ApplyInclinationAndStepSmoothing();
+        }
     }
 
     // === Opción 2 (alternativa): aplicar impulso calculado ===
@@ -176,13 +163,38 @@ public class RiderController : MonoBehaviour
         {
             float impulseNeeded = mass * deltaV; // N·s
             rb.AddForce(Vector2.up * impulseNeeded, ForceMode2D.Impulse);
-            //Debug.Log("[Rider] Salto ejecutado (impulso aplicado = " + impulseNeeded + ").");
+        }
+    }
+
+    private void ApplyInclinationAndStepSmoothing()
+    {
+        // Origin del raycast (usar groundCheck si está asignado para calcular targetY)
+        Vector2 origin = (groundCheck != null) ? (Vector2)groundCheck.position : (Vector2)transform.position;
+
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayLength, Ground);
+        if (hit.collider != null)
+        {
+            // Ajuste vertical para escalones (usar groundCheck.localPosition.y si hay)
+            float groundCheckLocalY = (groundCheck != null) ? groundCheck.localPosition.y : 0f;
+            float targetY = hit.point.y + groundCheckLocalY;
+            float deltaY = targetY - transform.position.y;
+
+            if (deltaY > 0f && deltaY <= stepOffset)
+            {
+                float newY = Mathf.Lerp(transform.position.y, targetY, stepSmoothSpeed * Time.fixedDeltaTime);
+                rb.MovePosition(new Vector2(rb.position.x, newY));
+            }
+
+            // Inclinación suave según pendiente
+            float slopeAngle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg - 90f;
+            float newRotation = Mathf.LerpAngle(rb.rotation, slopeAngle, rotationSpeed * Time.fixedDeltaTime);
+            rb.MoveRotation(newRotation);
         }
         else
         {
-            // Si deltaV <= 0 significa que ya tenemos una velocidad vertical igual o superior al objetivo.
-            // No aplicamos nada (si quieres sobrescribir la velocidad, usa la opción 1).
-            // Debug.Log("[Rider] No se aplicó impulso (deltaV <= 0).");
+            // Si no hay suelo detectado, rotamos hacia 0 gradualmente (opcional)
+            float newRotation = Mathf.LerpAngle(rb.rotation, 0f, rotationSpeed * Time.fixedDeltaTime * 0.5f);
+            rb.MoveRotation(newRotation);
         }
     }
 
@@ -196,7 +208,6 @@ public class RiderController : MonoBehaviour
 
         if (!isAttached && (other.CompareTag("Horse") || other.CompareTag("Player")))
         {
-            // Comprobamos si el rider está más abajo que el caballo
             if (transform.position.y < other.transform.position.y)
             {
                 ReattachToHorse(other.transform);
@@ -220,6 +231,6 @@ public class RiderController : MonoBehaviour
         transform.position = horseTransform.position;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
-        // Debug.Log("[Rider] Re-enganchado al caballo.");
+        rb.MoveRotation(0f);
     }
 }

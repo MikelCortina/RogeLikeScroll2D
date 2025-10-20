@@ -1,26 +1,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InfiniteGroundDynamic : MonoBehaviour
+public class InfiniteGroundDynamicFixed : MonoBehaviour
 {
     [Header("Configuración del suelo")]
-    public List<GameObject> groundPrefabs; // Lista de prefabs de suelo
-    public float speed = 5f; // Velocidad de desplazamiento
-    public Transform startPoint; // Punto donde empieza el suelo
+    public List<GameObject> groundPrefabs; // prefabs (pueden tener anchos distintos)
+    public float speed = 5f;               // velocidad de desplazamiento (izquierda)
+    public Transform startPoint;           // punto de referencia X donde empieza el suelo
+    public float spawnBuffer = 2f;         // distancia extra delante del startPoint para decidir spawn
+    public float destroyBuffer = 20f;      // distancia detrás del startPoint para destruir tiles
 
     private List<GameObject> groundTiles = new List<GameObject>();
-    private float lastTileEndX; // Posición X del final del último tile
+    private int nextPrefabIndex = 0;
 
     void Start()
     {
-        if (groundPrefabs.Count == 0)
+        if (groundPrefabs == null || groundPrefabs.Count == 0)
         {
-            Debug.LogError("No hay prefabs de suelo asignados!");
+            Debug.LogError("No hay prefabs asignados en groundPrefabs!");
+            enabled = false;
             return;
         }
 
-        lastTileEndX = startPoint.position.x;
-        SpawnNextTile(); // Instanciamos el primer tile
+        // Instanciamos el primer tile justo en startPoint
+        SpawnNextTileAtPosition(startPoint.position.x);
     }
 
     void Update()
@@ -28,41 +31,76 @@ public class InfiniteGroundDynamic : MonoBehaviour
         // Movemos todos los tiles
         for (int i = 0; i < groundTiles.Count; i++)
         {
-            groundTiles[i].transform.position += Vector3.left * speed * Time.deltaTime;
+            if (groundTiles[i] != null)
+                groundTiles[i].transform.position += Vector3.left * speed * Time.deltaTime;
         }
 
-        // Verificamos si el último tile está lo suficientemente cerca para generar uno nuevo
+        // Si no hay tiles, no intentamos acceder a [0] ni al último
+        if (groundTiles.Count == 0) return;
+
+        // Comprobamos el último tile para saber si debemos generar uno nuevo
         GameObject lastTile = groundTiles[groundTiles.Count - 1];
-        SpriteRenderer sr = lastTile.GetComponent<SpriteRenderer>();
-        float tileWidth = sr.bounds.size.x;
-
-        if (lastTile.transform.position.x + tileWidth / 2 < lastTileEndX)
+        float lastTileRightX = GetRightEdgeX(lastTile);
+        // Si el extremo derecho del último tile está por detrás de startPoint.x + spawnBuffer => generamos
+        if (lastTileRightX < startPoint.position.x + spawnBuffer)
         {
-            SpawnNextTile();
+            SpawnNextTileAtPosition(lastTileRightX);
         }
 
-        // Eliminamos tiles que ya están fuera de la cámara
+        // Comprobamos el primer tile para destruirlo si ya está muy a la izquierda
         GameObject firstTile = groundTiles[0];
-        if (firstTile.transform.position.x + tileWidth < startPoint.position.x - 20f) // margen opcional
+        float firstTileRightEdge = GetRightEdgeX(firstTile);
+        if (firstTileRightEdge < startPoint.position.x - destroyBuffer)
         {
             Destroy(firstTile);
             groundTiles.RemoveAt(0);
         }
     }
 
-    void SpawnNextTile()
+    // Genera un nuevo tile posicionándolo de forma que su borde izquierdo esté justo donde le pases (xStart).
+    private void SpawnNextTileAtPosition(float xStart)
     {
-        // Elegimos el prefab siguiente (puede alternar o aleatorio)
-        GameObject prefab = groundPrefabs[groundTiles.Count % groundPrefabs.Count];
+        GameObject prefab = groundPrefabs[nextPrefabIndex % groundPrefabs.Count];
+        nextPrefabIndex++;
 
-        // Instanciamos el tile justo después del último
-        GameObject tile = Instantiate(prefab);
-        SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
-        float tileWidth = sr.bounds.size.x;
+        GameObject tile = Instantiate(prefab, transform);
+        float tileWidth = GetWidth(tile);
 
-        tile.transform.position = new Vector3(lastTileEndX + tileWidth / 2, startPoint.position.y, 0);
+        // Colocamos el tile de modo que su borde izquierdo quede en xStart
+        // Para ello la posición.x será xStart + tileWidth/2 (centro del sprite)
+        Vector3 pos = new Vector3(xStart + tileWidth * 0.5f, startPoint.position.y, 0f);
+        tile.transform.position = pos;
 
-        lastTileEndX = tile.transform.position.x + tileWidth / 2;
         groundTiles.Add(tile);
+    }
+
+    // Devuelve el ancho del tile (busca SpriteRenderer o Collider2D), fallback = 1
+    private float GetWidth(GameObject go)
+    {
+        if (go == null) return 1f;
+
+        SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
+        if (sr != null) return sr.bounds.size.x;
+
+        // Intentamos buscar en hijos
+        sr = go.GetComponentInChildren<SpriteRenderer>();
+        if (sr != null) return sr.bounds.size.x;
+
+        Collider2D col = go.GetComponent<Collider2D>();
+        if (col != null) return col.bounds.size.x;
+
+        col = go.GetComponentInChildren<Collider2D>();
+        if (col != null) return col.bounds.size.x;
+
+        // fallback
+        return 1f;
+    }
+
+    // Devuelve la X del borde derecho del objeto (centroX + width/2)
+    private float GetRightEdgeX(GameObject go)
+    {
+        if (go == null) return float.NegativeInfinity;
+        float width = GetWidth(go);
+        return go.transform.position.x + width * 0.5f;
     }
 }

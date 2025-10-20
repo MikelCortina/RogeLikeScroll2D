@@ -19,43 +19,46 @@ public class AreaShooter2D : MonoBehaviour
 
     private CursorLockMode savedLockState;
     private bool savedVisible;
+    private float nextShootTime = 0f;
 
- 
-        void Start()
+    void Start()
         {
             savedLockState = Cursor.lockState;
             savedVisible = Cursor.visible;
             mainCamera = Camera.main;
         }
-    
 
-    void FixedUpdate()
+
+    void Update()
     {
-        cooldown -= Time.deltaTime;
-        // Si hay un panel abierto, bloquear sistema de disparo Y mostrar cursor
+        // Bloquear disparo si hay panel abierto
         if (upgradePanel != null && upgradePanel.activeSelf)
         {
-            // Asegurarse de que el cursor está visible y sin bloqueo
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
-            return; // no disparar
+            return;
         }
 
-        // Si llegamos aquí, restaurar cursor al estado "jugador"
+        // Restaurar cursor
         if (Cursor.visible != savedVisible)
             Cursor.visible = savedVisible;
         if (Cursor.lockState != savedLockState)
             Cursor.lockState = savedLockState;
 
-       
-            if (cooldown <= 0f)
-            {
-                Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-                TryShoot(mouseWorldPos);
-            }
-        
-    }
+        // Tiempo actual
+        float currentTime = Time.time;
 
+        // Solo disparar si ha pasado el tiempo suficiente
+        if (currentTime >= nextShootTime)
+        {
+            Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            TryShoot(mouseWorldPos);
+
+            // Actualizar próximo disparo
+            float fireRate = Mathf.Max(0.0001f, StatsManager.Instance.RuntimeStats.fireRate);
+            nextShootTime = currentTime + (1f / fireRate);
+        }
+    }
     void TryShoot(Vector2 mouseWorldPos)
     {
         Collider2D target = FindClosestEnemyInCircle(mouseWorldPos);
