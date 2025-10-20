@@ -92,7 +92,7 @@ public class StatsManager : MonoBehaviour
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(this.gameObject);
 
         RuntimeStats = templateStats.Clone();
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
