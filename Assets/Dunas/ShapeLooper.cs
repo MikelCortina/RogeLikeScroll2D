@@ -7,7 +7,7 @@ using UnityEngine;
 /// a la derecha del tile actualmente más a la derecha, creando un bucle infinito.
 /// Funciona con 3 o más tiles (también con 2 o incluso 1, aunque 1 no es un loop real).
 /// </summary>
-public class MoveBackgroundMultiTiles : MonoBehaviour
+public class ShapeLooper : MonoBehaviour
 {
     [Header("Tiles")]
     [Tooltip("Lista de tiles (Transform). Si está vacía, se intentarán usar los hijos de este GameObject.")]

@@ -1,89 +1,95 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AreaShooter2D : MonoBehaviour
 {
     [Header("Referencias")]
-    public GameObject upgradePanel; // 👈 arrastra aquí el panel de la UI en el inspector
+    public GameObject upgradePanel;
 
     [Header("Disparo")]
     public Transform firePoint;
     public GameObject projectilePrefab;
+    public int poolSize = 20;
 
     [Header("Homing")]
     public float homingRadius = 3f;
     public LayerMask enemyLayer = ~0;
     public string enemyTag = "enemigo";
 
-    private float cooldown = 0f;
-    private Camera mainCamera;
+    public Camera mainCamera;
 
-    private CursorLockMode savedLockState;
-    private bool savedVisible;
-    private float nextShootTime = 0f;
+    private float shootTimer = 0f;
+    private List<GameObject> projectilePool;
 
     void Start()
-        {
-            savedLockState = Cursor.lockState;
-            savedVisible = Cursor.visible;
-            mainCamera = Camera.main;
-        }
-
+    {
+        mainCamera = Camera.main;
+        InitPool();
+    }
 
     void Update()
     {
-        // Bloquear disparo si hay panel abierto
         if (upgradePanel != null && upgradePanel.activeSelf)
-        {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
             return;
-        }
 
-        // Restaurar cursor
-        if (Cursor.visible != savedVisible)
-            Cursor.visible = savedVisible;
-        if (Cursor.lockState != savedLockState)
-            Cursor.lockState = savedLockState;
+        shootTimer -= Time.deltaTime;
 
-        // Tiempo actual
-        float currentTime = Time.time;
-
-        // Solo disparar si ha pasado el tiempo suficiente
-        if (currentTime >= nextShootTime)
+        if (shootTimer <= 0f && Input.GetMouseButton(0))
         {
             Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            TryShoot(mouseWorldPos);
-
-            // Actualizar próximo disparo
+            Shoot(mouseWorldPos);
             float fireRate = Mathf.Max(0.0001f, StatsManager.Instance.RuntimeStats.fireRate);
-            nextShootTime = currentTime + (1f / fireRate);
+            shootTimer = 1f / fireRate;
         }
     }
-    void TryShoot(Vector2 mouseWorldPos)
+
+    void InitPool()
     {
-        Collider2D target = FindClosestEnemyInCircle(mouseWorldPos);
-
-        if (target != null)
-            ShootWithHoming(target);
-        else
-            ShootStraight(mouseWorldPos);
-
-        cooldown = 1f / Mathf.Max(0.0001f, StatsManager.Instance.RuntimeStats.fireRate);
+        projectilePool = new List<GameObject>();
+        for (int i = 0; i < poolSize; i++)
+        {
+            GameObject proj = Instantiate(projectilePrefab);
+            proj.SetActive(false);
+            projectilePool.Add(proj);
+        }
     }
 
-    Collider2D FindClosestEnemyInCircle(Vector2 searchCenter)
+    GameObject GetPooledProjectile()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(searchCenter, homingRadius, enemyLayer);
+        foreach (var proj in projectilePool)
+        {
+            if (!proj.activeInHierarchy)
+                return proj;
+        }
+        // Si no hay disponible, instanciamos uno extra
+        GameObject newProj = Instantiate(projectilePrefab);
+        newProj.SetActive(false);
+        projectilePool.Add(newProj);
+        return newProj;
+    }
+
+    void Shoot(Vector2 targetPos)
+    {
+        Collider2D target = FindClosestEnemy(targetPos);
+        if (target != null)
+            ShootHoming(target);
+        else
+            ShootStraight(targetPos);
+    }
+
+    Collider2D FindClosestEnemy(Vector2 position)
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(position, homingRadius, enemyLayer);
         Collider2D closest = null;
-        float minDistSqr = Mathf.Infinity;
+        float minDist = Mathf.Infinity;
 
         foreach (Collider2D c in hits)
         {
             if (c == null || !c.CompareTag(enemyTag)) continue;
-            float distSqr = ((Vector2)c.bounds.center - searchCenter).sqrMagnitude;
-            if (distSqr < minDistSqr)
+            float dist = ((Vector2)c.bounds.center - position).sqrMagnitude;
+            if (dist < minDist)
             {
-                minDistSqr = distSqr;
+                minDist = dist;
                 closest = c;
             }
         }
@@ -91,34 +97,37 @@ public class AreaShooter2D : MonoBehaviour
         return closest;
     }
 
-    void ShootWithHoming(Collider2D target)
+    void ShootHoming(Collider2D target)
     {
-        if (projectilePrefab == null || firePoint == null || target == null) return;
+        if (target == null || firePoint == null) return;
 
-        GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+        GameObject proj = GetPooledProjectile();
+        proj.transform.position = firePoint.position;
+        proj.SetActive(true);
+
         Projectile2D p = proj.GetComponent<Projectile2D>();
-
         if (p != null)
         {
-            float projectileSpeed = StatsManager.Instance.RuntimeStats.projectileSpeed;
-            p.Initialize(target.transform, projectileSpeed, gameObject);
-        }
-        else
-        {
-            ShootStraight(target.bounds.center);
+            float speed = StatsManager.Instance.RuntimeStats.projectileSpeed;
+            p.Initialize(target.transform, speed, gameObject);
         }
     }
 
-    void ShootStraight(Vector2 targetPosition)
+    void ShootStraight(Vector2 targetPos)
     {
-        if (projectilePrefab == null || firePoint == null) return;
+        if (firePoint == null) return;
 
-        GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-        Vector2 dir = (targetPosition - (Vector2)firePoint.position).normalized;
-        float projectileSpeed = StatsManager.Instance.RuntimeStats.projectileSpeed;
+        GameObject proj = GetPooledProjectile();
+        proj.transform.position = firePoint.position;
+        proj.SetActive(true);
+
+        Vector2 dir = (targetPos - (Vector2)firePoint.position).normalized;
+        float speed = StatsManager.Instance.RuntimeStats.projectileSpeed;
 
         Rigidbody2D rb = proj.GetComponent<Rigidbody2D>();
         if (rb != null)
-            rb.linearVelocity = dir * projectileSpeed;
+        {
+            rb.linearVelocity = dir * speed;
+        }
     }
 }

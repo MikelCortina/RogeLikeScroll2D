@@ -4,7 +4,7 @@ using UnityEngine;
 public class Projectile2D : MonoBehaviour
 {
     Rigidbody2D rb;
-   public float speed = 8f;
+    public float speed = 8f;
     Vector2 direction = Vector2.right;
     public float lifeTime = 5f;
     public GameObject owner;
@@ -12,8 +12,7 @@ public class Projectile2D : MonoBehaviour
     // Homing
     Transform target;
     public bool isHoming = true;
-    // Si quieres que gire más lento en lugar de apuntar instantáneamente, usa turningSpeed > 0 (grados por segundo)
-    public float turningSpeed = 720f; // 0 = giro instantáneo, mayor = giro más rápido
+    public float turningSpeed = 720f;
 
     public EffectSpawner effectSpawner;
 
@@ -21,28 +20,20 @@ public class Projectile2D : MonoBehaviour
     [Tooltip("Capas que el proyectil debe ignorar al colisionar.")]
     [SerializeField] private List<string> ignoreLayerNames = new List<string>();
 
-
     private HashSet<EnemyBase> damagedEnemies = new HashSet<EnemyBase>();
-
-
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         if (rb != null) rb.freezeRotation = true;
-        Destroy(gameObject, lifeTime);
     }
 
-    /// <summary>
-    /// Inicializa el proyectil con objetivo (homing).
-    /// </summary>
     public void Initialize(Transform targetTransform, float spd, GameObject ownerObj = null)
     {
         target = targetTransform;
         speed = spd;
         owner = ownerObj;
 
-        // dirección inicial hacia donde está el target en este instante
         if (target != null)
             direction = ((Vector2)target.position - (Vector2)transform.position).normalized;
 
@@ -59,25 +50,20 @@ public class Projectile2D : MonoBehaviour
 
         if (isHoming && target != null)
         {
-            // Si el objetivo ha sido destruido, target será null y continuará en la última dirección
             Vector2 toTarget = (Vector2)target.position - rb.position;
             if (toTarget.sqrMagnitude < 0.01f)
             {
-                // Estamos prácticamente encima: aseguramos impacto moviéndonos directamente al centro
                 rb.linearVelocity = toTarget.normalized * speed;
             }
             else
             {
                 Vector2 desiredDir = toTarget.normalized;
-
                 if (turningSpeed <= 0f)
                 {
-                    // Giro instantáneo: máxima precisión
                     direction = desiredDir;
                 }
                 else
                 {
-                    // Giro con límite angular: interpolamos la rotación
                     float currentAng = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                     float desiredAng = Mathf.Atan2(desiredDir.y, desiredDir.x) * Mathf.Rad2Deg;
                     float maxDelta = turningSpeed * Time.fixedDeltaTime;
@@ -85,23 +71,14 @@ public class Projectile2D : MonoBehaviour
                     float rad = newAng * Mathf.Deg2Rad;
                     direction = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)).normalized;
                 }
-
                 rb.linearVelocity = direction * speed;
             }
 
-            // orientación visual
             float ang = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0f, 0f, ang);
         }
-        else
-        {
-            // No homing: mantenemos velocidad constante
-            // rb.velocity ya fue fijado en Initialize; opcionalmente podríamos mantener la rotación
-        }
 
-        // --- RAYCAST CONTINUO AÑADIDO ---
-        // Raycast en la dirección actual para detectar colisiones entre frames.
-        // Distancia: la que recorre este fixed step + un pequeño buffer.
+        // --- RAYCAST CONTINUO ---
         float rayDist = speed * Time.fixedDeltaTime + 0.05f;
         if (direction.sqrMagnitude > 0f)
         {
@@ -110,13 +87,10 @@ public class Projectile2D : MonoBehaviour
             {
                 Collider2D other = hit.collider;
 
-                // Reproducir la misma lógica de OnTriggerEnter2D para el hit por raycast
-
                 if (owner != null && other.gameObject == owner) return;
 
                 string otherLayerName = LayerMask.LayerToName(other.gameObject.layer);
-                if (ignoreLayerNames.Contains(otherLayerName))
-                    return;
+                if (ignoreLayerNames.Contains(otherLayerName)) return;
 
                 EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
                 if (enemy != null && !damagedEnemies.Contains(enemy))
@@ -124,66 +98,45 @@ public class Projectile2D : MonoBehaviour
                     float dmg = StatsCommunicator.Instance.CalculateDamage();
                     enemy.TakeContactDamage(dmg);
                     damagedEnemies.Add(enemy);
-                }
 
-                // --- AQUI VIENE LA CLAVE ---
-                if (effectSpawner != null && RunEffectManager.Instance != null)
-                {
-                    foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
+                    if (effectSpawner != null && RunEffectManager.Instance != null)
                     {
-                        Debug.Log($"Checking active effect: {activeEffect.name}");
-                        if (effectSpawner.effects.Contains(activeEffect))
+                        foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
                         {
-                            if (activeEffect is IEffect ie)
+                            if (effectSpawner.effects.Contains(activeEffect))
                             {
-                                ie.Execute(transform.position, owner);
-                            }
-                            else
-                            {
-                                Debug.LogWarning($"El ScriptableObject {activeEffect.name} no implementa IEffect.");
+                                if (activeEffect is IEffect ie)
+                                    ie.Execute(transform.position, owner);
                             }
                         }
                     }
-                }
 
-                Destroy(gameObject);
-                return;
+                    ReturnToPool(); // ✅ se llama **después de aplicar daño y efectos**
+                    return;
+                }
             }
         }
-        // --- FIN RAYCAST CONTINUO ---
     }
-
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (owner != null && other.gameObject == owner) return;
 
         string otherLayerName = LayerMask.LayerToName(other.gameObject.layer);
-        if (ignoreLayerNames.Contains(otherLayerName))
-            return;
+        if (ignoreLayerNames.Contains(otherLayerName)) return;
 
         EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
-       
 
-        // --- AQUI VIENE LA CLAVE ---
-        // Si el proyectil tiene efecto explosivo
+        if (enemy != null && !damagedEnemies.Contains(enemy))
+        {
+            float dmg = StatsCommunicator.Instance.CalculateDamage();
+            enemy.TakeContactDamage(dmg);
+            damagedEnemies.Add(enemy);
+        }
+
+        // Ejecutar efectos
         if (effectSpawner != null && RunEffectManager.Instance != null)
         {
-            // Determinar radio de explosión
-            float explosionRadius = 2f; // ejemplo
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
-            foreach (var hit in hits)
-            {
-            
-                if (enemy != null && !damagedEnemies.Contains(enemy))
-                {
-                    float dmg = StatsCommunicator.Instance.CalculateDamage();
-                    enemy.TakeContactDamage(dmg);
-                    damagedEnemies.Add(enemy);
-                }
-            }
-
-            // Ejecutar efectos
             foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
             {
                 if (effectSpawner.effects.Contains(activeEffect))
@@ -193,16 +146,16 @@ public class Projectile2D : MonoBehaviour
                 }
             }
         }
-        else if (enemy != null && !damagedEnemies.Contains(enemy))
-        {
-            float dmg = StatsCommunicator.Instance.CalculateDamage();
-            enemy.TakeContactDamage(dmg);
-            damagedEnemies.Add(enemy);
-        }
 
-        // Finalmente destruir proyectil
-        Destroy(gameObject);
+        ReturnToPool(); // ✅ se llama **al final**, después de daño y efectos
     }
 
+    public void ReturnToPool()
+    {
+        target = null;
+        isHoming = false;
+        damagedEnemies.Clear();
+        rb.linearVelocity = Vector2.zero;
+        gameObject.SetActive(false);  // ⚡ reemplaza Destroy
+    }
 }
-
