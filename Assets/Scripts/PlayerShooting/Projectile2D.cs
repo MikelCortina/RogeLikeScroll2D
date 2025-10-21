@@ -1,129 +1,93 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Projectile2D : MonoBehaviour
 {
-    Rigidbody2D rb;
-    public float speed = 8f;
-    Vector2 direction = Vector2.right;
-    public float lifeTime = 5f;
-    public GameObject owner;
+    [Header("Visual / Travel")]
+    [Tooltip("Si <=0 se calculará travelTime como distance/speed")]
+    public float travelTime = 0f;
 
-    // Homing
-    Transform target;
-    public bool isHoming = true;
-    public float turningSpeed = 720f;
+    [Header("Explosivo (solo para datos en prefab)")]
+    public bool isExplosive = false;
+    public float explosionRadius = 1.5f;
 
+    [Header("Referencias de efectos")]
     public EffectSpawner effectSpawner;
 
-    [Header("Colisión")]
-    [Tooltip("Capas que el proyectil debe ignorar al colisionar.")]
-    [SerializeField] private List<string> ignoreLayerNames = new List<string>();
+    [Header("Ignorar capas (solo para VFX si las usas)")]
+    public List<string> ignoreLayerNames = new List<string>();
 
-    private HashSet<EnemyBase> damagedEnemies = new HashSet<EnemyBase>();
+    Coroutine travelCoroutine;
+    Rigidbody2D cachedRb;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        if (rb != null) rb.freezeRotation = true;
+        cachedRb = GetComponent<Rigidbody2D>();
     }
 
-    public void Initialize(Transform targetTransform, float spd, GameObject ownerObj = null)
+    private void OnEnable()
     {
-        target = targetTransform;
-        speed = spd;
-        owner = ownerObj;
-
-        if (target != null)
-            direction = ((Vector2)target.position - (Vector2)transform.position).normalized;
-
-        if (rb != null)
-            rb.linearVelocity = direction * speed;
-
-        float ang = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, ang);
-    }
-
-    void FixedUpdate()
-    {
-        if (rb == null) return;
-
-        if (isHoming && target != null)
+        // asegurar que el visual está listo
+        if (cachedRb != null)
         {
-            Vector2 toTarget = ((Vector2)target.position - rb.position).normalized;
+            // mantenemos isKinematic true mientras el visual viaja
+            cachedRb.isKinematic = true;
+            cachedRb.linearVelocity = Vector2.zero;
+            cachedRb.angularVelocity = 0f;
+        }
+    }
 
-            // Aplicar fuerza proporcional al turningSpeed y al deltaTime
-            float rotationStep = turningSpeed * Time.fixedDeltaTime;
-            float angle = Vector2.SignedAngle(direction, toTarget);
-            float clampedAngle = Mathf.Clamp(angle, -rotationStep, rotationStep);
+    /// <summary>
+    /// Hace la animación visual desde start hasta end.
+    /// </summary>
+    public void PlayVisual(Vector2 start, Vector2 end, float speed)
+    {
+        if (travelCoroutine != null) StopCoroutine(travelCoroutine);
+        gameObject.SetActive(true);
 
-            direction = Quaternion.Euler(0, 0, clampedAngle) * direction;
-            direction.Normalize();
+        float distance = Vector2.Distance(start, end);
+        float t = travelTime;
+        if (t <= 0f)
+        {
+            if (speed > 0f) t = distance / speed;
+            else t = 0.12f;
+        }
 
-            rb.linearVelocity = direction * speed;
+        travelCoroutine = StartCoroutine(TravelRoutine(start, end, t));
+    }
 
-            // Rotar el proyectil visualmente
-            float ang = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+    IEnumerator TravelRoutine(Vector2 start, Vector2 end, float duration)
+    {
+        float elapsed = 0f;
+        transform.position = start;
+
+        // rotación hacia la dirección
+        Vector2 dir = (end - start).normalized;
+        if (dir.sqrMagnitude > 0f)
+        {
+            float ang = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0f, 0f, ang);
         }
 
-        // --- RAYCAST CONTINUO ---
-        float rayDist = speed * Time.fixedDeltaTime + 0.05f;
-        if (direction.sqrMagnitude > 0f)
+        // asegurar rb kinematic para que la física no lo ancle
+        if (cachedRb != null)
         {
-            RaycastHit2D hit = Physics2D.Raycast(rb.position, direction, rayDist);
-            if (hit.collider != null)
-            {
-                Collider2D other = hit.collider;
-
-                if (owner != null && other.gameObject == owner) return;
-
-                string otherLayerName = LayerMask.LayerToName(other.gameObject.layer);
-                if (ignoreLayerNames.Contains(otherLayerName)) return;
-
-                EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
-                if (enemy != null && !damagedEnemies.Contains(enemy))
-                {
-                    float dmg = StatsCommunicator.Instance.CalculateDamage();
-                    enemy.TakeContactDamage(dmg);
-                    damagedEnemies.Add(enemy);
-
-                    if (effectSpawner != null && RunEffectManager.Instance != null)
-                    {
-                        foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
-                        {
-                            if (effectSpawner.effects.Contains(activeEffect))
-                            {
-                                if (activeEffect is IEffect ie)
-                                    ie.Execute(transform.position, owner);
-                            }
-                        }
-                    }
-
-                    ReturnToPool();
-                    return;
-                }
-            }
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (owner != null && other.gameObject == owner) return;
-
-        string otherLayerName = LayerMask.LayerToName(other.gameObject.layer);
-        if (ignoreLayerNames.Contains(otherLayerName)) return;
-
-        EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
-
-        if (enemy != null && !damagedEnemies.Contains(enemy))
-        {
-            float dmg = StatsCommunicator.Instance.CalculateDamage();
-            enemy.TakeContactDamage(dmg);
-            damagedEnemies.Add(enemy);
+            cachedRb.isKinematic = true;
+            cachedRb.linearVelocity = Vector2.zero;
         }
 
-        // Ejecutar efectos
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float a = Mathf.Clamp01(elapsed / duration);
+            transform.position = Vector2.Lerp(start, end, a);
+            yield return null;
+        }
+
+        transform.position = end;
+
+        // reproducir efectos visuales de impacto si existen (los daños ya se aplicaron por AreaShooter2D)
         if (effectSpawner != null && RunEffectManager.Instance != null)
         {
             foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
@@ -131,20 +95,26 @@ public class Projectile2D : MonoBehaviour
                 if (effectSpawner.effects.Contains(activeEffect))
                 {
                     if (activeEffect is IEffect ie)
-                        ie.Execute(transform.position, owner);
+                        ie.Execute(end, gameObject);
                 }
             }
         }
 
-        ReturnToPool(); // ✅ se llama **al final**, después de daño y efectos
+        ReturnToPool();
     }
 
     public void ReturnToPool()
     {
-        target = null;
-        isHoming = false;
-        damagedEnemies.Clear();
-        rb.linearVelocity = Vector2.zero;
-        gameObject.SetActive(false);  // ⚡ reemplaza Destroy
+        if (travelCoroutine != null) StopCoroutine(travelCoroutine);
+
+        // reset física si existe
+        if (cachedRb != null)
+        {
+            cachedRb.linearVelocity = Vector2.zero;
+            cachedRb.angularVelocity = 0f;
+            cachedRb.isKinematic = true;
+        }
+
+        gameObject.SetActive(false);
     }
 }
