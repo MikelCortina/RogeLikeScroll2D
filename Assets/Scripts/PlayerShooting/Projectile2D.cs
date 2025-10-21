@@ -50,30 +50,19 @@ public class Projectile2D : MonoBehaviour
 
         if (isHoming && target != null)
         {
-            Vector2 toTarget = (Vector2)target.position - rb.position;
-            if (toTarget.sqrMagnitude < 0.01f)
-            {
-                rb.linearVelocity = toTarget.normalized * speed;
-            }
-            else
-            {
-                Vector2 desiredDir = toTarget.normalized;
-                if (turningSpeed <= 0f)
-                {
-                    direction = desiredDir;
-                }
-                else
-                {
-                    float currentAng = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                    float desiredAng = Mathf.Atan2(desiredDir.y, desiredDir.x) * Mathf.Rad2Deg;
-                    float maxDelta = turningSpeed * Time.fixedDeltaTime;
-                    float newAng = Mathf.MoveTowardsAngle(currentAng, desiredAng, maxDelta);
-                    float rad = newAng * Mathf.Deg2Rad;
-                    direction = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)).normalized;
-                }
-                rb.linearVelocity = direction * speed;
-            }
+            Vector2 toTarget = ((Vector2)target.position - rb.position).normalized;
 
+            // Aplicar fuerza proporcional al turningSpeed y al deltaTime
+            float rotationStep = turningSpeed * Time.fixedDeltaTime;
+            float angle = Vector2.SignedAngle(direction, toTarget);
+            float clampedAngle = Mathf.Clamp(angle, -rotationStep, rotationStep);
+
+            direction = Quaternion.Euler(0, 0, clampedAngle) * direction;
+            direction.Normalize();
+
+            rb.linearVelocity = direction * speed;
+
+            // Rotar el proyectil visualmente
             float ang = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0f, 0f, ang);
         }
@@ -111,7 +100,7 @@ public class Projectile2D : MonoBehaviour
                         }
                     }
 
-                    ReturnToPool(); // ✅ se llama **después de aplicar daño y efectos**
+                    ReturnToPool();
                     return;
                 }
             }

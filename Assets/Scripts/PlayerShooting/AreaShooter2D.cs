@@ -12,7 +12,7 @@ public class AreaShooter2D : MonoBehaviour
     public int poolSize = 20;
 
     [Header("Homing")]
-    public float homingRadius = 3f;
+    public float homingRadius = 10f;
     public LayerMask enemyLayer = ~0;
     public string enemyTag = "enemigo";
 
@@ -38,6 +38,7 @@ public class AreaShooter2D : MonoBehaviour
         {
             Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             Shoot(mouseWorldPos);
+
             float fireRate = Mathf.Max(0.0001f, StatsManager.Instance.RuntimeStats.fireRate);
             shootTimer = 1f / fireRate;
         }
@@ -61,7 +62,6 @@ public class AreaShooter2D : MonoBehaviour
             if (!proj.activeInHierarchy)
                 return proj;
         }
-        // Si no hay disponible, instanciamos uno extra
         GameObject newProj = Instantiate(projectilePrefab);
         newProj.SetActive(false);
         projectilePool.Add(newProj);
@@ -109,7 +109,7 @@ public class AreaShooter2D : MonoBehaviour
         if (p != null)
         {
             float speed = StatsManager.Instance.RuntimeStats.projectileSpeed;
-            p.Initialize(target.transform, speed, gameObject);
+            p.Initialize(target.transform, speed, gameObject); // Aseg�rate de que Projectile2D haga homing
         }
     }
 
@@ -129,5 +129,14 @@ public class AreaShooter2D : MonoBehaviour
         {
             rb.linearVelocity = dir * speed;
         }
+    }
+
+    // Visualizar el radio de homing en la escena
+    void OnDrawGizmosSelected()
+    {
+        if (mainCamera == null) mainCamera = Camera.main;
+        Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(mouseWorldPos, homingRadius);
     }
 }

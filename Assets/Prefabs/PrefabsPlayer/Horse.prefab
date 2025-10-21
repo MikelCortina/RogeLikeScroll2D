@@ -60,11 +60,12 @@ Transform:
   m_GameObject: {fileID: 2519349346738342829}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.0458114, y: -0.49, z: -0.068104215}
-  m_LocalScale: {x: 0.25, y: 0.1, z: 1}
+  m_LocalPosition: {x: -2.0458114, y: -0.44465, z: -0.068104215}
+  m_LocalScale: {x: 0.25, y: 0.190703, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5160224271494268727}
+  - {fileID: 2828532458705315687}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5076988797446205399
@@ -85,10 +86,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   isGrounded: 0
-  jumpPressed: 0
   dobleSalto: 0
   riderPrefab: {fileID: 709477410786537509, guid: e6f0001951453cd45bf24504b6700102, type: 3}
   rider1: {fileID: 4580341518737383333, guid: e6f0001951453cd45bf24504b6700102, type: 3}
+  platCheck: {fileID: 0}
+  stepOffset: 0.3
+  stepSmoothSpeed: 10
+  rayLength: 1
+  rotationSpeed: 10
 --- !u!212 &73822119067335309
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -217,3 +222,34 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!1 &4382757827875583924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2828532458705315687}
+  m_Layer: 0
+  m_Name: Silla
+  m_TagString: Player
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2828532458705315687
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4382757827875583924}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.161, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6959890658855805926}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -34,9 +34,6 @@ public class EnemyBase : MonoBehaviour
     public float stepOffset = 0.3f;
     public float stepSmoothSpeed = 10f;
 
-
-
-
     [Header("Attack (general)")]
     [Tooltip("Cooldown genérico que pueden usar las subclases")]
     [SerializeField] protected float attackCooldown = 1.2f;
@@ -69,30 +66,25 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] private float flashDuration = 0.1f; // duración de cada parpadeo
     [SerializeField] private int flashCount = 5; // cuántas veces parpadea
 
-
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
 
         // Calcula ajustes por nivel
         float multiplier = 1f;
-        if (useLevelScaling && EnemyLevelManager.Instance != null)
-            multiplier = EnemyLevelManager.Instance.GetEnemyMultiplier();
+        if (useLevelScaling && EnemyLevelManager.Instance != null) multiplier = EnemyLevelManager.Instance.GetEnemyMultiplier();
 
         adjustedMaxHealth = Mathf.Max(1, Mathf.RoundToInt(maxHealth * multiplier));
         adjustedContactDamage = Mathf.Max(1, Mathf.CeilToInt(contactDamage * multiplier));
-
         currentHealth = adjustedMaxHealth;
 
-        if (animator == null)
-            animator = GetComponentInChildren<Animator>();
+        if (animator == null) animator = GetComponentInChildren<Animator>();
     }
 
     protected virtual void Start()
     {
         GameObject playerObj = FindPlayerByLayerOrTag();
-        if (playerObj != null)
-            target = playerObj.transform;
+        if (playerObj != null) target = playerObj.transform;
     }
 
     private void OnValidate()
@@ -100,8 +92,7 @@ public class EnemyBase : MonoBehaviour
         if (renderersToFlash == null || renderersToFlash.Length == 0)
         {
             var sr = GetComponentInChildren<SpriteRenderer>();
-            if (sr != null)
-                renderersToFlash = new SpriteRenderer[] { sr };
+            if (sr != null) renderersToFlash = new SpriteRenderer[] { sr };
         }
     }
 
@@ -116,48 +107,36 @@ public class EnemyBase : MonoBehaviour
         if (originalColors == null || originalColors.Length != renderersToFlash.Length)
         {
             originalColors = new Color[renderersToFlash.Length];
-            for (int i = 0; i < renderersToFlash.Length; i++)
-                originalColors[i] = renderersToFlash[i].color;
+            for (int i = 0; i < renderersToFlash.Length; i++) originalColors[i] = renderersToFlash[i].color;
         }
 
         // Si ya hay un flash en curso, reiniciarlo
-        if (flashRoutine != null)
-            StopCoroutine(flashRoutine);
-
+        if (flashRoutine != null) StopCoroutine(flashRoutine);
         flashRoutine = StartCoroutine(FlashCoroutine());
     }
 
     private IEnumerator FlashCoroutine()
     {
         Color flashColor = new Color(1f, 1f, 1f, 0.7f);
-
         for (int i = 0; i < flashCount; i++)
         {
-            for (int j = 0; j < renderersToFlash.Length; j++)
-                renderersToFlash[j].color = flashColor;
-
+            for (int j = 0; j < renderersToFlash.Length; j++) renderersToFlash[j].color = flashColor;
             yield return new WaitForSeconds(flashDuration);
 
-            for (int j = 0; j < renderersToFlash.Length; j++)
-                renderersToFlash[j].color = originalColors[j];
-
+            for (int j = 0; j < renderersToFlash.Length; j++) renderersToFlash[j].color = originalColors[j];
             yield return new WaitForSeconds(flashDuration);
         }
 
         // Asegurar restauración final
-        for (int j = 0; j < renderersToFlash.Length; j++)
-            renderersToFlash[j].color = originalColors[j];
-
+        for (int j = 0; j < renderersToFlash.Length; j++) renderersToFlash[j].color = originalColors[j];
         flashRoutine = null;
     }
 
     #region Detection
-
     protected GameObject FindPlayerByLayerOrTag()
     {
         Collider2D hit = Physics2D.OverlapCircle(transform.position, detectRadius, playerLayer);
         if (hit != null) return hit.gameObject;
-
         GameObject t = GameObject.FindGameObjectWithTag(playerTag);
         return t;
     }
@@ -167,11 +146,9 @@ public class EnemyBase : MonoBehaviour
         if (target == null) return false;
         return Vector2.Distance(transform.position, target.position) <= detectRadius;
     }
-
     #endregion
 
     #region Health & Damage
-
     public void TakeContactDamage(float amount)
     {
         currentHealth -= amount;
@@ -189,28 +166,28 @@ public class EnemyBase : MonoBehaviour
         Collider2D[] cols = GetComponents<Collider2D>();
         foreach (var c in cols) c.enabled = false;
 
-        if (WaveManager.Instance != null)
-            WaveManager.Instance.NotifyEnemyKilled(gameObject);
+        if (WaveManager.Instance != null) WaveManager.Instance.NotifyEnemyKilled(gameObject);
 
         float xpGained = StatsManager.Instance.GetXPForEnemy(enemyLevel, baseXP);
         Debug.Log($"Enemy Level: {enemyLevel}, Base XP: {baseXP}, XP Gained: {xpGained}");
         StatsManager.Instance.GainXP(xpGained);
+
         ScoreManager.Instance.EnemyDied();
         HealthDecay.Instance.GetBackHP();
 
-        if(gameObject.GetComponent<PickupEffectItem>() != null)
+        if (gameObject.GetComponent<PickupEffectItem>() != null)
         {
             PickupEffectItem pickup = gameObject.GetComponent<PickupEffectItem>();
             if (pickup != null)
             {
-
                 // Ejecutar la coroutine desde este MonoBehaviour activo
                 StartCoroutine(ShowUIFromPickup(pickup));
             }
-
         }
-        Destroy(gameObject,0.05f);
+
+        Destroy(gameObject, 0.05f);
     }
+
     private IEnumerator ShowUIFromPickup(PickupEffectItem pickup)
     {
         yield return null; // Esperar un frame para que Unity renderice el objeto
@@ -220,23 +197,19 @@ public class EnemyBase : MonoBehaviour
 
     public float GetContactDamage() => adjustedContactDamage;
     public float GetMaxHealth() => adjustedMaxHealth;
-
     #endregion
 
     #region Movement / Attack Utilities
-
     /// <summary>
     /// Movimiento genérico hacia el objetivo (usa moveSpeed y rb).
     /// </summary>
     protected void MoveTowardsPlayer()
     {
-        if (target == null || !canMove)
-            return;
+        if (target == null || !canMove) return;
 
         // Dirección hacia el jugador
         Vector2 direction = (target.position - transform.position);
         float distance = direction.magnitude;
-
         if (distance < 0.1f)
         {
             StopMovement();
@@ -272,7 +245,6 @@ public class EnemyBase : MonoBehaviour
             // No tenemos groundCheck transform aquí, así que usamos un offset de 0
             float targetY = hit.point.y;
             float deltaY = targetY - transform.position.y;
-
             if (deltaY > 0f && deltaY <= stepOffset)
             {
                 float newY = Mathf.Lerp(transform.position.y, targetY, stepSmoothSpeed * Time.fixedDeltaTime);
@@ -292,7 +264,6 @@ public class EnemyBase : MonoBehaviour
         }
     }
 
-
     /// <summary>
     /// Para el movimiento horizontal.
     /// </summary>
@@ -309,7 +280,6 @@ public class EnemyBase : MonoBehaviour
     protected void TryAttack()
     {
         if (Time.time - lastAttackTime < attackCooldown) return;
-
         lastAttackTime = Time.time;
         if (animator != null) animator.SetTrigger("Attack");
         PerformAttack();
@@ -322,11 +292,9 @@ public class EnemyBase : MonoBehaviour
     {
         // override en subclase
     }
-
     #endregion
 
     #region Utils & Editor
-
     protected void FlipIfNeeded(float direction)
     {
         if (direction > 0 && !isFacingRight) Flip();
@@ -345,10 +313,8 @@ public class EnemyBase : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectRadius);
-
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, stopDistance);
     }
-
     #endregion
 }

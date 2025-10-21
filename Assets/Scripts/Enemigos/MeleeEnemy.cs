@@ -10,12 +10,10 @@ public class MeleeEnemy : EnemyBase
 
     protected void FixedUpdate()
     {
-
         if (target == null)
         {
             GameObject playerObj = FindPlayerByLayerOrTag();
-            if (playerObj != null)
-                target = playerObj.transform;
+            if (playerObj != null) target = playerObj.transform;
             return;
         }
 
@@ -26,21 +24,18 @@ public class MeleeEnemy : EnemyBase
             if (dist > stopDistance)
             {
                 MoveTowardsPlayer();
-                if (animator != null)
-                    animator.SetBool("IsMoving", true);
+                if (animator != null) animator.SetBool("IsMoving", true);
             }
             else
             {
                 StopMovement();
-                if (animator != null)
-                    animator.SetBool("IsMoving", false);
+                if (animator != null) animator.SetBool("IsMoving", false);
             }
         }
         else
         {
             StopMovement();
-            if (animator != null)
-                animator.SetBool("IsMoving", false);
+            if (animator != null) animator.SetBool("IsMoving", false);
         }
     }
 
@@ -71,7 +66,6 @@ public class MeleeEnemy : EnemyBase
     protected override void OnDrawGizmosSelected()
     {
         base.OnDrawGizmosSelected();
-
         if (attackPofloat != null)
         {
             Gizmos.color = Color.magenta;

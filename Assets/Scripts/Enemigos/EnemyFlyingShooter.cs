@@ -25,27 +25,21 @@ public class EnemyFlyingShooter : EnemyBase
     protected override void Awake()
     {
         base.Awake();
-        if (rb != null)
-            rb.gravityScale = 0f;
-
+        if (rb != null) rb.gravityScale = 0f;
         baseY = transform.position.y;
     }
 
     protected override void Start()
     {
         base.Start();
-
         if (firePoint == null)
         {
             var fp = transform.Find("FirePoint");
             if (fp != null) firePoint = fp;
         }
 
-        if (firePoint == null)
-            Debug.LogWarning($"{name}: firePoint no asignado (asigna en inspector o crea un hijo llamado 'FirePoint').");
-
-        if (projectilePrefab == null)
-            Debug.LogWarning($"{name}: projectilePrefab no asignado.");
+        if (firePoint == null) Debug.LogWarning($"{name}: firePoint no asignado (asigna en inspector o crea un hijo llamado 'FirePoint').");
+        if (projectilePrefab == null) Debug.LogWarning($"{name}: projectilePrefab no asignado.");
     }
 
     private void Update()
@@ -96,6 +90,7 @@ public class EnemyFlyingShooter : EnemyBase
     {
         Vector2 direction = (Vector2)target.position - (Vector2)transform.position;
         float distance = direction.magnitude;
+
         if (distance < 0.05f)
         {
             StopMovementPhysics();
@@ -105,16 +100,12 @@ public class EnemyFlyingShooter : EnemyBase
         direction.Normalize();
         FlipIfNeeded(direction.x);
 
-        float worldSpeed = parallaxController != null
-            ? parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier
-            : 0f;
-
+        float worldSpeed = parallaxController != null ? parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier : 0f;
         Vector2 desiredVelocity = direction * flyingSpeed;
         desiredVelocity.x -= worldSpeed;
 
         // Mantener hover suavemente
         desiredVelocity.y = (targetY - transform.position.y) / Time.fixedDeltaTime;
-
         rb.linearVelocity = desiredVelocity;
     }
 
@@ -122,10 +113,8 @@ public class EnemyFlyingShooter : EnemyBase
     {
         if (projectilePrefab == null || firePoint == null || target == null) return;
 
-        if (burstCount <= 1)
-            ShootOne();
-        else
-            StartCoroutine(ShootBurst());
+        if (burstCount <= 1) ShootOne();
+        else StartCoroutine(ShootBurst());
     }
 
     private IEnumerator ShootBurst()
@@ -142,7 +131,6 @@ public class EnemyFlyingShooter : EnemyBase
         if (projectilePrefab == null || firePoint == null || target == null) return;
 
         Vector2 aimDir = ((Vector2)target.position - (Vector2)firePoint.position).normalized;
-
         GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
 
         Projectile2DEnemy projScript = proj.GetComponent<Projectile2DEnemy>();
@@ -174,7 +162,8 @@ public class EnemyFlyingShooter : EnemyBase
         base.OnDrawGizmosSelected();
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, fireRange);
-        if (firePoint != null)
-            Gizmos.DrawSphere(firePoint.position, 0.05f);
+        if (firePoint != null) Gizmos.DrawSphere(firePoint.position, 0.05f);
     }
 }
+
+
