@@ -1,11 +1,10 @@
-// MeleeEnemy.cs
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class MeleeEnemy : EnemyBase
 {
     [Header("Melee Attack (Trigger-based)")]
-    [SerializeField] private Transform attackPofloat; // opcional, solo para gizmos
+    [SerializeField] private Transform attackPofloat;
     [SerializeField] private float attackRadius = 0.5f;
 
     protected void FixedUpdate()
@@ -17,10 +16,9 @@ public class MeleeEnemy : EnemyBase
             return;
         }
 
-        float dist = Vector2.Distance(transform.position, target.position);
-
         if (IsPlayerInRange() && canMove)
         {
+            float dist = Vector2.Distance(transform.position, target.position);
             if (dist > stopDistance)
             {
                 MoveTowardsPlayer();
@@ -39,25 +37,19 @@ public class MeleeEnemy : EnemyBase
         }
     }
 
-    /// <summary>
-    /// Override de PerformAttack solo para mantener animaciones,
-    /// pero el daño real se aplica por trigger.
-    /// </summary>
     protected override void PerformAttack()
     {
-        // opcional: reproducir efecto de ataque, sonido, etc.
         Debug.Log($"{name} performed attack animation (damage by trigger).");
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Solo dañar al jugador usando playerLayer heredado del padre
         if (((1 << other.gameObject.layer) & playerLayer) != 0)
         {
             var playerHealth = other.GetComponentInParent<PlayerHealth>();
             if (playerHealth != null)
             {
-                float damageToDeal = GetContactDamage(); // usa contactDamage ajustado por nivel del padre
+                float damageToDeal = GetContactDamage();
                 playerHealth.TakeDamage(damageToDeal);
             }
         }

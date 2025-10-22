@@ -1,119 +1,82 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(Rigidbody2D))]
 public class Projectile2D : MonoBehaviour
 {
-    [Header("Visual / Travel")]
-    [Tooltip("Si <=0 se calculará travelTime como distance/speed")]
-    public float travelTime = 0f;
+    private Rigidbody2D rb;
+    private Collider2D col;
+    private float timer;
+    public float lifeTime = 2f;
 
-    [Header("Explosivo (solo para datos en prefab)")]
-    public bool isExplosive = false;
-    public float explosionRadius = 1.5f;
+    [Header("Visual Effects")]
+    public ParticleSystem hitParticles; // Partículas al colisionar
+    public TrailRenderer trailRenderer;  // Trail del proyectil
 
-    [Header("Referencias de efectos")]
-    public EffectSpawner effectSpawner;
-
-    [Header("Ignorar capas (solo para VFX si las usas)")]
-    public List<string> ignoreLayerNames = new List<string>();
-
-    Coroutine travelCoroutine;
-    Rigidbody2D cachedRb;
-
-    private void Awake()
+    void Awake()
     {
-        cachedRb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<Collider2D>();
+
+        if (col != null) col.isTrigger = true;
+
+        if (rb != null)
+        {
+            rb.gravityScale = 0f;
+            rb.freezeRotation = true;
+        }
+
+        if (trailRenderer != null)
+            trailRenderer.emitting = false;
     }
 
-    private void OnEnable()
+    public void InitializeVisual(Vector2 direction, float speed)
     {
-        // asegurar que el visual está listo
-        if (cachedRb != null)
+        if (rb == null) return;
+
+        timer = lifeTime;
+
+        rb.linearVelocity = direction.normalized * speed;
+
+        float ang = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, ang);
+
+        // Activar trail
+        if (trailRenderer != null)
         {
-            // mantenemos isKinematic true mientras el visual viaja
-            cachedRb.isKinematic = true;
-            cachedRb.linearVelocity = Vector2.zero;
-            cachedRb.angularVelocity = 0f;
+            trailRenderer.Clear();
+            trailRenderer.emitting = true;
         }
+
+        // Activar partículas iniciales si quieres (opcional)
+        if (hitParticles != null && !hitParticles.isPlaying)
+            hitParticles.Play();
     }
 
-    /// <summary>
-    /// Hace la animación visual desde start hasta end.
-    /// </summary>
-    public void PlayVisual(Vector2 start, Vector2 end, float speed)
+    void Update()
     {
-        if (travelCoroutine != null) StopCoroutine(travelCoroutine);
-        gameObject.SetActive(true);
-
-        float distance = Vector2.Distance(start, end);
-        float t = travelTime;
-        if (t <= 0f)
-        {
-            if (speed > 0f) t = distance / speed;
-            else t = 0.12f;
-        }
-
-        travelCoroutine = StartCoroutine(TravelRoutine(start, end, t));
+        timer -= Time.deltaTime;
+        if (timer <= 0f)
+            ReturnToPool();
     }
 
-    IEnumerator TravelRoutine(Vector2 start, Vector2 end, float duration)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        float elapsed = 0f;
-        transform.position = start;
-
-        // rotación hacia la dirección
-        Vector2 dir = (end - start).normalized;
-        if (dir.sqrMagnitude > 0f)
-        {
-            float ang = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0f, 0f, ang);
-        }
-
-        // asegurar rb kinematic para que la física no lo ancle
-        if (cachedRb != null)
-        {
-            cachedRb.isKinematic = true;
-            cachedRb.linearVelocity = Vector2.zero;
-        }
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float a = Mathf.Clamp01(elapsed / duration);
-            transform.position = Vector2.Lerp(start, end, a);
-            yield return null;
-        }
-
-        transform.position = end;
-
-        // reproducir efectos visuales de impacto si existen (los daños ya se aplicaron por AreaShooter2D)
-        if (effectSpawner != null && RunEffectManager.Instance != null)
-        {
-            foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
-            {
-                if (effectSpawner.effects.Contains(activeEffect))
-                {
-                    if (activeEffect is IEffect ie)
-                        ie.Execute(end, gameObject);
-                }
-            }
-        }
+        // Partículas de impacto
+        if (hitParticles != null)
+            hitParticles.Play();
 
         ReturnToPool();
     }
 
     public void ReturnToPool()
     {
-        if (travelCoroutine != null) StopCoroutine(travelCoroutine);
+        if (rb != null)
+            rb.linearVelocity = Vector2.zero;
 
-        // reset física si existe
-        if (cachedRb != null)
-        {
-            cachedRb.linearVelocity = Vector2.zero;
-            cachedRb.angularVelocity = 0f;
-            cachedRb.isKinematic = true;
-        }
+        // Desactivar trail
+        if (trailRenderer != null)
+            trailRenderer.emitting = false;
 
         gameObject.SetActive(false);
     }

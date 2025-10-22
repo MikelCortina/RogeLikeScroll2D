@@ -92,6 +92,13 @@ MonoBehaviour:
   moveSpeed: 0
   stopDistance: 0.6
   parallaxController: {fileID: 5779312947448505574, guid: 22950df0fd825a6409441d687ace09f5, type: 3}
+  Ground:
+    serializedVersion: 2
+    m_Bits: 8
+  rayLength: 1
+  rotationSpeed: 10
+  stepOffset: 0.3
+  stepSmoothSpeed: 10
   attackCooldown: 1.2
   animator: {fileID: 0}
   enemyLevel: 0
@@ -106,7 +113,8 @@ MonoBehaviour:
   hoverFrequency: 1.2
   projectilePrefab: {fileID: 847502903425083811, guid: be4fd9c0788596c448c1ef3a7d42d5d1, type: 3}
   firePoint: {fileID: 4374116530489601792}
-  fireRange: 1
+  minFireRange: 1
+  maxFireRange: 2
   projectileSpeed: 1.5
   burstDelay: 0.12
   burstCount: 1

@@ -13,10 +13,14 @@ public class EnemyFlyingShooter : EnemyBase
     [Header("Shooting")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private float fireRange = 6f;
+    [SerializeField] private float minFireRange = 3f;
+    [SerializeField] private float maxFireRange = 7f;
+    private float fireRange;
     [SerializeField] private float projectileSpeed = 9f;
     [SerializeField] private float burstDelay = 0.12f;
     [SerializeField] private int burstCount = 1;
+
+
 
     // Internal
     private float hoverOffset = 0f;
@@ -31,7 +35,9 @@ public class EnemyFlyingShooter : EnemyBase
 
     protected override void Start()
     {
+
         base.Start();
+        fireRange = Random.Range(minFireRange, maxFireRange);
         if (firePoint == null)
         {
             var fp = transform.Find("FirePoint");
@@ -90,7 +96,6 @@ public class EnemyFlyingShooter : EnemyBase
     {
         Vector2 direction = (Vector2)target.position - (Vector2)transform.position;
         float distance = direction.magnitude;
-
         if (distance < 0.05f)
         {
             StopMovementPhysics();
@@ -132,7 +137,6 @@ public class EnemyFlyingShooter : EnemyBase
 
         Vector2 aimDir = ((Vector2)target.position - (Vector2)firePoint.position).normalized;
         GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-
         Projectile2DEnemy projScript = proj.GetComponent<Projectile2DEnemy>();
         if (projScript != null)
         {

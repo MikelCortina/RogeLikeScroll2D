@@ -1,4 +1,3 @@
-using System.Buffers.Text;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -11,7 +10,7 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] protected float contactDamage;
 
     [Header("Leveling")]
-    [Tooltip("Si está activo, aplica el multiplicador de LevelManager.")] //Util para bosses por ejemplo
+    [Tooltip("Si está activo, aplica el multiplicador de LevelManager.")]
     [SerializeField] protected bool useLevelScaling = true;
 
     [Header("Detection")]
@@ -27,6 +26,10 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] protected float stopDistance = 0.6f;
     [SerializeField] protected ParallaxController parallaxController;
 
+    [Header("Grouping / Collision Avoidance")]
+    [SerializeField] protected float followSpacing = 0.4f; // separación mínima entre enemigos
+    [SerializeField] protected float groupSpeedMultiplier = 0.8f; // ralentiza si hay enemigos delante
+
     [Header("Terrain Adaptation")]
     public LayerMask Ground;
     public float rayLength = 1.0f;
@@ -35,7 +38,6 @@ public class EnemyBase : MonoBehaviour
     public float stepSmoothSpeed = 10f;
 
     [Header("Attack (general)")]
-    [Tooltip("Cooldown genérico que pueden usar las subclases")]
     [SerializeField] protected float attackCooldown = 1.2f;
 
     [Header("References")]
@@ -49,28 +51,25 @@ public class EnemyBase : MonoBehaviour
     protected float currentHealth;
     protected bool isFacingRight = true;
 
-    // valores ajustados por nivel
     protected float adjustedMaxHealth;
     protected float adjustedContactDamage;
 
-    // Attack control
     protected bool canMove = true;
     protected float lastAttackTime = -999f;
 
-    public int enemyLevel = 0; // nivel individual del enemigo (para XP)
-    public EnemyLevelManager enemyLevelManager; // referencia opcional al LevelManager
-    public float baseXP = 25f; // XP base que da este enemigo (se multiplica por nivel)
+    public int enemyLevel = 0;
+    public EnemyLevelManager enemyLevelManager;
+    public float baseXP = 25f;
 
     [Header("Flash Settings")]
     [SerializeField] private SpriteRenderer[] renderersToFlash;
-    [SerializeField] private float flashDuration = 0.1f; // duración de cada parpadeo
-    [SerializeField] private int flashCount = 5; // cuántas veces parpadea
+    [SerializeField] private float flashDuration = 0.1f;
+    [SerializeField] private int flashCount = 5;
 
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
 
-        // Calcula ajustes por nivel
         float multiplier = 1f;
         if (useLevelScaling && EnemyLevelManager.Instance != null) multiplier = EnemyLevelManager.Instance.GetEnemyMultiplier();
 
@@ -96,21 +95,17 @@ public class EnemyBase : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Llama a este método cuando el enemigo reciba daño para que parpadee.
-    /// </summary>
+    #region Flash
     public void Flash()
     {
         if (renderersToFlash == null || renderersToFlash.Length == 0) return;
 
-        // Guardar colores originales solo la primera vez
         if (originalColors == null || originalColors.Length != renderersToFlash.Length)
         {
             originalColors = new Color[renderersToFlash.Length];
             for (int i = 0; i < renderersToFlash.Length; i++) originalColors[i] = renderersToFlash[i].color;
         }
 
-        // Si ya hay un flash en curso, reiniciarlo
         if (flashRoutine != null) StopCoroutine(flashRoutine);
         flashRoutine = StartCoroutine(FlashCoroutine());
     }
@@ -127,10 +122,10 @@ public class EnemyBase : MonoBehaviour
             yield return new WaitForSeconds(flashDuration);
         }
 
-        // Asegurar restauración final
         for (int j = 0; j < renderersToFlash.Length; j++) renderersToFlash[j].color = originalColors[j];
         flashRoutine = null;
     }
+    #endregion
 
     #region Detection
     protected GameObject FindPlayerByLayerOrTag()
@@ -152,8 +147,7 @@ public class EnemyBase : MonoBehaviour
     public void TakeContactDamage(float amount)
     {
         currentHealth -= amount;
-        //Debug.Log($"{name} took {amount} damage, current health: {currentHealth}/{adjustedMaxHealth}");
-        Flash(); // parpadea al recibir daño
+        Flash();
         if (currentHealth <= 0) Die();
     }
 
@@ -178,11 +172,7 @@ public class EnemyBase : MonoBehaviour
         if (gameObject.GetComponent<PickupEffectItem>() != null)
         {
             PickupEffectItem pickup = gameObject.GetComponent<PickupEffectItem>();
-            if (pickup != null)
-            {
-                // Ejecutar la coroutine desde este MonoBehaviour activo
-                StartCoroutine(ShowUIFromPickup(pickup));
-            }
+            if (pickup != null) StartCoroutine(ShowUIFromPickup(pickup));
         }
 
         Destroy(gameObject, 0.05f);
@@ -190,8 +180,8 @@ public class EnemyBase : MonoBehaviour
 
     private IEnumerator ShowUIFromPickup(PickupEffectItem pickup)
     {
-        yield return null; // Esperar un frame para que Unity renderice el objeto
-        Time.timeScale = 0f; // Pausar el juego
+        yield return null;
+        Time.timeScale = 0f;
         StartCoroutine(pickup.ShowEffectNamesAndActivate());
     }
 
@@ -200,14 +190,23 @@ public class EnemyBase : MonoBehaviour
     #endregion
 
     #region Movement / Attack Utilities
-    /// <summary>
-    /// Movimiento genérico hacia el objetivo (usa moveSpeed y rb).
-    /// </summary>
+    protected bool IsBlockedByAlly(Vector2 direction)
+    {
+        if (direction.magnitude < 0.01f) return false;
+
+        Collider2D[] hit = Physics2D.OverlapCircleAll(rb.position + direction.normalized * followSpacing, followSpacing);
+        foreach (var col in hit)
+        {
+            if (col != null && col.gameObject != this.gameObject && col.GetComponent<EnemyBase>() != null)
+                return true;
+        }
+        return false;
+    }
+
     protected void MoveTowardsPlayer()
     {
         if (target == null || !canMove) return;
 
-        // Dirección hacia el jugador
         Vector2 direction = (target.position - transform.position);
         float distance = direction.magnitude;
         if (distance < 0.1f)
@@ -219,30 +218,23 @@ public class EnemyBase : MonoBehaviour
         direction.Normalize();
         FlipIfNeeded(direction.x);
 
-        // Compensar la velocidad del mundo
+        float speedMultiplier = IsBlockedByAlly(direction) ? groupSpeedMultiplier : 1f;
+
         float worldSpeed = parallaxController != null ? parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier : 0f;
 
-        // Aplicar movimiento en X compensando el mundo
         Vector2 velocity = rb.linearVelocity;
-        velocity.x = direction.x * moveSpeed - worldSpeed; // restamos para neutralizar movimiento del mundo
+        velocity.x = direction.x * moveSpeed * speedMultiplier - worldSpeed;
         rb.linearVelocity = velocity;
 
-        // --- APLICAR INCLINACIÓN Y AJUSTE DE ESCALONES ---
         ApplyInclinationAndStepSmoothing();
     }
 
-    /// <summary>
-    /// Aplica el ajuste vertical (step smoothing) y rotación según la pendiente
-    /// usando un raycast hacia abajo desde la posición del enemigo.
-    /// </summary>
     protected void ApplyInclinationAndStepSmoothing()
     {
         Vector2 origin = transform.position;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayLength, Ground);
         if (hit.collider != null)
         {
-            // Ajuste vertical para escalones
-            // No tenemos groundCheck transform aquí, así que usamos un offset de 0
             float targetY = hit.point.y;
             float deltaY = targetY - transform.position.y;
             if (deltaY > 0f && deltaY <= stepOffset)
@@ -251,22 +243,17 @@ public class EnemyBase : MonoBehaviour
                 rb.MovePosition(new Vector2(rb.position.x, newY));
             }
 
-            // Inclinación suave según pendiente
             float slopeAngle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg - 90f;
             float newRotation = Mathf.LerpAngle(rb.rotation, slopeAngle, rotationSpeed * Time.fixedDeltaTime);
             rb.MoveRotation(newRotation);
         }
         else
         {
-            // Si no hay suelo directamente debajo, suavemente dirigimos la rotación a 0
             float newRotation = Mathf.LerpAngle(rb.rotation, 0f, rotationSpeed * Time.fixedDeltaTime * 0.5f);
             rb.MoveRotation(newRotation);
         }
     }
 
-    /// <summary>
-    /// Para el movimiento horizontal.
-    /// </summary>
     protected void StopMovement()
     {
         Vector2 vel = rb.linearVelocity;
@@ -274,9 +261,6 @@ public class EnemyBase : MonoBehaviour
         rb.linearVelocity = vel;
     }
 
-    /// <summary>
-    /// Control de cooldown y trigger de animación. Las subclases deben implementar PerformAttack().
-    /// </summary>
     protected void TryAttack()
     {
         if (Time.time - lastAttackTime < attackCooldown) return;
@@ -285,13 +269,7 @@ public class EnemyBase : MonoBehaviour
         PerformAttack();
     }
 
-    /// <summary>
-    /// Implementación por defecto vacía; las subclases hacen el daño real.
-    /// </summary>
-    protected virtual void PerformAttack()
-    {
-        // override en subclase
-    }
+    protected virtual void PerformAttack() { }
     #endregion
 
     #region Utils & Editor
@@ -315,6 +293,8 @@ public class EnemyBase : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, detectRadius);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, stopDistance);
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position + Vector3.right * followSpacing, followSpacing);
     }
     #endregion
 }

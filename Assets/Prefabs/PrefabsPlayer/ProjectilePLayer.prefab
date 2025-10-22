@@ -166,16 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f3ac35dd2019f94d9c87e558796b320, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 80
-  lifeTime: 5
-  owner: {fileID: 2962280322261411938, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
-  isHoming: 1
-  turningSpeed: 720
-  effectSpawner: {fileID: 312572203072155370}
-  ignoreLayerNames:
-  - PlayerProjectile
-  - EnemyProjectile
-  - Player
+  lifeTime: 0.1
 --- !u!114 &312572203072155370
 MonoBehaviour:
   m_ObjectHideFlags: 0

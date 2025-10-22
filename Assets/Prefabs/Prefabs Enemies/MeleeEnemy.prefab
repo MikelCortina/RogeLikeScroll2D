@@ -125,9 +125,16 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   playerTag: Player
-  moveSpeed: 0.5
+  moveSpeed: 0.75
   stopDistance: 0
   parallaxController: {fileID: 5779312947448505574, guid: 22950df0fd825a6409441d687ace09f5, type: 3}
+  Ground:
+    serializedVersion: 2
+    m_Bits: 8
+  rayLength: 1
+  rotationSpeed: 10
+  stepOffset: 0.3
+  stepSmoothSpeed: 10
   attackCooldown: 1.2
   animator: {fileID: 0}
   enemyLevel: 0
@@ -139,6 +146,8 @@ MonoBehaviour:
   flashCount: 1
   attackPofloat: {fileID: 0}
   attackRadius: 0.1
+  crowdSpeed: 2
+  minDistanceToPlayer: 0.5
 --- !u!50 &4813197852411494764
 Rigidbody2D:
   serializedVersion: 5
