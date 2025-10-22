@@ -111,7 +111,7 @@ public class WaveManager : MonoBehaviour
         if (wave <= 4) return wave * (wave + 1) / 2;
 
         int baseFourth = 10;
-        float exponentBase = 1.05f; // más suave que 1.2
+        float exponentBase = 1.02f; // más suave que 1.2
         float scaled = baseFourth * Mathf.Pow(exponentBase, wave - 4);
         return Mathf.CeilToInt(scaled);
     }

@@ -92,6 +92,8 @@ MonoBehaviour:
   moveSpeed: 0
   stopDistance: 0.6
   parallaxController: {fileID: 5779312947448505574, guid: 22950df0fd825a6409441d687ace09f5, type: 3}
+  followSpacing: 0.4
+  groupSpeedMultiplier: 0.8
   Ground:
     serializedVersion: 2
     m_Bits: 8
@@ -103,7 +105,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   enemyLevel: 0
   enemyLevelManager: {fileID: 5311849784333808177, guid: cb7045c3fae47eb4694b9823c1e51f45, type: 3}
-  baseXP: 25
+  baseXP: 32.5
   renderersToFlash:
   - {fileID: 7474790222286392728}
   flashDuration: 0.1
@@ -174,7 +176,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 10
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0

@@ -27,11 +27,15 @@ public class PlayerMovement : MonoBehaviour
     [Header("Inclinación")]
     public float rayLength = 1.0f;
     public float rotationSpeed = 10f;
+    public Animator anim;
+    private string currentAnim;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>(); // <-- Añadido
     }
+
 
     void Update()
     {
@@ -111,8 +115,29 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             jumpPressed = false;
         }
+        // --- Animación según movimiento ---
+        float speedThreshold = 0.2f;
+
+        if (Mathf.Abs(rb.linearVelocity.x) < speedThreshold)
+        {
+            PlayAnimation("Idle");
+        }
+        else if (rb.linearVelocity.x > speedThreshold)
+        {
+            PlayAnimation("HorseRunRight");
+        }
+        else if (rb.linearVelocity.x < -speedThreshold)
+        {
+            PlayAnimation("RunLeft");
+        }
     }
 
+        void PlayAnimation(string animName)
+    {
+        if (currentAnim == animName) return;
+        anim.Play(animName);
+        currentAnim = animName;
+    }
     private bool IsGrounded()
     {
         if (groundCheck == null) return false;

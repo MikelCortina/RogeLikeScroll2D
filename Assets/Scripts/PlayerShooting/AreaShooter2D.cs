@@ -87,20 +87,39 @@ public class AreaShooter2D : MonoBehaviour
 
         // --- RAYCAST con radio ---
         float fireRange = maxRange;
-        float rayRadius = 0.1f; // ✅ Ajusta esto según lo ancho que quieras el disparo (0.2f-0.5f ideal)
+        float rayRadius = 0.1f;
         RaycastHit2D hit = Physics2D.CircleCast(firePoint.position, rayRadius, dir, fireRange, enemyLayer);
+
+        // Datos para el visual: por defecto no hay impacto
+        bool hitSomething = false;
+        Vector2 hitPoint = (Vector2)firePoint.position + dir * fireRange; // punto por defecto (max range)
+        Transform hitTransform = null;
 
         if (hit.collider != null && hit.collider.CompareTag(enemyTag))
         {
+            hitSomething = true;
+            hitPoint = hit.point;
+
             EnemyBase enemy = hit.collider.GetComponentInParent<EnemyBase>();
             if (enemy != null)
             {
+                hitTransform = enemy.transform;
                 float dmg = StatsCommunicator.Instance.CalculateDamage();
                 enemy.TakeContactDamage(dmg);
             }
         }
 
-        // --- EFECTO VISUAL ---
+        // --- EJECUTAR EFECTOS ACTIVOS ---
+        EffectSpawner effectSpawner = GetComponent<EffectSpawner>();
+        if (effectSpawner != null)
+        {
+            foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
+            {
+                effectSpawner.TriggerEffect(activeEffect, hitPoint, gameObject);
+            }
+        }
+
+        // --- EFECTO VISUAL DEL PROYECTIL ---
         GameObject visual = GetPooledProjectile();
         visual.transform.position = firePoint.position;
         visual.SetActive(true);
@@ -108,20 +127,13 @@ public class AreaShooter2D : MonoBehaviour
         Projectile2D p = visual.GetComponent<Projectile2D>();
         if (p != null)
         {
-            p.InitializeVisual(dir, projectileSpeed);
+            // Inicializa visual con dirección, velocidad y punto de impacto
+            p.InitializeVisual(dir, projectileSpeed, hitPoint, hitTransform);
         }
 
-        // --- DEBUG (opcional) ---
 #if UNITY_EDITOR
         Debug.DrawRay(firePoint.position, dir * fireRange, Color.yellow, 0.15f);
-        Debug.DrawLine(
-            (Vector2)firePoint.position + Vector2.Perpendicular(dir) * rayRadius,
-            (Vector2)firePoint.position + dir * fireRange + Vector2.Perpendicular(dir) * rayRadius,
-            Color.red, 0.1f);
-        Debug.DrawLine(
-            (Vector2)firePoint.position - Vector2.Perpendicular(dir) * rayRadius,
-            (Vector2)firePoint.position + dir * fireRange - Vector2.Perpendicular(dir) * rayRadius,
-            Color.red, 0.1f);
 #endif
     }
+
 }

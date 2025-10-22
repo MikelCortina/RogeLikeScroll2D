@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 788225860bc83ab408582f986469749d, type: 3}
   m_Name: ProjectileExplosion
   m_EditorClassIdentifier: 
-  radius: 0.3
+  radius: 0.2
   knockback: 2
   hittableLayers:
     serializedVersion: 2
     m_Bits: 1024
-  vfxPrefab: {fileID: 0}
+  vfxPrefab: {fileID: 162584487599433031, guid: 39f852c28f9c3fd45a427c24f3564ba7, type: 3}
   destroyVfxAfterSec: 1
   vfxLifetime: 2
   ignoreOwner: 1

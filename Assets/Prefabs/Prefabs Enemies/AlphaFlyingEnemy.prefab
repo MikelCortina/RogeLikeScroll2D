@@ -269,6 +269,15 @@ MonoBehaviour:
   moveSpeed: 0
   stopDistance: 0.6
   parallaxController: {fileID: 5779312947448505574, guid: 22950df0fd825a6409441d687ace09f5, type: 3}
+  followSpacing: 0.4
+  groupSpeedMultiplier: 0.8
+  Ground:
+    serializedVersion: 2
+    m_Bits: 0
+  rayLength: 1
+  rotationSpeed: 10
+  stepOffset: 0.3
+  stepSmoothSpeed: 10
   attackCooldown: 1.2
   animator: {fileID: 0}
   enemyLevel: 0
@@ -283,7 +292,8 @@ MonoBehaviour:
   hoverFrequency: 1.2
   projectilePrefab: {fileID: 847502903425083811, guid: be4fd9c0788596c448c1ef3a7d42d5d1, type: 3}
   firePoint: {fileID: 8151028941939378793}
-  fireRange: 1
+  minFireRange: 3
+  maxFireRange: 7
   projectileSpeed: 1.5
   burstDelay: 0.12
   burstCount: 1
@@ -343,7 +353,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 10
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
