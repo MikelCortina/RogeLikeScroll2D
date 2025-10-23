@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -28,20 +29,30 @@ public class PlayerMovement : MonoBehaviour
     public float rayLength = 1.0f;
     public float rotationSpeed = 10f;
     public Animator anim;
-    private string currentAnim;
+
+    private bool isJumping = false;
+
+    [Header("Ajustes de movimiento")]
+    public float leftSpeedMultiplier = 1.2f;
+
+    [Header("Ajustes de salto horizontal")]
+    public float jumpHorizontalImpulse = 4f;     // impulso total hacia la derecha
+    public float jumpHorizontalDuration = 0.3f;  // duración del impulso progresivo
+
+    // Control interno del impulso progresivo
+    private float applyJumpHorizontalTimer = 0f;
+    private float jumpHorizontalRemaining = 0f;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>(); // <-- Añadido
+        anim = GetComponent<Animator>();
     }
-
 
     void Update()
     {
         moveInput = Input.GetAxisRaw("Horizontal");
 
-        // Salto (NO MODIFICADO)
         if (Input.GetButtonDown("Jump"))
         {
             if (IsGrounded())
@@ -53,10 +64,6 @@ public class PlayerMovement : MonoBehaviour
                 rider1.RequestJump();
             }
         }
-
-        isGrounded = IsGrounded();
-        if (isGrounded)
-            dobleSalto = false;
     }
 
     void FixedUpdate()
@@ -66,12 +73,21 @@ public class PlayerMovement : MonoBehaviour
         float maxSpeed = StatsManager.Instance.RuntimeStats.maxSpeed;
         float friction = StatsManager.Instance.RuntimeStats.friction;
 
-        // Movimiento horizontal
+        // --- Calcular grounded ---
+        isGrounded = IsGrounded();
+        if (isGrounded)
+            dobleSalto = false;
+
+        // --- Movimiento horizontal ---
         if (!rider1.canMove)
         {
             if (moveInput != 0f)
             {
-                rb.AddForce(Vector2.right * moveInput * moveForce, ForceMode2D.Force);
+                float adjustedMoveForce = moveForce;
+                if (moveInput < 0f)
+                    adjustedMoveForce *= leftSpeedMultiplier;
+
+                rb.AddForce(Vector2.right * moveInput * adjustedMoveForce, ForceMode2D.Force);
             }
             else
             {
@@ -85,11 +101,10 @@ public class PlayerMovement : MonoBehaviour
             transform.position = p;
         }
 
-        // Ajuste de escalones e inclinación (UNIFICADO)
+        // --- Ajuste de inclinación ---
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, rayLength, Ground);
         if (hit.collider != null)
         {
-            // Ajuste vertical para escalones
             float targetY = hit.point.y + groundCheck.localPosition.y;
             float deltaY = targetY - transform.position.y;
 
@@ -99,45 +114,105 @@ public class PlayerMovement : MonoBehaviour
                 rb.MovePosition(new Vector2(rb.position.x, newY));
             }
 
-            // Inclinación suave según pendiente
             float slopeAngle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg - 90f;
             float newRotation = Mathf.LerpAngle(rb.rotation, slopeAngle, rotationSpeed * Time.fixedDeltaTime);
             rb.MoveRotation(newRotation);
         }
 
-        // Limitar velocidad horizontal
-        rb.linearVelocity = new Vector2(Mathf.Clamp(rb.linearVelocity.x, -maxSpeed, maxSpeed), rb.linearVelocity.y);
+        // --- Limitar velocidad horizontal ---
+        rb.linearVelocity = new Vector2(
+            Mathf.Clamp(rb.linearVelocity.x, -maxSpeed * leftSpeedMultiplier, maxSpeed),
+            rb.linearVelocity.y
+        );
 
-        // Salto (NO MODIFICADO)
+        // --- SALTO ---
         if (jumpPressed && rider1.isAttached)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+
+            // 🔹 SOLO aplicar impulso si se está pulsando hacia la derecha
+            if (moveInput > 0.01f)
+            {
+                jumpHorizontalRemaining = jumpHorizontalImpulse;
+                applyJumpHorizontalTimer = jumpHorizontalDuration;
+            }
+            else
+            {
+                jumpHorizontalRemaining = 0f;
+                applyJumpHorizontalTimer = 0f;
+            }
+
+            isJumping = true;
+            isGrounded = false;
+            PlayAnimationOnce("HorseJump");
             jumpPressed = false;
         }
-        // --- Animación según movimiento ---
+
+        // --- IMPULSO HORIZONTAL PROGRESIVO DURANTE EL SALTO ---
+        if (applyJumpHorizontalTimer > 0f && jumpHorizontalRemaining > 0f)
+        {
+            float dt = Time.fixedDeltaTime;
+            float duration = Mathf.Max(0.0001f, jumpHorizontalDuration);
+            float impulseThisFrame = (jumpHorizontalImpulse * dt / duration);
+
+            if (impulseThisFrame > jumpHorizontalRemaining)
+                impulseThisFrame = jumpHorizontalRemaining;
+
+            Vector2 horizImpulse = Vector2.right * impulseThisFrame;
+            rb.AddForce(horizImpulse, ForceMode2D.Impulse);
+
+            jumpHorizontalRemaining -= impulseThisFrame;
+            applyJumpHorizontalTimer -= dt;
+
+            if (applyJumpHorizontalTimer <= 0f || jumpHorizontalRemaining <= 0f)
+            {
+                applyJumpHorizontalTimer = 0f;
+                jumpHorizontalRemaining = 0f;
+            }
+        }
+
+        // --- ANIMACIONES ---
         float speedThreshold = 0.2f;
 
-        if (Mathf.Abs(rb.linearVelocity.x) < speedThreshold)
+        if (isJumping)
         {
-            PlayAnimation("Idle");
+            if (IsGrounded() && rb.linearVelocity.y <= 0.01f)
+            {
+                isJumping = false;
+                isGrounded = true;
+            }
+            else
+            {
+                return;
+            }
         }
-        else if (rb.linearVelocity.x > speedThreshold)
+
+        if (isGrounded)
         {
-            PlayAnimation("HorseRunRight");
-        }
-        else if (rb.linearVelocity.x < -speedThreshold)
-        {
-            PlayAnimation("RunLeft");
+            if (Mathf.Abs(rb.linearVelocity.x) < speedThreshold)
+                PlayAnimationIfNotPlaying("Idle");
+            else if (rb.linearVelocity.x > speedThreshold)
+                PlayAnimationIfNotPlaying("HorseRunRight");
+            else if (rb.linearVelocity.x < -speedThreshold)
+                PlayAnimationIfNotPlaying("HorseRunLeft");
         }
     }
 
-        void PlayAnimation(string animName)
+    void PlayAnimationOnce(string animName)
     {
-        if (currentAnim == animName) return;
-        anim.Play(animName);
-        currentAnim = animName;
+        if (anim == null) return;
+        if (!anim.GetCurrentAnimatorStateInfo(0).IsName(animName))
+            anim.Play(animName, 0, 0f);
     }
+
+    void PlayAnimationIfNotPlaying(string animName)
+    {
+        if (anim == null) return;
+        if (!anim.GetCurrentAnimatorStateInfo(0).IsName(animName))
+            anim.Play(animName);
+    }
+
     private bool IsGrounded()
     {
         if (groundCheck == null) return false;

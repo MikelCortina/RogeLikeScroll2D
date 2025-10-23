@@ -94,6 +94,7 @@ MonoBehaviour:
   stepSmoothSpeed: 10
   rayLength: 1
   rotationSpeed: 10
+  anim: {fileID: 0}
 --- !u!212 &73822119067335309
 SpriteRenderer:
   m_ObjectHideFlags: 0
