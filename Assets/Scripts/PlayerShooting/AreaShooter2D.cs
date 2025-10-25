@@ -100,7 +100,8 @@ public class AreaShooter2D : MonoBehaviour
             hitSomething = true;
             hitPoint = hit.point;
 
-            EnemyBase enemy = hit.collider.GetComponentInParent<EnemyBase>();
+           EnemyBase enemy = hit.collider.GetComponentInParent<EnemyBase>();
+
             if (enemy != null)
             {
                 hitTransform = enemy.transform;

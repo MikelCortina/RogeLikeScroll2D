@@ -24,7 +24,7 @@ public class StatsData
     public float riderMuliplier; // Currently unused
     public float runnerMuliplier; // Currently unused
     [Header("Suerte")]
-    public float luck, wormLuck; // Currently unused  
+    public float luck, towerLuck; // Currently unused  
 
     public StatsData Clone()
     {
@@ -49,7 +49,7 @@ public class StatsData
             riderMuliplier = this.riderMuliplier,
             runnerMuliplier = this.runnerMuliplier,
             luck = this.luck,
-            wormLuck = this.wormLuck,
+            towerLuck = this.towerLuck,
         };
     }
 }
@@ -223,6 +223,20 @@ public class StatsManager : MonoBehaviour
     public void dodgeChanceIncreaser(float delta)
     {
         RuntimeStats.dodgeChance += (RuntimeStats.dodgeChance * (delta/100));
+    }
+  public void AddTowerLuck(float delta)
+    {
+        RuntimeStats.towerLuck = Mathf.Max(0, RuntimeStats.towerLuck + delta);
+    }
+    public void AddLuck(float delta)
+    {
+        RuntimeStats.luck = Mathf.Max(0, RuntimeStats.luck + delta);
+    }
+    public void ResetMaxHP()
+    {
+        RuntimeStats.currentMaxHP = RuntimeStats.maxHP;
+        OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.currentMaxHP);
+        RuntimeStats.currentHP = RuntimeStats.currentMaxHP;
     }
 
 

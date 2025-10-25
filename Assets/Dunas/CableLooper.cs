@@ -7,7 +7,7 @@ using UnityEngine;
 /// a la derecha del tile actualmente más a la derecha, creando un bucle infinito.
 /// Funciona con 3 o más tiles (también con 2 o incluso 1, aunque 1 no es un loop real).
 /// </summary>
-public class ShapeLooper : MonoBehaviour
+public class ShapeLooper1 : MonoBehaviour
 {
     [Header("Tiles")]
     [Tooltip("Lista de tiles (Transform). Si está vacía, se intentarán usar los hijos de este GameObject.")]
@@ -135,7 +135,7 @@ public class ShapeLooper : MonoBehaviour
 
 #if UNITY_EDITOR
     // Para visualizar en el editor: dibuja líneas que marquen PontoDeDestino y los bordes de tiles.
-   /* void OnDrawGizmosSelected()
+    void OnDrawGizmosSelected()
     {
         // línea vertical en PontoDeDestino
         Gizmos.color = Color.cyan;
@@ -155,6 +155,6 @@ public class ShapeLooper : MonoBehaviour
                 Gizmos.DrawLine(left + Vector3.up * 0.1f, right + Vector3.up * 0.1f);
             }
         }
-    }*/
+    }
 #endif
 }

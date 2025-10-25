@@ -35,6 +35,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3766110797246970965}
+  - {fileID: 3399346530017220392}
+  - {fileID: 312739910915352993}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3979893125059676651
@@ -117,16 +119,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b921a3aa0acaba459f42515ce85e3c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waveSpace: 1
   maxHealth: 34
   contactDamage: 5.4
   useLevelScaling: 1
-  detectRadius: 8
+  detectRadius: 1000
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
   playerTag: Player
-  moveSpeed: 0.75
-  stopDistance: 0
+  moveSpeed: 0.5
+  stopDistance: 0.5
   parallaxController: {fileID: 5779312947448505574, guid: 22950df0fd825a6409441d687ace09f5, type: 3}
   followSpacing: 0.4
   groupSpeedMultiplier: 0.8
@@ -139,6 +142,7 @@ MonoBehaviour:
   stepSmoothSpeed: 10
   attackCooldown: 1.2
   animator: {fileID: 0}
+  lastAttackTime: -999
   enemyLevel: 0
   enemyLevelManager: {fileID: 5311849784333808177, guid: cb7045c3fae47eb4694b9823c1e51f45, type: 3}
   baseXP: 32.5
@@ -146,8 +150,14 @@ MonoBehaviour:
   - {fileID: 7474790222286392728}
   flashDuration: 0.1
   flashCount: 1
-  attackPofloat: {fileID: 0}
-  attackRadius: 0.1
+  attackPofloat: {fileID: 3399346530017220392}
+  attackPofloatEnd: {fileID: 312739910915352993}
+  attackRadius: 0.14
+  attackPrefab: {fileID: 1475880060116396789, guid: bc5b1d8e1f55c074ea8d93d8d058f376, type: 3}
+  attackDuration: 0.15
+  arcHeight: 0.075
+  startVerticalOffset: 0.5
+  attackHorizontalDistance: 0.1
 --- !u!50 &4813197852411494764
 Rigidbody2D:
   serializedVersion: 5
@@ -212,6 +222,68 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0.07260332}
   m_Size: {x: 1, y: 1.1452068}
   m_Direction: 0
+--- !u!1 &5760479258382090616
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 312739910915352993}
+  m_Layer: 0
+  m_Name: AtackEndPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &312739910915352993
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5760479258382090616}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.9, y: -2.64, z: -0.0018037175}
+  m_LocalScale: {x: 16.666668, y: 13.333333, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6480012780865629657}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6141734896595863026
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3399346530017220392}
+  m_Layer: 0
+  m_Name: AtackStartPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3399346530017220392
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6141734896595863026}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.9, y: 2.7, z: -0.0018037175}
+  m_LocalScale: {x: 16.666668, y: 13.333333, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6480012780865629657}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7847794529915240800
 GameObject:
   m_ObjectHideFlags: 0

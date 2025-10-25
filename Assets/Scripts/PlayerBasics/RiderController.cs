@@ -1,4 +1,5 @@
-using Unity.VisualScripting;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -20,7 +21,7 @@ public class RiderController : MonoBehaviour
     private float moveInput;
     private bool hasTouchedGround = false;
 
-    [Header("Inclinación / Step Smoothing")]
+    [Header("layer / Step Smoothing")]
     public LayerMask Ground;
     public Transform groundCheck; // opcional, para calcular targetY (si está null usa transform)
     public float rayLength = 1.0f;
@@ -28,10 +29,30 @@ public class RiderController : MonoBehaviour
     public float stepOffset = 0.3f;
     public float stepSmoothSpeed = 10f;
 
+    [Header("Cable (auto-move)")]
+    public float cableSpeed = 3f;          // velocidad en el cable
+    public int cableDirection = 1;         // 1 hacia la derecha, -1 hacia la izquierda
+    private bool onCable = false;          // true mientras esté en contacto con plataforma tag "cable"
+    public string cableTag = "cable";      // tag a comprobar (case-sensitive)
+
+    [Header("Drop (pasar hacia abajo)")]
+    public Collider2D playerCollider;                  // asignar desde inspector o se obtiene en Awake
+    public float dropIgnoreTime = 0.25f;               // tiempo que ignoramos la colisión
+    public float dropDownImpulse = 2f;                 // impulso hacia abajo al soltarse
+    private Coroutine dropCoroutine = null;
+
+    // guardamos todos los colliders de la/s plataforma/s cable con las que estamos en contacto
+    private readonly List<Collider2D> currentPlatformColliders = new List<Collider2D>();
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
+
+        if (playerCollider == null)
+        {
+            playerCollider = GetComponent<Collider2D>();
+        }
     }
 
     public void Init(Transform horse)
@@ -42,7 +63,7 @@ public class RiderController : MonoBehaviour
         if (horseTransform != null) transform.position = horseTransform.position;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
-        rb.SetRotation(0f);
+        rb.rotation = 0f;
     }
 
     // Llamada externa desde PlayerMovement
@@ -54,8 +75,9 @@ public class RiderController : MonoBehaviour
 
     void Update()
     {
-        // leer input en Update
-        moveInput = Input.GetAxisRaw("Horizontal");
+        // leer input en Update (pero lo sobrescribiremos si está en cable)
+        float rawHorizontal = Input.GetAxisRaw("Horizontal");
+        moveInput = rawHorizontal;
 
         // Guardamos la intención de salto
         if (Input.GetButtonDown("Jump") && platCheck != null && platCheck.isGrounded)
@@ -63,10 +85,28 @@ public class RiderController : MonoBehaviour
             jumpPressed = true;
         }
 
+        // Si está en contacto con cable y no attached -> movimiento automático
+        if (onCable && !isAttached)
+        {
+            soloMove = true;
+            // forzamos movimiento hacia adelante según cableDirection
+            moveInput = Mathf.Sign(cableDirection);
+
+            // si el jugador pulsa S (minúscula o mayúscula) se intenta 'bajar' del cable
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                TryDropFromPlatform();
+            }
+        }
+        else
+        {
+            soloMove = false;
+        }
+
         if (isAttached)
         {
             // forzar misma coordenada exacta mientras está enganchado
-            transform.position = horseTransform.position;
+            if (horseTransform != null) transform.position = horseTransform.position;
             rb.linearVelocity = Vector2.zero;
             rb.gravityScale = 0f;
             soloMove = false;
@@ -76,7 +116,7 @@ public class RiderController : MonoBehaviour
         }
         else if (!hasTouchedGround && !isAttached)
         {
-            // en aire: forzar X, dejar Y a física
+            // en aire: forzar X si hay horseTransform, dejar Y a física
             Vector3 p = transform.position;
             if (horseTransform != null) p.x = horseTransform.position.x;
             transform.position = p;
@@ -91,7 +131,7 @@ public class RiderController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Stats
+        // Stats (deja igual que tienes)
         float jumpForce = StatsManager.Instance.RuntimeStats.jumpForce;
         float moveForce = StatsManager.Instance.RuntimeStats.moveForce;
         float maxSpeed = StatsManager.Instance.RuntimeStats.maxSpeed;
@@ -107,13 +147,27 @@ public class RiderController : MonoBehaviour
         canMove = (((hasTouchedGround && !isAttached)));
 
         // --- MOVIMIENTO HORIZONTAL ---
-        if (canMove && moveInput != 0f)
+        if (onCable && !isAttached)
         {
-            rb.AddForce(Vector2.right * moveInput * moveForce, ForceMode2D.Force);
+            // Movimiento automático en cable: fijamos velocidad hacia adelante suavemente
+            float targetVelX = cableDirection * cableSpeed;
+            float newVelX = Mathf.MoveTowards(rb.linearVelocity.x, targetVelX, moveForce * Time.fixedDeltaTime);
+            rb.linearVelocity = new Vector2(newVelX, rb.linearVelocity.y);
+            // No aplicamos fricción ni input horizontal mientras esté en cable
         }
-        else if (canMove && moveInput == 0f)
+         if (!onCable && !isAttached)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x * friction, rb.linearVelocity.y);
+            if (canMove && Mathf.Abs(moveInput) > 0f)
+            {
+                rb.AddForce(Vector2.right * moveInput * moveForce, ForceMode2D.Force);
+                // clamp horizontal speed
+                float clampedX = Mathf.Clamp(rb.linearVelocity.x, -maxSpeed, maxSpeed);
+                rb.linearVelocity = new Vector2(clampedX, rb.linearVelocity.y);
+            }
+            else if (canMove && Mathf.Approximately(moveInput, 0f))
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x * friction, rb.linearVelocity.y);
+            }
         }
 
         // --- SALTO NORMAL ---
@@ -124,7 +178,7 @@ public class RiderController : MonoBehaviour
             jumpPressed = false;
         }
 
-        // --- SALTO DEL RIDER ---
+        // --- SALTO DEL RIDER (desde caballo) ---
         if (jumpRequested && isAttached)
         {
             jumpRequested = false;
@@ -137,7 +191,7 @@ public class RiderController : MonoBehaviour
             hasTouchedGround = false;
         }
 
-        // --- APLICAR INCLINACIÓN Y AJUSTE DE ESCALONES (solo cuando NO está attached) ---
+        // --- APLICAR layer Y AJUSTE DE ESCALONES (solo cuando NO está attached) ---
         if (!isAttached)
         {
             ApplyInclinationAndStepSmoothing();
@@ -185,7 +239,7 @@ public class RiderController : MonoBehaviour
                 rb.MovePosition(new Vector2(rb.position.x, newY));
             }
 
-            // Inclinación suave según pendiente
+            // layer suave según pendiente
             float slopeAngle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg - 90f;
             float newRotation = Mathf.LerpAngle(rb.rotation, slopeAngle, rotationSpeed * Time.fixedDeltaTime);
             rb.MoveRotation(newRotation);
@@ -198,20 +252,40 @@ public class RiderController : MonoBehaviour
         }
     }
 
-    // Reattach
+    // --- Gestión de contacto con plataformas "cable" ---
     void OnTriggerEnter2D(Collider2D other)
     {
+        // Reattach habitual
         if (!isAttached && (other.CompareTag("Horse") || other.CompareTag("Player")))
         {
             ReattachToHorse(other.transform);
+            return;
         }
 
-        if (!isAttached && (other.CompareTag("Horse") || other.CompareTag("Player")))
+        // Detectar contacto con plataformas "cable" por trigger
+        if (!isAttached && other.CompareTag(cableTag))
         {
-            if (transform.position.y < other.transform.position.y)
+            // Comprobamos si el collider está "usedByEffector" o tiene PlatformEffector2D
+            if (other.usedByEffector || other.GetComponent<PlatformEffector2D>() != null)
             {
-                ReattachToHorse(other.transform);
+                AddPlatformCollider(other);
+                rb.gravityScale = 0.1f;
             }
+            else
+            {
+                // si no es effector pero sigue siendo cable, lo añadimos para soporte general
+                AddPlatformCollider(other);
+                rb.gravityScale = 0.1f;
+            }
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag(cableTag))
+        {
+            RemovePlatformCollider(other);
+            rb.gravityScale = 0.9f;
         }
     }
 
@@ -220,7 +294,87 @@ public class RiderController : MonoBehaviour
         if (!isAttached && (collision.collider.CompareTag("Horse") || collision.collider.CompareTag("Player")))
         {
             ReattachToHorse(collision.transform);
+            return;
         }
+
+        // Si la plataforma cable usa colisiones normales
+        if (!isAttached && collision.collider.CompareTag(cableTag))
+        {
+            Collider2D c = collision.collider;
+            if (c.usedByEffector || c.GetComponent<PlatformEffector2D>() != null)
+            {
+                AddPlatformCollider(c);
+                rb.gravityScale = 0.1f;
+            }
+            else
+            {
+                AddPlatformCollider(c);
+                rb.gravityScale = 0.1f;
+            }
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.collider.CompareTag(cableTag))
+        {
+            RemovePlatformCollider(collision.collider);
+            rb.gravityScale = 0.9f;
+        }
+    }
+
+    private void AddPlatformCollider(Collider2D col)
+    {
+        if (!currentPlatformColliders.Contains(col))
+        {
+            currentPlatformColliders.Add(col);
+            onCable = true;
+        }
+    }
+
+    private void RemovePlatformCollider(Collider2D col)
+    {
+        if (currentPlatformColliders.Contains(col))
+            currentPlatformColliders.Remove(col);
+
+        if (currentPlatformColliders.Count == 0)
+            onCable = false;
+    }
+
+    // --- Intento de bajar desde la plataforma (S) ---
+    private void TryDropFromPlatform()
+    {
+        if (!onCable || currentPlatformColliders.Count == 0 || playerCollider == null)
+            return;
+
+        // evita llamadas repetidas
+        if (dropCoroutine != null) StopCoroutine(dropCoroutine);
+        dropCoroutine = StartCoroutine(TemporarilyIgnorePlatformCollisions(currentPlatformColliders.ToArray(), dropIgnoreTime));
+    }
+
+    private IEnumerator TemporarilyIgnorePlatformCollisions(Collider2D[] platformCols, float duration)
+    {
+        // Ignoramos colisión entre rider y todos los colliders de la plataforma
+        foreach (var pc in platformCols)
+        {
+            if (pc != null)
+                Physics2D.IgnoreCollision(playerCollider, pc, true);
+        }
+
+        // aseguramos que cae: cancelamos su velocidad vertical y aplicamos impulso hacia abajo
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+        rb.AddForce(Vector2.down * dropDownImpulse, ForceMode2D.Impulse);
+
+        yield return new WaitForSeconds(duration);
+
+        // Restablecemos la colisión (si los colliders aún existen)
+        foreach (var pc in platformCols)
+        {
+            if (pc != null)
+                Physics2D.IgnoreCollision(playerCollider, pc, false);
+        }
+
+        dropCoroutine = null;
     }
 
     private void ReattachToHorse(Transform horse)
@@ -232,5 +386,7 @@ public class RiderController : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
         rb.MoveRotation(0f);
+        currentPlatformColliders.Clear();
+        onCable = false;
     }
 }

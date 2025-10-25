@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ using UnityEngine;
 public class EnemyBase : MonoBehaviour
 {
     [Header("Stats (lvl 0")]
+    public float waveSpace;
     [SerializeField] protected float maxHealth;
     [SerializeField] protected float contactDamage;
 
@@ -50,13 +52,11 @@ public class EnemyBase : MonoBehaviour
     protected Transform target;
     protected float currentHealth;
     protected bool isFacingRight = true;
-
     protected float adjustedMaxHealth;
     protected float adjustedContactDamage;
-
     protected bool canMove = true;
-    protected float lastAttackTime = -999f;
 
+    public float lastAttackTime = -999f;
     public int enemyLevel = 0;
     public EnemyLevelManager enemyLevelManager;
     public float baseXP = 25f;
@@ -69,14 +69,11 @@ public class EnemyBase : MonoBehaviour
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-
         float multiplier = 1f;
         if (useLevelScaling && EnemyLevelManager.Instance != null) multiplier = EnemyLevelManager.Instance.GetEnemyMultiplier();
-
         adjustedMaxHealth = Mathf.Max(1, Mathf.RoundToInt(maxHealth * multiplier));
         adjustedContactDamage = Mathf.Max(1, Mathf.CeilToInt(contactDamage * multiplier));
         currentHealth = adjustedMaxHealth;
-
         if (animator == null) animator = GetComponentInChildren<Animator>();
     }
 
@@ -99,13 +96,11 @@ public class EnemyBase : MonoBehaviour
     public void Flash()
     {
         if (renderersToFlash == null || renderersToFlash.Length == 0) return;
-
         if (originalColors == null || originalColors.Length != renderersToFlash.Length)
         {
             originalColors = new Color[renderersToFlash.Length];
             for (int i = 0; i < renderersToFlash.Length; i++) originalColors[i] = renderersToFlash[i].color;
         }
-
         if (flashRoutine != null) StopCoroutine(flashRoutine);
         flashRoutine = StartCoroutine(FlashCoroutine());
     }
@@ -117,11 +112,9 @@ public class EnemyBase : MonoBehaviour
         {
             for (int j = 0; j < renderersToFlash.Length; j++) renderersToFlash[j].color = flashColor;
             yield return new WaitForSeconds(flashDuration);
-
             for (int j = 0; j < renderersToFlash.Length; j++) renderersToFlash[j].color = originalColors[j];
             yield return new WaitForSeconds(flashDuration);
         }
-
         for (int j = 0; j < renderersToFlash.Length; j++) renderersToFlash[j].color = originalColors[j];
         flashRoutine = null;
     }
@@ -156,25 +149,20 @@ public class EnemyBase : MonoBehaviour
         if (animator != null) animator.SetTrigger("Dead");
         canMove = false;
         if (rb != null) rb.linearVelocity = Vector2.zero;
-
         Collider2D[] cols = GetComponents<Collider2D>();
         foreach (var c in cols) c.enabled = false;
-
         if (WaveManager.Instance != null) WaveManager.Instance.NotifyEnemyKilled(gameObject);
-
         float xpGained = StatsManager.Instance.GetXPForEnemy(enemyLevel, baseXP);
         Debug.Log($"Enemy Level: {enemyLevel}, Base XP: {baseXP}, XP Gained: {xpGained}");
         StatsManager.Instance.GainXP(xpGained);
-
         ScoreManager.Instance.EnemyDied();
         HealthDecay.Instance.GetBackHP();
-
         if (gameObject.GetComponent<PickupEffectItem>() != null)
         {
             PickupEffectItem pickup = gameObject.GetComponent<PickupEffectItem>();
             if (pickup != null) StartCoroutine(ShowUIFromPickup(pickup));
         }
-
+        DestroyChildrenWithTag("MeleAtack");
         Destroy(gameObject, 0.05f);
     }
 
@@ -193,12 +181,10 @@ public class EnemyBase : MonoBehaviour
     protected bool IsBlockedByAlly(Vector2 direction)
     {
         if (direction.magnitude < 0.01f) return false;
-
         Collider2D[] hit = Physics2D.OverlapCircleAll(rb.position + direction.normalized * followSpacing, followSpacing);
         foreach (var col in hit)
         {
-            if (col != null && col.gameObject != this.gameObject && col.GetComponent<EnemyBase>() != null)
-                return true;
+            if (col != null && col.gameObject != this.gameObject && col.GetComponent<EnemyBase>() != null) return true;
         }
         return false;
     }
@@ -206,27 +192,23 @@ public class EnemyBase : MonoBehaviour
     protected void MoveTowardsPlayer()
     {
         if (target == null || !canMove) return;
-
         Vector2 direction = (target.position - transform.position);
-        float distance = direction.magnitude;
-        if (distance < 0.1f)
-        {
-            StopMovement();
-            return;
-        }
-
         direction.Normalize();
         FlipIfNeeded(direction.x);
-
         float speedMultiplier = IsBlockedByAlly(direction) ? groupSpeedMultiplier : 1f;
-
-        float worldSpeed = parallaxController != null ? parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier : 0f;
-
+        float worldSpeed = parallaxController != null ? parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier : 1f;
         Vector2 velocity = rb.linearVelocity;
         velocity.x = direction.x * moveSpeed * speedMultiplier - worldSpeed;
         rb.linearVelocity = velocity;
-
         ApplyInclinationAndStepSmoothing();
+    }
+
+    void DestroyChildrenWithTag(string tag)
+    {
+        foreach (Transform child in transform.Cast<Transform>().ToArray())
+        {
+            if (child.CompareTag(tag)) Destroy(child.gameObject);
+        }
     }
 
     protected void ApplyInclinationAndStepSmoothing()
@@ -242,7 +224,6 @@ public class EnemyBase : MonoBehaviour
                 float newY = Mathf.Lerp(transform.position.y, targetY, stepSmoothSpeed * Time.fixedDeltaTime);
                 rb.MovePosition(new Vector2(rb.position.x, newY));
             }
-
             float slopeAngle = Mathf.Atan2(hit.normal.y, hit.normal.x) * Mathf.Rad2Deg - 90f;
             float newRotation = Mathf.LerpAngle(rb.rotation, slopeAngle, rotationSpeed * Time.fixedDeltaTime);
             rb.MoveRotation(newRotation);
@@ -263,13 +244,19 @@ public class EnemyBase : MonoBehaviour
 
     protected void TryAttack()
     {
-        if (Time.time - lastAttackTime < attackCooldown) return;
+        float timeSinceLast = Time.time - lastAttackTime;
+        if (timeSinceLast < attackCooldown)
+        {
+            return;
+        }
         lastAttackTime = Time.time;
         if (animator != null) animator.SetTrigger("Attack");
         PerformAttack();
     }
 
-    protected virtual void PerformAttack() { }
+    protected virtual void PerformAttack()
+    {
+    }
     #endregion
 
     #region Utils & Editor
@@ -298,3 +285,4 @@ public class EnemyBase : MonoBehaviour
     }
     #endregion
 }
+

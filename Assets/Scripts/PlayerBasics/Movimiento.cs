@@ -152,6 +152,14 @@ public class PlayerMovement : MonoBehaviour
         // --- IMPULSO HORIZONTAL PROGRESIVO DURANTE EL SALTO ---
         if (applyJumpHorizontalTimer > 0f && jumpHorizontalRemaining > 0f)
         {
+            // 🟡 Si el jugador pulsa izquierda en el aire → cancelar impulso
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+            {
+                applyJumpHorizontalTimer = 0f;
+                jumpHorizontalRemaining = 0f;
+                return; // salir inmediatamente, no aplicar más impulso
+            }
+
             float dt = Time.fixedDeltaTime;
             float duration = Mathf.Max(0.0001f, jumpHorizontalDuration);
             float impulseThisFrame = (jumpHorizontalImpulse * dt / duration);

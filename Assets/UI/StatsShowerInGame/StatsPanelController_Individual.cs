@@ -207,7 +207,7 @@ public class StatsPanelController_Individual : MonoBehaviour
             case StatType.CriticalChance: raw = s.criticalChance; break;
             case StatType.DodgeChance: raw = s.dodgeChance; break;
             case StatType.Luck: raw = s.luck; break;
-            case StatType.WormLuck: raw = s.wormLuck; break;
+            case StatType.WormLuck: raw = s.towerLuck; break;
             case StatType.RiderMultiplier: raw = s.riderMuliplier; break;
             case StatType.RunnerMultiplier: raw = s.runnerMuliplier; break;
             case StatType.Harvester: raw = s.harvester; break;
