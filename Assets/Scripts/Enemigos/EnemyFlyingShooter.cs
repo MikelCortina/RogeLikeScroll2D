@@ -58,10 +58,17 @@ public class EnemyFlyingShooter : EnemyBase
         {
             if (distToTarget > fireRange)
             {
+                // Si estamos fuera del rango de disparo, movernos hacia el target
+                canMove = true;
+            }
+            else if (distToTarget < fireRange * 0.8f)
+            {
+                // Si estamos demasiado cerca, movernos ligeramente hacia atrás para mantener variedad
                 canMove = true;
             }
             else
             {
+                // Dentro del rango ideal, no moverse horizontalmente
                 canMove = false;
                 StopMovementPhysics();
                 TryAttack();
@@ -104,7 +111,6 @@ public class EnemyFlyingShooter : EnemyBase
 
     private void FlyTowardsTarget(float targetY)
     {
-        // Si estamos en knockback, no mover la IA
         if (IsCurrentlyKnockedBack()) return;
 
         Vector2 direction = (Vector2)target.position - (Vector2)transform.position;
@@ -115,19 +121,22 @@ public class EnemyFlyingShooter : EnemyBase
             return;
         }
 
+        // Normalizamos solo horizontalmente si queremos que ajuste la distancia
         direction.Normalize();
+
+        // Ajuste para que mantenga el rango: si está demasiado cerca, invertimos la dirección
+        float distToTarget = Vector2.Distance(transform.position, target.position);
+        if (distToTarget < fireRange * 0.8f) direction.x *= -1f;
+
         FlipIfNeeded(direction.x);
 
         float worldSpeed = parallaxController != null ? parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier : 0f;
-        Vector2 desiredVelocity = direction * flyingSpeed;
-        desiredVelocity.x -= worldSpeed;
+        Vector2 desiredVelocity = new Vector2(direction.x * flyingSpeed - worldSpeed, 0f);
 
-        // Mantener hover suavemente: interpolamos la componente Y hacia la velocidad objetivo del hover
+        // Hover suavizado
         float currentY = rb.linearVelocity.y;
-        float targetYVel = (targetY - transform.position.y) * 5f; // 5f = suavizado; ajustar segun necesites
+        float targetYVel = (targetY - transform.position.y) * 5f;
         targetYVel = Mathf.Clamp(targetYVel, -flyingSpeed * 2f, flyingSpeed * 2f);
-
-        // Combinamos; no usamos MovePosition para que f�sicas/knockback no se pierdan
         desiredVelocity.y = Mathf.Lerp(currentY, targetYVel, 0.2f);
 
         rb.linearVelocity = desiredVelocity;

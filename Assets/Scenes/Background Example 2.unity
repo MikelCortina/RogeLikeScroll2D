@@ -4464,7 +4464,7 @@ PrefabInstance:
     - target: {fileID: 9091031886549585467, guid: ada8f8971647bd844a376273a775dd07, type: 3}
       propertyPath: 'effectList.Array.data[0]'
       value: 
-      objectReference: {fileID: 11400000, guid: 2add402aeb5ec9343a30b5c77ac9b38e, type: 2}
+      objectReference: {fileID: 11400000, guid: 6bef2bf443f94594e9ecc413c622631d, type: 2}
     - target: {fileID: 9091031886549585467, guid: ada8f8971647bd844a376273a775dd07, type: 3}
       propertyPath: 'effectList.Array.data[1]'
       value: 
@@ -7026,7 +7026,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1575941445
 Transform:
   m_ObjectHideFlags: 0
@@ -8658,6 +8658,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effects:
   - {fileID: 11400000, guid: 2add402aeb5ec9343a30b5c77ac9b38e, type: 2}
+  - {fileID: 11400000, guid: 6bef2bf443f94594e9ecc413c622631d, type: 2}
+  - {fileID: 11400000, guid: b0f0a05cea0abc74e8471b2c3750fb3e, type: 2}
+  - {fileID: 11400000, guid: baf58b071b586b84094211356bdb75fd, type: 2}
+  - {fileID: 11400000, guid: d86c45b01e4cb704396213c4060215d1, type: 2}
 --- !u!114 &1819705537
 MonoBehaviour:
   m_ObjectHideFlags: 0

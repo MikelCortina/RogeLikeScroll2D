@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e9343a66888c924ab00bdea0cbf4fae, type: 3}
+  m_Name: ContactDrone
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 3890009663444259604, guid: a76d85dd920b2be41b666059d3842330, type: 3}
+  speed: 5
+  respawnDelay: 1
+  leftOffset: -10
+  rightOffset: 10
+  yPosition: 0.7

@@ -163,7 +163,6 @@ public class MeleeEnemy : EnemyBase
         }
 
         Destroy(attackObj);
-        Debug.Log("Objeto de ataque destruido");
 
         lastAttackTime = Time.time;
         isAttacking = false;

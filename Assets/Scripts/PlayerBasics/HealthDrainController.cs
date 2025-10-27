@@ -49,7 +49,7 @@ public class HealthDecay : MonoBehaviour
         {
             int decayInt = Mathf.FloorToInt(accumulatedDecay);
             accumulatedDecay -= decayInt;
-            Debug.Log($"HealthDecay: Decay aplicado de {decaySpeed} HP");
+
 
             // statsManager.DamagePlayerDecay(decayInt);
             statsManager.AddCurrentMaxHP(-decayInt); // También resta de maxHP

@@ -30,7 +30,7 @@ public class HorseThrower : MonoBehaviour
     /// </summary>
     private void StartAutomaticEffects()
     {
-        Debug.Log("[HorseThrower] StartAutomaticEffects called.");
+
 
         foreach (var effectSO in RunEffectManager.Instance.GetActiveEffects())
         {
