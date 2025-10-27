@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ProjectileExplosion
   m_EditorClassIdentifier: 
   radius: 0.2
-  knockback: 2
+  knockback: 1.5
   hittableLayers:
     serializedVersion: 2
     m_Bits: 1024
@@ -21,3 +21,8 @@ MonoBehaviour:
   destroyVfxAfterSec: 1
   vfxLifetime: 2
   ignoreOwner: 1
+  drawDebugCircleInGame: 1
+  debugDuration: 0.5
+  debugSegments: 60
+  debugLineWidth: 0.05
+  debugColor: {r: 1, g: 0, b: 0, a: 1}

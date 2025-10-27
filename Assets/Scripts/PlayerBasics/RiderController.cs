@@ -278,6 +278,10 @@ public class RiderController : MonoBehaviour
                 rb.gravityScale = 0.1f;
             }
         }
+        if(!isAttached && other.CompareTag("Ground"))
+        {
+            ReattachToHorse(horseTransform.transform);
+        }
     }
 
     void OnTriggerExit2D(Collider2D other)

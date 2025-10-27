@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Linq;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -45,6 +46,11 @@ public class EnemyBase : MonoBehaviour
     [Header("References")]
     [SerializeField] protected Animator animator;
 
+    [Header("Knockback")]
+    [SerializeField] private float knockbackRecoveryTime = 0.25f; // tiempo que dura el knockback (puedes ajustar)
+    private bool isKnockedBack = false;
+    private Coroutine knockbackRoutine = null;
+
     private Coroutine flashRoutine;
     private Color[] originalColors;
 
@@ -65,6 +71,8 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] private SpriteRenderer[] renderersToFlash;
     [SerializeField] private float flashDuration = 0.1f;
     [SerializeField] private int flashCount = 5;
+
+    public Transform emergencySpawn;
 
     protected virtual void Awake()
     {
@@ -89,6 +97,14 @@ public class EnemyBase : MonoBehaviour
         {
             var sr = GetComponentInChildren<SpriteRenderer>();
             if (sr != null) renderersToFlash = new SpriteRenderer[] { sr };
+        }
+    }
+
+    private void Update()
+    {
+        if (transform.position.y < -4)
+        {
+            if (emergencySpawn != null) transform.position = emergencySpawn.position;
         }
     }
 
@@ -191,7 +207,7 @@ public class EnemyBase : MonoBehaviour
 
     protected void MoveTowardsPlayer()
     {
-        if (target == null || !canMove) return;
+        if (target == null || !canMove || isKnockedBack) return;
         Vector2 direction = (target.position - transform.position);
         direction.Normalize();
         FlipIfNeeded(direction.x);
@@ -259,6 +275,38 @@ public class EnemyBase : MonoBehaviour
     }
     #endregion
 
+    #region Knockback Handling
+    public void ApplyKnockback(Vector2 force, float recoveryTime = -1f)
+    {
+        if (rb == null) return;
+        if (recoveryTime > 0f) knockbackRecoveryTime = recoveryTime;
+
+        // Aplicar la fuerza (impulso) al rigidbody
+        rb.AddForce(force, ForceMode2D.Impulse);
+
+        // Gestionar estado para que la IA no sobrescriba la velocidad
+        if (knockbackRoutine != null) StopCoroutine(knockbackRoutine);
+        knockbackRoutine = StartCoroutine(KnockbackCoroutine(knockbackRecoveryTime));
+    }
+
+    private IEnumerator KnockbackCoroutine(float duration)
+    {
+        isKnockedBack = true;
+        canMove = false;
+        // opcional: parar animación de movimiento si usas una trigger/param
+        if (animator != null)
+        {
+            // ejemplo: animator.ResetTrigger("Walk"); // ajusta según tus animaciones
+        }
+
+        yield return new WaitForSeconds(duration);
+
+        isKnockedBack = false;
+        canMove = true;
+        knockbackRoutine = null;
+    }
+    #endregion
+
     #region Utils & Editor
     protected void FlipIfNeeded(float direction)
     {
@@ -285,4 +333,3 @@ public class EnemyBase : MonoBehaviour
     }
     #endregion
 }
-

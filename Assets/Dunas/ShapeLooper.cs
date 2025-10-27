@@ -58,21 +58,17 @@ public class ShapeLooper : MonoBehaviour
             tiles[i].position = new Vector3(newX, tiles[i].position.y, tiles[i].position.z);
         }
     }
-
     void Update()
     {
         if (tiles == null || tiles.Count == 0) return;
 
-        // Mueve todos los tiles
         float dx = speed * Time.deltaTime;
-        for (int i = 0; i < tiles.Count; i++)
-        {
-            tiles[i].position += new Vector3(dx, 0f, 0f);
-        }
 
-        // Recalcula anchuras y comprueba cada tile si hay que reposicionarlo.
-        // Iteramos en orden ascendente; si reposicionamos un tile lo colocamos a la derecha
-        // del tile con el borde derecho máximo en ese momento.
+        // mover todos los tiles
+        for (int i = 0; i < tiles.Count; i++)
+            tiles[i].position += new Vector3(dx, 0f, 0f);
+
+        // reposicionar tiles que cruzan PontoDeDestino
         for (int i = 0; i < tiles.Count; i++)
         {
             Transform t = tiles[i];
@@ -81,38 +77,18 @@ public class ShapeLooper : MonoBehaviour
 
             if (right <= PontoDeDestino)
             {
-                // Encuentra el tile con el borde derecho más a la derecha (actualizado)
+                // buscar el tile actualmente más a la derecha
                 float maxRight = float.NegativeInfinity;
-                Transform maxTile = null;
-                for (int j = 0; j < tiles.Count; j++)
+                foreach (var tile in tiles)
                 {
-                    if (j == i) continue; // ignorar el tile que vamos a mover
-                    float wj = GetWidth(tiles[j]);
-                    float rightj = tiles[j].position.x + (wj / 2f);
-                    if (rightj > maxRight)
-                    {
-                        maxRight = rightj;
-                        maxTile = tiles[j];
-                    }
+                    if (tile == t) continue;
+                    float tileRight = tile.position.x + GetWidth(tile) / 2f;
+                    if (tileRight > maxRight) maxRight = tileRight;
                 }
 
-                // Si no hay otro tile (por ejemplo solo 1 tile), usa su propia posición + offset
-                float newCenterX;
-                if (maxTile != null)
-                {
-                    float maxW = GetWidth(maxTile);
-                    // new left edge = maxRight + spacing
-                    // centerX = new left + (w/2) => = maxRight + spacing + (w/2)
-                    newCenterX = maxRight + spacing + (w / 2f);
-                }
-                else
-                {
-                    // caso raro: solo un tile
-                    newCenterX = t.position.x + w + spacing;
-                }
-
+                // colocar el tile reposicionado a la derecha
+                float newCenterX = maxRight + spacing + (w / 2f);
                 t.position = new Vector3(newCenterX, t.position.y, t.position.z);
-                // Nota: no hacemos 'i--' ni nada; es intencional: el tile ya reposicionado no volverá a cumplir la condición inmediatamente.
             }
         }
     }

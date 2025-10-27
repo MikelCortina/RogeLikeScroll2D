@@ -150,6 +150,7 @@ MonoBehaviour:
   - {fileID: 7474790222286392728}
   flashDuration: 0.1
   flashCount: 1
+  emergencySpawn: {fileID: 1915086932696611674, guid: 3b4756fde7f31474c906a64d26a350c2, type: 3}
   attackPofloat: {fileID: 3399346530017220392}
   attackPofloatEnd: {fileID: 312739910915352993}
   attackRadius: 0.14

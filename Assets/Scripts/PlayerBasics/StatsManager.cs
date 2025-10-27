@@ -65,7 +65,7 @@ public class StatsManager : MonoBehaviour
     [Header("Leveling System")]
     public int playerCurrentLevel = 1;
     public float currentXP = 0;
-    float baseXPToLevel = 100f; // XP necesaria para subir del nivel 1 al 2
+    float baseXPToLevel = 50f; // XP necesaria para subir del nivel 1 al 2
     float xpMultiplierPerLevel = 1.15f; // crecimiento moderado de XP necesaria por nivel
 
 

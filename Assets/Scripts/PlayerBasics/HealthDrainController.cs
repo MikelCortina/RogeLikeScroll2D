@@ -15,6 +15,7 @@ public class HealthDecay : MonoBehaviour
 
     private float decaySpeed;
     private float accumulatedDecay = 0f;
+    public bool aceleracion = true;
 
     private void Awake()
     {
@@ -48,8 +49,9 @@ public class HealthDecay : MonoBehaviour
         {
             int decayInt = Mathf.FloorToInt(accumulatedDecay);
             accumulatedDecay -= decayInt;
+            Debug.Log($"HealthDecay: Decay aplicado de {decaySpeed} HP");
 
-           // statsManager.DamagePlayerDecay(decayInt);
+            // statsManager.DamagePlayerDecay(decayInt);
             statsManager.AddCurrentMaxHP(-decayInt); // También resta de maxHP
             statsManager.NotifyHealthChanged();
         }
@@ -59,14 +61,12 @@ public class HealthDecay : MonoBehaviour
 
     public void OnTakeDamage()
     {
+        if (!aceleracion) return;
         decaySpeed += velocidadDecayTrasDaino;
     }
-    private void ResetDecay()
+    public void ResetDecay()
     {
-        // DecaySpeed vuelve gradualmente a baseDecayPerSecond
-        if (decaySpeed > baseDecayPerSecond)
-            decaySpeed -= damageMultiplier * Time.deltaTime; // ajuste suave
-        decaySpeed = Mathf.Max(baseDecayPerSecond, decaySpeed);
+       decaySpeed = baseDecayPerSecond;
     }
 
     // Llamar desde EnemyBase.Die()

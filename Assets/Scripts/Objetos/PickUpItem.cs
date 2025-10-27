@@ -30,10 +30,11 @@ public class PickupEffectItem : MonoBehaviour
         effectToActivate = effectList[Random.Range(0, effectList.Length)];
 
         float elapsed = 0f;
-        int index = Random.Range(0, effectList.Length);
+        int index = 0;
 
         while (elapsed < displayDuration)
         {
+            // Mostrar nombres aleatorios de la lista, pero no afectar al efecto final
             effectTextUI.text = effectList[index].name;
             index = (index + 1) % effectList.Length;
 
@@ -41,13 +42,26 @@ public class PickupEffectItem : MonoBehaviour
             elapsed += nameChangeInterval;
         }
 
+        // Mostrar finalmente el nombre del efecto que se aplicará
+        effectTextUI.text = effectToActivate.name;
+        yield return new WaitForSecondsRealtime(0.5f); // un pequeño delay para que se vea
+
         textObjectPanel.SetActive(false);
 
         // Activamos el efecto seleccionado
         RunEffectManager.Instance.ActivateEffect(effectToActivate);
 
+        // Aplicamos el efecto si es persistente
+        if (effectToActivate is IPersistentEffect persistentEffect)
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null)
+                persistentEffect.ApplyTo(player);
+        }
+
         Time.timeScale = 1f;
         Destroy(gameObject);
     }
+
 
 }

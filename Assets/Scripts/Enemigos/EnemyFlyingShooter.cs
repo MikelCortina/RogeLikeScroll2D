@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.ProBuilder;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyFlyingShooter : EnemyBase
@@ -20,8 +19,6 @@ public class EnemyFlyingShooter : EnemyBase
     [SerializeField] private float burstDelay = 0.12f;
     [SerializeField] private int burstCount = 1;
 
-
-
     // Internal
     private float hoverOffset = 0f;
     private float baseY = 0f;
@@ -29,13 +26,16 @@ public class EnemyFlyingShooter : EnemyBase
     protected override void Awake()
     {
         base.Awake();
-        if (rb != null) rb.gravityScale = 0f;
+        if (rb != null)
+        {
+            rb.gravityScale = 0f; // aseguramos que no caiga
+            // revisa en Inspector que Body Type sea Dynamic para que AddForce/velocity funcione
+        }
         baseY = transform.position.y;
     }
 
     protected override void Start()
     {
-
         base.Start();
         fireRange = Random.Range(minFireRange, maxFireRange);
         if (firePoint == null)
@@ -77,6 +77,9 @@ public class EnemyFlyingShooter : EnemyBase
     {
         if (target == null) return;
 
+        // Si estamos en knockback, no ejecutar la IA de movimiento (dejar que la f�sica aplique la fuerza)
+        if (IsCurrentlyKnockedBack()) return;
+
         // Hover
         hoverOffset = Mathf.Sin(Time.time * hoverFrequency) * hoverAmplitude;
         float targetY = baseY + hoverOffset;
@@ -87,13 +90,23 @@ public class EnemyFlyingShooter : EnemyBase
         }
         else
         {
-            // Solo hover
-            rb.MovePosition(new Vector2(transform.position.x, targetY));
+            // Solo hover: mover suavemente la posici�n vertical sin anular la f�sica horizontal
+            Vector2 currentVel = rb.linearVelocity;
+            float desiredYVel = (targetY - transform.position.y) * 5f; // 5f = suavizado; ajusta si necesitas m�s/menos seguimiento
+            // limitamos para evitar valores enormes
+            desiredYVel = Mathf.Clamp(desiredYVel, -flyingSpeed * 2f, flyingSpeed * 2f);
+
+            // asignamos la componente vertical mientras preservamos la horizontal f�sica
+            rb.linearVelocity = new Vector2(currentVel.x, desiredYVel);
+            // NOTA: no uso MovePosition aqu� para no interferir con fuerzas/knockback
         }
     }
 
     private void FlyTowardsTarget(float targetY)
     {
+        // Si estamos en knockback, no mover la IA
+        if (IsCurrentlyKnockedBack()) return;
+
         Vector2 direction = (Vector2)target.position - (Vector2)transform.position;
         float distance = direction.magnitude;
         if (distance < 0.05f)
@@ -109,8 +122,14 @@ public class EnemyFlyingShooter : EnemyBase
         Vector2 desiredVelocity = direction * flyingSpeed;
         desiredVelocity.x -= worldSpeed;
 
-        // Mantener hover suavemente
-        desiredVelocity.y = (targetY - transform.position.y) / Time.fixedDeltaTime;
+        // Mantener hover suavemente: interpolamos la componente Y hacia la velocidad objetivo del hover
+        float currentY = rb.linearVelocity.y;
+        float targetYVel = (targetY - transform.position.y) * 5f; // 5f = suavizado; ajustar segun necesites
+        targetYVel = Mathf.Clamp(targetYVel, -flyingSpeed * 2f, flyingSpeed * 2f);
+
+        // Combinamos; no usamos MovePosition para que f�sicas/knockback no se pierdan
+        desiredVelocity.y = Mathf.Lerp(currentY, targetYVel, 0.2f);
+
         rb.linearVelocity = desiredVelocity;
     }
 
@@ -146,6 +165,7 @@ public class EnemyFlyingShooter : EnemyBase
         Rigidbody2D prb = proj.GetComponent<Rigidbody2D>();
         if (prb != null)
         {
+            // Usa la propiedad correcta y no forces que puedan ser anuladas
             prb.linearVelocity = aimDir * projectileSpeed;
         }
 
@@ -168,6 +188,22 @@ public class EnemyFlyingShooter : EnemyBase
         Gizmos.DrawWireSphere(transform.position, fireRange);
         if (firePoint != null) Gizmos.DrawSphere(firePoint.position, 0.05f);
     }
-}
 
+    // Helper para verificar el estado de knockback heredado (isKnockedBack es privado en la base)
+    // Si en el futuro quieres exponerlo mejor, convierte isKnockedBack en protected en EnemyBase.
+    private bool IsCurrentlyKnockedBack()
+    {
+        // Intentamos obtener el componente y comprobar su estado a trav�s de reflexi�n segura.
+        // Mejor: si prefieres, cambia `isKnockedBack` en EnemyBase a `protected` o a�ade un getter p�blico.
+        var baseType = typeof(EnemyBase);
+        var field = baseType.GetField("isKnockedBack", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        if (field != null)
+        {
+            object val = field.GetValue(this);
+            if (val is bool b) return b;
+        }
+        // fallback: si no podemos leerlo, asumimos false para no bloquear movimiento
+        return false;
+    }
+}
 

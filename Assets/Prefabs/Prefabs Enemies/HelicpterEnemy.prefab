@@ -110,7 +110,7 @@ MonoBehaviour:
   renderersToFlash:
   - {fileID: 7474790222286392728}
   flashDuration: 0.1
-  flashCount: 5
+  flashCount: 1
   flyingSpeed: 1.5
   hoverAmplitude: 0.12
   hoverFrequency: 1.2
