@@ -19,7 +19,7 @@ public class DamageOnTrigger : MonoBehaviour
 
             if (enemy != null)
             {
-                float dmg = StatsCommunicator.Instance.CalculateDamage();
+                float dmg = StatsCommunicator.Instance.CalculateGunDamage();
                 enemy.TakeContactDamage(dmg);
                 enemy.ApplyKnockback(dir * knockback);
             }

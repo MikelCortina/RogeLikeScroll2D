@@ -135,7 +135,7 @@ public class MeleeEnemy : EnemyBase
                     {
                      
                         float damageToDeal = GetContactDamage();
-                        playerHealth.TakeDamage(damageToDeal);
+                        playerHealth.TakeMeleDamage(damageToDeal);
                         dealtDamage = true;
                     }
                 }
@@ -156,7 +156,7 @@ public class MeleeEnemy : EnemyBase
                 {
             
                     float damageToDeal = GetContactDamage();
-                    playerHealth.TakeDamage(damageToDeal);
+                    playerHealth.TakeMeleDamage(damageToDeal);
                 }
             }
  

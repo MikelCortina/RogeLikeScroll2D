@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae0674290370d554b9d905237912ff01, type: 3}
-  m_Name: TowerLuckUpgrade
+  m_Script: {fileID: 11500000, guid: 85b3fcefac1cf29408b15bc4af30cfab, type: 3}
+  m_Name: GunDamageIncreaser_rare
   m_EditorClassIdentifier: 
-  upgradeName: TowerLuckUpgrade
-  description: 
-  quality: 1
-  extraLuck: 10
+  upgradeName: GunDamageIncreaser_rare
+  description: "Haces +2 de da\xF1o "
+  quality: 0
+  extraDamage: 2

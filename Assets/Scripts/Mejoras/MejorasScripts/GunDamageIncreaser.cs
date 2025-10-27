@@ -7,6 +7,6 @@ public class BaseDamageIncreaser : Upgrade
 
     public override void Apply(StatsManager statsManager)
     {
-        statsManager.AddbaseDamage(extraDamage);
+        statsManager.AddGunDamage(extraDamage);
     }
 }

@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85b3fcefac1cf29408b15bc4af30cfab, type: 3}
-  m_Name: BaseDamageIncreaser_Legend
+  m_Script: {fileID: 11500000, guid: 7a04f96459b548d4c9d7992ed1c0ed13, type: 3}
+  m_Name: KnockbackIncreaser_epic
   m_EditorClassIdentifier: 
-  upgradeName: BaseDamageIncreaser_legend
-  description: "Haces +10 de da\xF1o "
-  quality: 2
-  extraDamage: 10
+  upgradeName: KnockBackIncrease_epic
+  description: 'Add 0.2 knockback
+
+'
+  quality: 1
+  extraKnockback: 0.2

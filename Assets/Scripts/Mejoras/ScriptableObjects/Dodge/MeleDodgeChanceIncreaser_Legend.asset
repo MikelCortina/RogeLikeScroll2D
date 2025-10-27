@@ -10,9 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 356e181f8d122b247a7b5ed1834befeb, type: 3}
-  m_Name: DodgeChanceIncreaser_Epic
+  m_Name: MeleDodgeChanceIncreaser_Legend
   m_EditorClassIdentifier: 
-  upgradeName: DodgeIncreaseChance_Epic
-  description: Aumenta la probabilidad de Dodge +4%
-  quality: 1
-  dodgeIncrease: 4
+  upgradeName: MeleDodgeIncreaseChance_Legend
+  description: 'Aumenta la probabilidad de Mele
+
+    Dodge en +10%'
+  quality: 2
+  dodgeIncrease: 10

@@ -13,16 +13,16 @@ public class StatsData
     [Header("FireArm")]
     public float fireRate; public float radius;
     [Header("Damage")]
-    public float criticalChance; public float baseDamage;// Currently unused
+    public float criticalChance; public float gunDamage; public float explosionDamage;// Currently unused
     [Header("Armor")]
     public float armorPercentage;
     [Header("XP")]
     public float xpGainMultiplier;
     [Header("Dodge")]
-    public float dodgeChance; // Currently unused
-    [Header("Jinete")]
-    public float riderMuliplier; // Currently unused
-    public float runnerMuliplier; // Currently unused
+    public float rangeDodgeChance; public float meleDodgeChance; // Currently unused
+    [Header("Knockback")]
+    public float knockback;
+
     [Header("Suerte")]
     public float luck, towerLuck; // Currently unused  
 
@@ -33,7 +33,8 @@ public class StatsData
             maxHP = this.maxHP,
             currentHP = this.currentHP,
             currentMaxHP = this.currentMaxHP,
-            baseDamage = this.baseDamage,
+            gunDamage = this.gunDamage,
+            explosionDamage = this.explosionDamage,
             projectileSpeed = this.projectileSpeed,
             moveForce = this.moveForce,
             jumpForce = this.jumpForce,
@@ -45,11 +46,12 @@ public class StatsData
             xpGainMultiplier = this.xpGainMultiplier,
             harvester = this.harvester,
             criticalChance = this.criticalChance,
-            dodgeChance = this.dodgeChance,
-            riderMuliplier = this.riderMuliplier,
-            runnerMuliplier = this.runnerMuliplier,
+            rangeDodgeChance = this.rangeDodgeChance,
+            meleDodgeChance = this.meleDodgeChance,
             luck = this.luck,
             towerLuck = this.towerLuck,
+            knockback = this.knockback
+
         };
     }
 }
@@ -190,13 +192,13 @@ public class StatsManager : MonoBehaviour
     }
 
 
-    public void AddbaseDamage(float delta)
+    public void AddGunDamage(float delta)
     {
-        RuntimeStats.baseDamage = Mathf.Max(0, RuntimeStats.baseDamage + delta);
+        RuntimeStats.gunDamage = Mathf.Max(0, RuntimeStats.gunDamage + delta);
     }
-    public void AddDamagePercentage(float delta)
+    public void AddExplosionDamage(float delta)
     {
-        RuntimeStats.baseDamage += (RuntimeStats.baseDamage * (delta/100));
+        RuntimeStats.explosionDamage = Mathf.Max(0, RuntimeStats.explosionDamage + delta);
     }
     public void AddCriticalPercentage(float delta)
     {
@@ -216,15 +218,23 @@ public class StatsManager : MonoBehaviour
     {
         RuntimeStats.armorPercentage = Mathf.Max(0, RuntimeStats.armorPercentage + delta);
     }
+    public void AddKnockback(float delta)
+    {
+        RuntimeStats.knockback = Mathf.Max(0, RuntimeStats.knockback + delta);
+    }
     public void XpGainMultiplier(float delta)
     {
         RuntimeStats.xpGainMultiplier = Mathf.Max(0,(RuntimeStats.xpGainMultiplier + delta));
     }
-    public void dodgeChanceIncreaser(float delta)
+    public void rangeDodgeChanceIncreaser(float delta)
     {
-        RuntimeStats.dodgeChance += (RuntimeStats.dodgeChance * (delta/100));
+        RuntimeStats.rangeDodgeChance += (RuntimeStats.rangeDodgeChance * (delta/100));
     }
-  public void AddTowerLuck(float delta)
+    public void meleDodgeChanceIncreaser(float delta)
+    {
+        RuntimeStats.rangeDodgeChance += (RuntimeStats.meleDodgeChance * (delta / 100));
+    }
+    public void AddTowerLuck(float delta)
     {
         RuntimeStats.towerLuck = Mathf.Max(0, RuntimeStats.towerLuck + delta);
     }

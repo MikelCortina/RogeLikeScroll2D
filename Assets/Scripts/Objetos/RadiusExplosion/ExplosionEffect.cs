@@ -5,7 +5,7 @@ using UnityEngine;
 public class ExplosionEffect : ProjectileEffect
 {
     public float radius = 2f;
-    public float knockback;
+    private float knockback;
     public LayerMask hittableLayers = ~0;
     public GameObject vfxPrefab;
     public bool destroyVfxAfterSec = true;
@@ -21,7 +21,8 @@ public class ExplosionEffect : ProjectileEffect
 
     public override void Execute(Vector2 position, GameObject owner = null)
     {
-        float damage = StatsCommunicator.Instance.CalculateDamage();
+        float damage = StatsCommunicator.Instance.CalculateExplosionDamage();
+        float knockback = StatsManager.Instance.RuntimeStats.knockback;
 
         // VFX
         if (vfxPrefab != null)

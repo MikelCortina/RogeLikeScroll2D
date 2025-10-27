@@ -115,7 +115,7 @@ public class Projectile2DEnemy : MonoBehaviour
      ? shooter.GetContactDamage()
      : 0f;
             Debug.Log("Proyectil enemigo golpea al jugador" + damageToDeal);
-            playerHealth.TakeDamage(damageToDeal);
+            playerHealth.TakeMeleDamage(damageToDeal);
             Destroy(gameObject);
             return;
 

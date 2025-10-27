@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e4048414a0da324295782cf1bdc37dc, type: 3}
-  m_Name: DamagePercentage
+  m_Script: {fileID: 11500000, guid: 356e181f8d122b247a7b5ed1834befeb, type: 3}
+  m_Name: MeleDodgeChanceIncreaser_Epic
   m_EditorClassIdentifier: 
-  upgradeName: +10% DamagePercentage_legend
-  description: "Ganas un 10% de da\xF1o"
-  quality: 2
-  extraDamage: 10
+  upgradeName: MeleDodgeIncreaseChance_Epic
+  description: 'Aumenta la probabilidad de Mele
+
+    Dodge +4%'
+  quality: 1
+  dodgeIncrease: 4

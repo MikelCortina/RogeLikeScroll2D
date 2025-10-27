@@ -9,20 +9,17 @@ public enum StatType
     CurrentHP,
     CurrentMaxHP,
     ArmorPercentage,
-    BaseDamage,
+    GunDamage,
+    ExplosionDamage,
     ProjectileSpeed,
     FireRate,
-    Radius,
     PlayerLevel,
     CurrentXP,
     XpGainMultiplier,
     CriticalChance,
-    DodgeChance,
-    Luck,
-    WormLuck,
-    RiderMultiplier,
-    RunnerMultiplier,
-    Harvester
+    MeleDodgeChance,
+    RangeDodgeChance,
+    Knockback,
 }
 
 [System.Serializable]
@@ -194,23 +191,18 @@ public class StatsPanelController_Individual : MonoBehaviour
         switch (cfg.stat)
         {
             case StatType.MaxHP: raw = s.maxHP; break;
-            case StatType.CurrentHP: raw = s.currentHP; break;
             case StatType.CurrentMaxHP: raw = s.currentMaxHP; break;
             case StatType.ArmorPercentage: raw = s.armorPercentage; break;
-            case StatType.BaseDamage: raw = s.baseDamage; break;
-            case StatType.ProjectileSpeed: raw = s.projectileSpeed; break;
+            case StatType.GunDamage: raw = s.gunDamage; break;
+            case StatType.ExplosionDamage: raw = s.explosionDamage; break;
             case StatType.FireRate: raw = s.fireRate; break;
-            case StatType.Radius: raw = s.radius; break;
             case StatType.PlayerLevel: isFloat = false; return StatsManager.Instance.playerCurrentLevel.ToString();
             case StatType.CurrentXP: isFloat = false; return StatsManager.Instance.currentXP.ToString();
             case StatType.XpGainMultiplier: raw = s.xpGainMultiplier; break;
             case StatType.CriticalChance: raw = s.criticalChance; break;
-            case StatType.DodgeChance: raw = s.dodgeChance; break;
-            case StatType.Luck: raw = s.luck; break;
-            case StatType.WormLuck: raw = s.towerLuck; break;
-            case StatType.RiderMultiplier: raw = s.riderMuliplier; break;
-            case StatType.RunnerMultiplier: raw = s.runnerMuliplier; break;
-            case StatType.Harvester: raw = s.harvester; break;
+            case StatType.MeleDodgeChance: raw = s.meleDodgeChance; break;
+            case StatType.RangeDodgeChance: raw = s.rangeDodgeChance; break;
+            case StatType.Knockback: raw = s.knockback; break;
             default: raw = 0f; break;
         }
 

@@ -105,7 +105,7 @@ public class AreaShooter2D : MonoBehaviour
             if (enemy != null)
             {
                 hitTransform = enemy.transform;
-                float dmg = StatsCommunicator.Instance.CalculateDamage();
+                float dmg = StatsCommunicator.Instance.CalculateGunDamage();
                 enemy.TakeContactDamage(dmg);
             }
         }

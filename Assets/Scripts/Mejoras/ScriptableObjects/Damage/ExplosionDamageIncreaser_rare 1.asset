@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85b3fcefac1cf29408b15bc4af30cfab, type: 3}
-  m_Name: BaseDamageIncreaser_Epic
+  m_Script: {fileID: 11500000, guid: 5e4048414a0da324295782cf1bdc37dc, type: 3}
+  m_Name: ExplosionDamageIncreaser_rare 1
   m_EditorClassIdentifier: 
-  upgradeName: BaseDamageIncreaser_rare
-  description: "Haces +2 de da\xF1o "
-  quality: 0
-  extraDamage: 2
+  upgradeName: Explosion DamagePercentage_epic
+  description: "Ganas +4 de da\xF1o explosivo\n"
+  quality: 1
+  extraDamage: 4

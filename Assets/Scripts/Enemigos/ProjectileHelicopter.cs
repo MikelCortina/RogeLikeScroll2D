@@ -69,7 +69,7 @@ public class ProjectileHelicopter : MonoBehaviour
      ? shooter.GetContactDamage()
      : 0f;
             Debug.Log("Proyectil enemigo golpea al jugador" + damageToDeal);
-            playerHealth.TakeDamage(damageToDeal);
+            playerHealth.TakeRangeDamage(damageToDeal);
             Destroy(gameObject);
             return;
 

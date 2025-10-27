@@ -31,9 +31,14 @@ public class PlayerHealth : MonoBehaviour
     }
 
     //Cuando un enemigo golpea al jugador, este metodo es llamado para reducir la vida del jugador
-    public void TakeDamage(float amount)
+    public void TakeMeleDamage(float amount)
     {
-        StatsCommunicator.Instance.CalculateTakenDamage(amount);
+        StatsCommunicator.Instance.CalculateMeleTakenDamage(amount);
+        StatsManager.Instance.DamagePlayer(amount);
+    }
+    public void TakeRangeDamage(float amount)
+    {
+        StatsCommunicator.Instance.CalculateRangeTakenDamage(amount);
         StatsManager.Instance.DamagePlayer(amount);
     }
 

@@ -18,14 +18,14 @@ public class StatsCommunicator : MonoBehaviour
     // --- Métodos de acceso ---
     public float GetCurrentHP() => statsManager.RuntimeStats.currentHP;
     public float GetMaxHP() => statsManager.RuntimeStats.maxHP;
-    public float GetProjectileDamage() => statsManager.RuntimeStats.baseDamage * projectileDamageMultiplier;
+    public float GetProjectileDamage() => statsManager.RuntimeStats.gunDamage * projectileDamageMultiplier;
 
   
 
     // --- Métodos para modificar estadísticas ---
 
     //Calcular el daino final recibido por el jugador, teniendo en cuenta armadura y dodge
-    public float CalculateTakenDamage(float incomingDamage)
+    public float CalculateMeleTakenDamage(float incomingDamage)
     {
         if (incomingDamage <= 0) return 0f;
 
@@ -33,7 +33,7 @@ public class StatsCommunicator : MonoBehaviour
 
         // 1️⃣ Verificar dodge
         float dodgeRoll = Random.value; // entre 0 y 1
-        if (dodgeRoll < stats.dodgeChance)
+        if (dodgeRoll < stats.meleDodgeChance)
         {
             Debug.Log("Player dodged the attack!");
             return 0f;
@@ -54,18 +54,67 @@ public class StatsCommunicator : MonoBehaviour
         }
         
     }
+    public float CalculateRangeTakenDamage(float incomingDamage)
+    {
+        if (incomingDamage <= 0) return 0f;
 
+        StatsData stats = statsManager.RuntimeStats;
+
+        // 1️⃣ Verificar dodge
+        float dodgeRoll = Random.value; // entre 0 y 1
+        if (dodgeRoll < stats.rangeDodgeChance)
+        {
+            Debug.Log("Player dodged the attack!");
+            return 0f;
+        }
+
+        // 2️⃣ Aplicar reducción de daño por armadura
+        if (stats.armorPercentage > 0)
+        {
+            float damageAfterArmor = incomingDamage - incomingDamage * (stats.armorPercentage / 100);
+            //Debug.Log($"Incoming damage {incomingDamage} Player took {damageAfterArmor} damage after armor reduction of {stats.armor}%");
+            damageAfterArmor = Mathf.Max(0f, damageAfterArmor); // No puede ser negativo
+            return damageAfterArmor;
+        }
+        else
+        {
+            return incomingDamage;
+
+        }
+
+    }
     //Calcular el daino final que hace el jugador, teniendo en cuenta crítico y porcentaje de daino
-    public float CalculateDamage()
+    public float CalculateGunDamage()
     {
         StatsData stats = statsManager.RuntimeStats;
-        float baseDamage = stats.baseDamage;
+        float baseDamage = stats.gunDamage;
         if (baseDamage <= 0) return 0f;
 
         float damage = baseDamage;
 
         float roll = Random.value; // 0..1
         if (roll < stats.criticalChance/100)
+        {
+            damage *= 2f;
+            Debug.Log($"Critical hit! roll={roll} critChance={stats.criticalChance}");
+        }
+        else
+        {
+            Debug.Log($"No crit. roll={roll} critChance={stats.criticalChance}");
+        }
+
+        return damage;
+    }
+    public float CalculateExplosionDamage()
+    {
+        StatsData stats = statsManager.RuntimeStats;
+        float baseDamage = stats.explosionDamage;
+        if (baseDamage <= 0) return 0f;
+
+        float damage = baseDamage;
+
+        float roll = Random.value; // 0..1
+        if (roll < stats.criticalChance / 100)
         {
             damage *= 2f;
             Debug.Log($"Critical hit! roll={roll} critChance={stats.criticalChance}");
