@@ -33,18 +33,26 @@ public class SkillNodeButton : MonoBehaviour
         UpdateState();
     }
 
+
     public void UpdateState()
     {
         if (node == null || treeUI == null) return;
+
         bool unlocked = treeUI.IsUnlocked(node.nodeId);
-        lockedOverlay.SetActive(!unlocked);
-        button.interactable = !unlocked && treeUI.CanUnlock(node);
+        bool canUnlock = treeUI.CanUnlock(node);
+
+        // Si está desbloqueado, ocultar overlay. Si no, mostrar overlay solo si NO se puede desbloquear.
+        lockedOverlay.SetActive(!unlocked && !canUnlock);
+
+        // El botón será interactuable solo si se puede desbloquear y no está desbloqueado
+        button.interactable = !unlocked && canUnlock;
     }
+
 
     private void OnClick()
     {
         if (treeUI != null && node != null)
-        {
+        {   
             treeUI.TryUnlock(node);
         }
     }

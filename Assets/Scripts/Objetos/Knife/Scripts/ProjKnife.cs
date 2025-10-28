@@ -50,8 +50,7 @@ public class KnifeProjectile2D : MonoBehaviour
             {
                 Debug.Log("KnifeProjectile2D: Impacto con enemigo, aplicando daño y destruyendo proyectil.");
                 float dmg = StatsCommunicator.Instance.CalculateGunDamage();
-                enemy.TakeContactDamage(dmg);
-                Destroy(gameObject); // destruir al impactar con un enemigo
+                enemy.TakeContactDamage(dmg);      
             }
         }
     }
