@@ -52,8 +52,17 @@ public class SkillNodeButton : MonoBehaviour
     private void OnClick()
     {
         if (treeUI != null && node != null)
-        {   
+        {
+            if (!treeUI.CanUnlock(node))
+            {
+                // Mostrar requisitos faltantes en el debug
+                string missingInfo = treeUI.GetMissingRequirements(node);
+                Debug.Log($"[SkillTreeUI] No puede desbloquear {node.nodeId}. Faltan: {missingInfo}");
+                return;
+            }
+
             treeUI.TryUnlock(node);
         }
     }
+
 }

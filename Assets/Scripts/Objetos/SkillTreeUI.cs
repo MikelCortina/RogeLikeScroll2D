@@ -160,4 +160,36 @@ public class SkillTreeUI : MonoBehaviour
             b.UpdateState();
         }
     }
+  public string GetMissingRequirements(ItemNode node)
+{
+    if (node == null) return "node null";
+
+    var missing = new System.Collections.Generic.List<string>();
+
+    // prereqs
+    foreach (var p in node.prerequisiteNodeIds)
+    {
+        if (!IsUnlocked(p)) missing.Add($"Requires node: {p}");
+    }
+
+    // currency
+    if (playerResources != null && !playerResources.HasCurrency(node.cost))
+    {
+        missing.Add($"Need {node.cost} currency");
+    }
+
+    // items
+    if (playerResources != null)
+    {
+        foreach (var id in node.requiredItemIds)
+        {
+            if (!playerResources.HasItems(new System.Collections.Generic.List<string> { id }))
+                missing.Add($"Need item: {id} x1");
+        }
+    }
+
+    return missing.Count == 0 ? "None" : string.Join(", ", missing);
+}
+
+
 }
