@@ -33,13 +33,14 @@ public class PlayerHealth : MonoBehaviour
     //Cuando un enemigo golpea al jugador, este metodo es llamado para reducir la vida del jugador
     public void TakeMeleDamage(float amount)
     {
-        StatsCommunicator.Instance.CalculateMeleTakenDamage(amount);
-        StatsManager.Instance.DamagePlayer(amount);
+        float finalDamage = StatsCommunicator.Instance.CalculateMeleTakenDamage(amount);
+        StatsManager.Instance.DamagePlayer(finalDamage);
     }
+
     public void TakeRangeDamage(float amount)
     {
-        StatsCommunicator.Instance.CalculateRangeTakenDamage(amount);
-        StatsManager.Instance.DamagePlayer(amount);
+        float finalDamage = StatsCommunicator.Instance.CalculateRangeTakenDamage(amount);
+        StatsManager.Instance.DamagePlayer(finalDamage);
     }
 
     //Cuando te curas se llama a este metodo, desde habilidades, items en el suelo etc.

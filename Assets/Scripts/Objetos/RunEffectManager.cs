@@ -23,6 +23,13 @@ public class RunEffectManager : MonoBehaviour
         if (effect == null) return;
         activeEffects.Add(effect);
         Debug.Log($"[RunEffectManager] Activado efecto: {effect.name}");
+        if (effect is IEffect gameEffect)
+        {
+            // Ejecutarlo en la posición del player (o Vector2.zero)
+            var player = GameObject.FindWithTag("Player");
+            Vector2 pos = player != null ? (Vector2)player.transform.position : Vector2.zero;
+            gameEffect.Execute(pos, player);
+        }
     }
 
     public bool IsEffectActive(ScriptableObject effect)

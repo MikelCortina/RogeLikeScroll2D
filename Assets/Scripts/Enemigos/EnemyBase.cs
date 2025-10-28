@@ -173,21 +173,11 @@ public class EnemyBase : MonoBehaviour
         StatsManager.Instance.GainXP(xpGained);
         ScoreManager.Instance.EnemyDied();
         HealthDecay.Instance.GetBackHP();
-        if (gameObject.GetComponent<PickupEffectItem>() != null)
-        {
-            PickupEffectItem pickup = gameObject.GetComponent<PickupEffectItem>();
-            if (pickup != null) StartCoroutine(ShowUIFromPickup(pickup));
-        }
+     
         DestroyChildrenWithTag("MeleAtack");
         Destroy(gameObject, 0.05f);
     }
 
-    private IEnumerator ShowUIFromPickup(PickupEffectItem pickup)
-    {
-        yield return null;
-        Time.timeScale = 0f;
-        StartCoroutine(pickup.ShowEffectNamesAndActivate());
-    }
 
     public float GetContactDamage() => adjustedContactDamage;
     public float GetMaxHealth() => adjustedMaxHealth;

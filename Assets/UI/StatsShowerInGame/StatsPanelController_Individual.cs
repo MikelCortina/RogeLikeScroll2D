@@ -44,6 +44,7 @@ public class StatsPanelController_Individual : MonoBehaviour
     public GameObject panel;
     public GameObject statLinePrefab; // Prefab con StatLineUI
     public Transform contentParent;   // Contenedor con VerticalLayoutGroup
+    public SkillTreeUI skillTreeUI;
 
     [Header("Options")]
     public bool startVisible = false;
@@ -69,6 +70,10 @@ public class StatsPanelController_Individual : MonoBehaviour
 
         panel.SetActive(startVisible);
         ApplyGameState(startVisible);
+
+        // Si quieres que al arrancar también se sincronice el skillTree con el estado inicial:
+        if (skillTreeUI != null)
+            skillTreeUI.Show(startVisible);
     }
 
     void OnEnable()
@@ -105,6 +110,13 @@ public class StatsPanelController_Individual : MonoBehaviour
             bool newState = !panel.activeSelf;
             panel.SetActive(newState);
             ApplyGameState(newState);
+
+            // --- NUEVA LÍNEA: sincroniza el SkillTreeUI con el mismo estado (abrir/cerrar) ---
+            if (skillTreeUI != null)
+            {
+                skillTreeUI.Show(newState);
+            }
+            // ------------------------------------------------------------------------------
 
             if (crosshairMouseFollow != null)
             {
