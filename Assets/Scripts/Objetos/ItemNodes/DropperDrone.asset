@@ -10,16 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c5c317566d6e4d4e80fc176bb7867a5, type: 3}
-  m_Name: KunaiNode
+  m_Name: DropperDrone
   m_EditorClassIdentifier: 
-  nodeId: KunaNode
-  displayName: KunaNode
-  icon: {fileID: 21300000, guid: cf118bb26b8edd641ac5e758c73d434d, type: 3}
+  nodeId: DropperDrone
+  displayName: DroperDrone
+  icon: {fileID: 8220671616104078300, guid: 09d06a9093435d64b91e263138d6c804, type: 3}
   description: 
-  effectToActivate: {fileID: 11400000, guid: b0f0a05cea0abc74e8471b2c3750fb3e, type: 2}
+  effectToActivate: {fileID: 11400000, guid: d86c45b01e4cb704396213c4060215d1, type: 2}
   cost: 0
   requiredEffectIdsToRemove:
-  - {fileID: 11400000, guid: 64827801536bdd8498f45bf9c0e4802c, type: 2}
+  - {fileID: 11400000, guid: 37a0537d10feb1449988ff8d4ca62d87, type: 2}
+  - {fileID: 11400000, guid: 19eecdec4f2108a49af8fd5ae9d4cb11, type: 2}
   prerequisiteNodeIds:
-  - KnifeNode
+  - OscilatorDroneNode
+  - 5BombaParabolicaNode
   debug_unlocked: 0

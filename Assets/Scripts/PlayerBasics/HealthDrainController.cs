@@ -16,6 +16,7 @@ public class HealthDecay : MonoBehaviour
     private float decaySpeed;
     private float accumulatedDecay = 0f;
     public bool aceleracion = true;
+    public bool halfDecay = false;
 
     private void Awake()
     {
@@ -42,7 +43,8 @@ public class HealthDecay : MonoBehaviour
     private void Update()
     {
         if (statsManager == null || statsManager.RuntimeStats.currentHP <= 0) return;
-
+        if (halfDecay) decaySpeed = decaySpeed / 2f;
+       
         // Decaimiento de vida continuo
         accumulatedDecay += decaySpeed * Time.deltaTime;
         if (accumulatedDecay >= 1f)

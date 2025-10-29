@@ -31,6 +31,11 @@ public class RunEffectManager : MonoBehaviour
             gameEffect.Execute(pos, player);
         }
     }
+    public void DeactivateEffect(ScriptableObject effect)
+    {
+        activeEffects.Remove(effect);
+        // Aquí puedes agregar lógica adicional si el efecto tiene consecuencias globales
+    }
 
     public bool IsEffectActive(ScriptableObject effect)
     {

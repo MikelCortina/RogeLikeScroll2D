@@ -10,16 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c5c317566d6e4d4e80fc176bb7867a5, type: 3}
-  m_Name: KunaiNode
+  m_Name: ContactDrone
   m_EditorClassIdentifier: 
-  nodeId: KunaNode
-  displayName: KunaNode
-  icon: {fileID: 21300000, guid: cf118bb26b8edd641ac5e758c73d434d, type: 3}
+  nodeId: ContactDroneNode
+  displayName: ContactDrone
+  icon: {fileID: 8108805326699794044, guid: 7ed0155a3af5fee4a86c97383a98c2e5, type: 3}
   description: 
-  effectToActivate: {fileID: 11400000, guid: b0f0a05cea0abc74e8471b2c3750fb3e, type: 2}
+  effectToActivate: {fileID: 11400000, guid: baf58b071b586b84094211356bdb75fd, type: 2}
   cost: 0
-  requiredEffectIdsToRemove:
-  - {fileID: 11400000, guid: 64827801536bdd8498f45bf9c0e4802c, type: 2}
-  prerequisiteNodeIds:
-  - KnifeNode
+  requiredEffectIdsToRemove: []
+  prerequisiteNodeIds: []
   debug_unlocked: 0

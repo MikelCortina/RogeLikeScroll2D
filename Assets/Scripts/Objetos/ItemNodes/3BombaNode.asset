@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c5c317566d6e4d4e80fc176bb7867a5, type: 3}
-  m_Name: KunaiNode
+  m_Name: 3BombaNode
   m_EditorClassIdentifier: 
-  nodeId: KunaNode
-  displayName: KunaNode
-  icon: {fileID: 21300000, guid: cf118bb26b8edd641ac5e758c73d434d, type: 3}
+  nodeId: 3BombaParabolicaNode
+  displayName: 3BombaParab
+  icon: {fileID: 21300000, guid: 7078d532c0cd5af409d2234c97e5f6fd, type: 3}
   description: 
-  effectToActivate: {fileID: 11400000, guid: b0f0a05cea0abc74e8471b2c3750fb3e, type: 2}
+  effectToActivate: {fileID: 11400000, guid: dd566fe0b0b132e49ba9bb529c6a11f3, type: 2}
   cost: 0
   requiredEffectIdsToRemove:
-  - {fileID: 11400000, guid: 64827801536bdd8498f45bf9c0e4802c, type: 2}
+  - {fileID: 11400000, guid: d391c2e312ed48140b7223b10f44a49e, type: 2}
   prerequisiteNodeIds:
-  - KnifeNode
+  - BombaParabolicaNode
   debug_unlocked: 0

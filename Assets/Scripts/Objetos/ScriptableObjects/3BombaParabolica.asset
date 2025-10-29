@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dbd5bb10f96cad4fa5b94a55e177351, type: 3}
+  m_Name: 3BombaParabolica
+  m_EditorClassIdentifier: 
+  projectilePrefab: {fileID: 1979434595378990830, guid: 5dc195df639707d4e9f54436ad711e8c, type: 3}
+  lifetime: 6
+  projectilesPerShot: 3
+  spawnDelay: 0.2
+  burstInterval: 2
+  arcHeight: 1.75
+  randomRadius: 3
+  localFireOffset: {x: 0, y: 0}
+  poolSize: 10

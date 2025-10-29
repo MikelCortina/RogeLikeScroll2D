@@ -13,6 +13,10 @@ public class FlyingBombDropper : ScriptableObject, IPersistentEffect
     public float leftOffset = -10f;
     public float rightOffset = 10f;
 
+    [Header("Oscilación vertical")]
+    public float oscillationAmplitude = 0.5f;
+    public float oscillationFrequency = 1f;
+
     [Header("Prefab y control de bombas")]
     public GameObject bombPrefab;
     public int bombPoolSize = 10;      // tamaño del pool
@@ -26,6 +30,7 @@ public class FlyingBombDropper : ScriptableObject, IPersistentEffect
     private Camera mainCam;
 
     private Queue<GameObject> bombPool = new Queue<GameObject>();
+    private float instancePhase = 0f;
 
     #region IPersistentEffect
 
@@ -45,6 +50,9 @@ public class FlyingBombDropper : ScriptableObject, IPersistentEffect
             Debug.LogWarning("[FlyingBombDropper] Cámara principal no encontrada.");
             return;
         }
+
+        // asignar fase aleatoria para la oscilación (evita sincronía entre instancias)
+        instancePhase = Random.Range(0f, Mathf.PI * 2f);
 
         // Instancia inicial del avión
         if (instance == null)
@@ -145,7 +153,17 @@ public class FlyingBombDropper : ScriptableObject, IPersistentEffect
 
             while (instance.transform.position.x < rightBound.x)
             {
-                instance.transform.position += Vector3.right * speed * Time.deltaTime;
+                // avanzar en X
+                float newX = instance.transform.position.x + speed * Time.deltaTime;
+
+                // calcular oscilación en Y
+                float osc = 0f;
+                if (oscillationAmplitude != 0f && oscillationFrequency != 0f)
+                {
+                    osc = oscillationAmplitude * Mathf.Sin(Time.time * (Mathf.PI * 2f) * oscillationFrequency + instancePhase);
+                }
+
+                instance.transform.position = new Vector3(newX, yPosition + osc, 0f);
                 yield return null;
             }
 

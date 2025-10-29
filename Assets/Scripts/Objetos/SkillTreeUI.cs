@@ -1,4 +1,4 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 using System.Collections.Generic;
 using TMPro;
 
@@ -13,6 +13,8 @@ public class SkillTreeUI : MonoBehaviour
 
     private PlayerResources playerResources;
 
+    public SkillTreePanZoom panZoom;
+
     private void Awake()
     {
         playerResources = GameObject.FindWithTag("Player")?.GetComponent<PlayerResources>();
@@ -20,11 +22,11 @@ public class SkillTreeUI : MonoBehaviour
 
     private void Start()
     {
-        // Si nodeButtons no est· asignado por el inspector, buscar en hijos
+        // Si nodeButtons no est√° asignado por el inspector, buscar en hijos
         if (nodeButtons == null || nodeButtons.Count == 0)
         {
             nodeButtons = new List<SkillNodeButton>(GetComponentsInChildren<SkillNodeButton>(true));
-            Debug.Log($"[SkillTreeUI] nodeButtons rellenado din·micamente: {nodeButtons.Count}");
+            Debug.Log($"[SkillTreeUI] nodeButtons rellenado din√°micamente: {nodeButtons.Count}");
         }
 
         // Inicializar siempre (idempotente)
@@ -37,12 +39,12 @@ public class SkillTreeUI : MonoBehaviour
         // Primero actualizar la UI para que los nodos se vean desbloqueados
         RefreshAllButtons();
 
-        // DespuÈs aplicar efectos de nodos ya desbloqueados
+        // Despu√©s aplicar efectos de nodos ya desbloqueados
         ApplyUnlockedEffects();
     }
     private void OnEnable()
     {
-        // Cada vez que se activa el panel nos aseguramos que el estado de los botones est· actualizado
+        // Cada vez que se activa el panel nos aseguramos que el estado de los botones est√° actualizado
         RefreshAllButtons();
         Debug.Log("[SkillTreeUI] OnEnable -> RefreshAllButtons");
     }
@@ -60,8 +62,7 @@ public class SkillTreeUI : MonoBehaviour
         // currency
         if (playerResources != null && !playerResources.HasCurrency(node.cost)) return false;
 
-        // items
-        if (playerResources != null && !playerResources.HasItems(node.requiredItemIds)) return false;
+     
 
         return true;
     }
@@ -76,9 +77,12 @@ public class SkillTreeUI : MonoBehaviour
 
         // consumir recursos
         if (playerResources != null && node.cost > 0) playerResources.SpendCurrency(node.cost);
-        if (playerResources != null && node.requiredItemIds.Count > 0) playerResources.ConsumeItems(node.requiredItemIds);
 
-        unlocked.Add(node.nodeId);
+        foreach (var p in node.requiredEffectIdsToRemove)
+        {
+            RemoveEffect(p);
+        }
+            unlocked.Add(node.nodeId);
         Save();
 
         // actualizar todos los botones
@@ -102,6 +106,20 @@ public class SkillTreeUI : MonoBehaviour
         {
             var player = GameObject.FindWithTag("Player");
             if (player != null) persistent.ApplyTo(player);
+        }
+    }
+    private void RemoveEffect(ItemNode node)
+    {
+        if (node.effectToActivate == null) return;
+
+        // eliminar efecto global
+        RunEffectManager.Instance?.DeactivateEffect(node.effectToActivate);
+
+        // eliminar efecto persistente
+        if (node.effectToActivate is IPersistentEffect persistent)
+        {
+            var player = GameObject.FindWithTag("Player");
+            if (player != null) persistent.RemoveFrom(player);
         }
     }
 
@@ -144,6 +162,10 @@ public class SkillTreeUI : MonoBehaviour
         gameObject.SetActive(show);
         Time.timeScale = show ? 0f : 1f;
         RefreshAllButtons();
+
+        if (panZoom != null)
+            panZoom.enabled = show; // activar/desactivar control de c√°mara
+
         Debug.Log($"[SkillTreeUI] Show({show}) called");
     }
 
@@ -178,15 +200,6 @@ public class SkillTreeUI : MonoBehaviour
         missing.Add($"Need {node.cost} currency");
     }
 
-    // items
-    if (playerResources != null)
-    {
-        foreach (var id in node.requiredItemIds)
-        {
-            if (!playerResources.HasItems(new System.Collections.Generic.List<string> { id }))
-                missing.Add($"Need item: {id} x1");
-        }
-    }
 
     return missing.Count == 0 ? "None" : string.Join(", ", missing);
 }

@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c5c317566d6e4d4e80fc176bb7867a5, type: 3}
-  m_Name: KunaiNode
+  m_Name: NoDecayNode
   m_EditorClassIdentifier: 
-  nodeId: KunaNode
-  displayName: KunaNode
-  icon: {fileID: 21300000, guid: cf118bb26b8edd641ac5e758c73d434d, type: 3}
+  nodeId: NoDecayNode
+  displayName: NoDecay
+  icon: {fileID: -7799507095271033690, guid: 7af840d9f75329246b137ec1f94b69a5, type: 3}
   description: 
-  effectToActivate: {fileID: 11400000, guid: b0f0a05cea0abc74e8471b2c3750fb3e, type: 2}
+  effectToActivate: {fileID: 11400000, guid: 5e4a682179b3abc4e94dc4dafce00ab6, type: 2}
   cost: 0
   requiredEffectIdsToRemove:
-  - {fileID: 11400000, guid: 64827801536bdd8498f45bf9c0e4802c, type: 2}
+  - {fileID: 11400000, guid: 4e0e1eab46567964b974720041e57f85, type: 2}
   prerequisiteNodeIds:
-  - KnifeNode
+  - HalfDecayNode
   debug_unlocked: 0
