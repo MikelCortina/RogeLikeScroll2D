@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 7652821434241836277}
   - component: {fileID: 3503966475829720182}
   - component: {fileID: 8698241403659991424}
+  - component: {fileID: 6616905148138264714}
   m_Layer: 6
   m_Name: Rider
   m_TagString: Untagged
@@ -82,14 +83,15 @@ MonoBehaviour:
     fireRate: 1
     radius: 2
     criticalChance: 0
-    baseDamage: 10
+    gunDamage: 0
+    explosionDamage: 0
     armorPercentage: 0
     xpGainMultiplier: 1
-    dodgeChance: 0
-    riderMuliplier: 0
-    runnerMuliplier: 0
+    rangeDodgeChance: 0
+    meleDodgeChance: 0
+    knockback: 0
     luck: 0
-    wormLuck: 0
+    towerLuck: 0
   playerCurrentLevel: 1
   currentXP: 0
   iFrameDuration: 0.8
@@ -111,6 +113,8 @@ MonoBehaviour:
   baseDecayPerSecond: 1
   maxHPRecoverPerKill: 1
   velocidadDecayTrasDaino: 0
+  aceleracion: 1
+  halfDecay: 0
 --- !u!114 &5533706791342859661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,14 +131,15 @@ MonoBehaviour:
   firePoint: {fileID: 8149587154431416546}
   projectilePrefab: {fileID: 847502903425083811, guid: d7ef14995020a5844969446b3d836db4, type: 3}
   poolSize: 20
-  maxStraightRange: 50
-  homingRadius: 10
+  maxRange: 20
   enemyLayer:
     serializedVersion: 2
     m_Bits: 4294967295
   enemyTag: enemigo
-  effectSpawner: {fileID: 8698241403659991424}
+  projectileSpeed: 0
   mainCamera: {fileID: 0}
+  shootAudioSource: {fileID: 0}
+  shootClip: {fileID: 0}
 --- !u!114 &6510442914046145241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,6 +184,12 @@ MonoBehaviour:
   rotationSpeed: 10
   stepOffset: 0.3
   stepSmoothSpeed: 10
+  cableSpeed: 3
+  cableDirection: 1
+  cableTag: cable
+  playerCollider: {fileID: 0}
+  dropIgnoreTime: 0.25
+  dropDownImpulse: 2
 --- !u!212 &8192167398263660715
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -338,8 +349,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   effects:
-  - {fileID: 11400000, guid: bb5be3e76f31edd4b98ff1e1378b8ab2, type: 2}
+  - {fileID: 0}
   - {fileID: 11400000, guid: 0a0969c6e553def4ea738686ba6a5964, type: 2}
+--- !u!114 &6616905148138264714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709477410786537509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbfa3cfaa9690404cb87cea084028b08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currency: 1
 --- !u!1 &747576164282703873
 GameObject:
   m_ObjectHideFlags: 0

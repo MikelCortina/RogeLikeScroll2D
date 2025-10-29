@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 477bfcfff0a7ba143b7105dad69d1430
+guid: 12d718501d73aec45b68f2a21db173ea
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 128158893553575062
-    second: sadadada_0
+      213: 1786102465050247127
+    second: '{EE41BEE8-AF72-4302-ACE9-5B90573C0A49}_0'
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,17 +96,43 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: sadadada_0
+      name: '{EE41BEE8-AF72-4302-ACE9-5B90573C0A49}_0'
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 338
-        height: 387
+        width: 501
+        height: 488
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 694611da5df47c100800000000000000
-      internalID: 128158893553575062
+      spriteID: 7dff4c19ab289c810800000000000000
+      internalID: 1786102465050247127
       vertices: []
       indices: 
       edges: []
@@ -135,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      sadadada_0: 128158893553575062
+      '{EE41BEE8-AF72-4302-ACE9-5B90573C0A49}_0': 1786102465050247127
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -10,6 +10,7 @@ TagManager:
   - Paredes
   - MeleAtack
   - Cable
+  - Organos
   layers:
   - Default
   - TransparentFX
@@ -28,8 +29,8 @@ TagManager:
   - SueloAltoLayerChecker
   - Towers
   - ProjectileEffects(Knifes,bombs)
-  - 
-  - 
+  - Organos
+  - OrganoCollider
   - 
   - 
   - 

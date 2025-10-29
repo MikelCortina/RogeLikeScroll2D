@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyHelicopter : EnemyBase
 {
@@ -29,6 +28,10 @@ public class EnemyHelicopter : EnemyBase
     private bool hasEnteredCamera = false;
     private Camera mainCam;
 
+    // Estado de muerte / pooling
+    private bool isDead = false;
+    private bool returningToPool = false; // si usas pooling, marca aqu�
+
     protected override void Awake()
     {
         base.Awake();
@@ -53,8 +56,47 @@ public class EnemyHelicopter : EnemyBase
             Debug.LogWarning($"{name}: projectilePrefab no asignado.");
     }
 
+    private void OnEnable()
+    {
+        // Al reactivar (pooling o no), reseteamos estados b�sicos
+        // Si usas pooling, llama ResetState() desde tu manager en vez de depender solo de OnEnable.
+        ResetState();
+    }
+
+    /// <summary>
+    /// Resetea el estado del enemigo (�til para pooling).
+    /// </summary>
+    public void ResetState()
+    {
+        isDead = false;
+        returningToPool = false;
+        hasEnteredCamera = false;
+        moveVelocityRef = Vector2.zero;
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+#if UNITY_2020_1_OR_NEWER
+            rb.simulated = true;
+#else
+            rb.isKinematic = false;
+#endif
+        }
+
+        // Reactivar colliders y renderers
+        var cols = GetComponents<Collider2D>();
+        foreach (var c in cols) c.enabled = true;
+
+        var childRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        foreach (var r in childRenderers) r.enabled = true;
+
+        if (animator != null) animator.enabled = true;
+    }
+
     private void Update()
     {
+        if (isDead) return;
+
         if (target == null) return;
 
         if (IsPlayerInRange())
@@ -73,6 +115,8 @@ public class EnemyHelicopter : EnemyBase
 
     private void FixedUpdate()
     {
+        if (isDead) return;
+
         hoverOffset = Mathf.Sin(Time.time * hoverFrequency) * hoverAmplitude;
         float targetY = baseY + hoverOffset;
 
@@ -82,6 +126,7 @@ public class EnemyHelicopter : EnemyBase
         }
         else
         {
+            if (rb == null) return;
             Vector2 desiredPos = new Vector2(transform.position.x, targetY);
             Vector2 newPos = Vector2.SmoothDamp(rb.position, desiredPos, ref moveVelocityRef, movementSmoothTime, Mathf.Infinity, Time.fixedDeltaTime);
             rb.MovePosition(newPos);
@@ -91,13 +136,14 @@ public class EnemyHelicopter : EnemyBase
 
     private void LateUpdate()
     {
+        if (isDead) return;
         if (hasEnteredCamera)
             ClampToCameraBounds();
     }
 
     private void FlyTowardsTarget(float targetY)
     {
-        if (target == null) return;
+        if (isDead || target == null) return;
 
         float dirX = Mathf.Sign(target.position.x - transform.position.x);
         float desiredX = target.position.x - dirX * desiredHorizontalDistance;
@@ -105,23 +151,29 @@ public class EnemyHelicopter : EnemyBase
 
         FlipIfNeeded(target.position.x - transform.position.x);
 
+        if (rb == null) return;
         Vector2 newPos = Vector2.SmoothDamp(rb.position, desiredPos, ref moveVelocityRef, movementSmoothTime, Mathf.Infinity, Time.fixedDeltaTime);
         rb.MovePosition(newPos);
     }
 
     protected override void PerformAttack()
     {
+        if (isDead) return;
         if (projectilePrefab == null || firePoint == null) return;
         StartCoroutine(ShootParabolicFan());
     }
 
     private IEnumerator ShootParabolicFan()
     {
+        if (isDead) yield break;
+
         Vector2 origin = firePoint.position;
         Vector2 playerPositionAtShot = target != null ? (Vector2)target.position : origin;
 
         for (int i = 0; i < projectilesPerShot; i++)
         {
+            if (isDead) yield break;
+
             Vector2 targetPos = (i == 0)
                 ? playerPositionAtShot
                 : playerPositionAtShot + new Vector2(i * horizontalSpacing, 0f);
@@ -191,5 +243,74 @@ public class EnemyHelicopter : EnemyBase
         pos.y = Mathf.Clamp(pos.y, min.y + cameraClampPadding, max.y - cameraClampPadding);
 
         transform.position = pos;
+    }
+
+    /// <summary>
+    /// Limpieza y parada al morir. Si usePooling es true, no hace Destroy, espera que el pool gestione el retorno.
+    /// </summary>
+    public void HandleDeathCleanup(float destroyDelay = 0.5f, bool usePooling = false)
+    {
+        if (isDead) return;
+        isDead = true;
+
+        // Detener l�gica y corrutinas
+        canMove = false;
+        StopAllCoroutines();
+
+        // Detener Rigidbody
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+#if UNITY_2020_1_OR_NEWER
+            rb.simulated = false;
+#else
+            rb.isKinematic = true;
+#endif
+        }
+
+        // Desactivar colisiones
+        var colliders = GetComponents<Collider2D>();
+        foreach (var c in colliders) c.enabled = false;
+
+        // Desactivar renderers (hijo incluido)
+        var sr = GetComponent<SpriteRenderer>();
+        if (sr != null) sr.enabled = false;
+
+        var childRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        foreach (var r in childRenderers) r.enabled = false;
+
+        // Desactivar animador por si re-activa cosas
+        if (animator != null) animator.enabled = false;
+
+        // Si usas pooling, aqu� deber�as notificar al pool en vez de destruir
+        if (usePooling)
+        {
+            returningToPool = true;
+            // Ejemplo (descomentar y adaptar):
+            // PoolManager.Instance.ReturnToPool(this.gameObject);
+            // NO Destroy() here.
+            return;
+        }
+
+        Destroy(gameObject, destroyDelay);
+    }
+
+    // Ejemplo helper si prefieres exponer un reset para el pool manager
+    public void OnReturnedToPool()
+    {
+        // Este m�todo debe ser llamado por tu pool manager cuando devuelva el objeto a la pool
+        // (por ejemplo, en lugar de Destroy).
+        // Aseg�rate de reactivar componentes cuando lo vuelvas a sacar de la pool.
+        ResetState();
+        gameObject.SetActive(false); // lo mantenemos inactivo hasta que el pool lo vuelva a activar
+    }
+
+    // Si quieres forzar la muerte desde el helic�ptero (por ejemplo para debug)
+    public void KillImmediate(float destroyDelay = 0.05f)
+    {
+        // Intenta llamar al Die() del base si existe
+        // Si EnemyBase implementa Die() como protected, no podemos llamarlo desde aqu� si es protected.
+        // Por tanto, usamos el cleanup directo.
+        HandleDeathCleanup(destroyDelay, false);
     }
 }

@@ -142,6 +142,7 @@ MonoBehaviour:
   stepSmoothSpeed: 10
   attackCooldown: 1.2
   animator: {fileID: 0}
+  knockbackRecoveryTime: 0.25
   lastAttackTime: -999
   enemyLevel: 0
   enemyLevelManager: {fileID: 5311849784333808177, guid: cb7045c3fae47eb4694b9823c1e51f45, type: 3}
@@ -151,6 +152,7 @@ MonoBehaviour:
   flashDuration: 0.1
   flashCount: 1
   emergencySpawn: {fileID: 1915086932696611674, guid: 3b4756fde7f31474c906a64d26a350c2, type: 3}
+  gorePrefab: {fileID: 8529829014863662933, guid: a12236eabc5d67d4dbe543c9f0634e3f, type: 3}
   attackPofloat: {fileID: 3399346530017220392}
   attackPofloatEnd: {fileID: 312739910915352993}
   attackRadius: 0.14

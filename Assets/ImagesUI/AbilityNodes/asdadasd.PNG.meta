@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 885d2cfe971eec24ba499ba5d7b70d1c
+guid: 7af840d9f75329246b137ec1f94b69a5
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1431264578679839541
-    second: qweqeqeqe_0
+      213: -7799507095271033690
+    second: asdadasd_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,17 +96,43 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: qweqeqeqe_0
+      name: asdadasd_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 444
-        height: 439
+        width: 272
+        height: 214
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bc46038e270232ce0800000000000000
-      internalID: -1431264578679839541
+      spriteID: 6a43b33de9592c390800000000000000
+      internalID: -7799507095271033690
       vertices: []
       indices: 
       edges: []
@@ -135,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      qweqeqeqe_0: -1431264578679839541
+      asdadasd_0: -7799507095271033690
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

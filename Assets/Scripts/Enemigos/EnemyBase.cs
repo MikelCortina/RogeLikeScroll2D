@@ -74,6 +74,8 @@ public class EnemyBase : MonoBehaviour
 
     public Transform emergencySpawn;
 
+    public GameObject gorePrefab; // asigna tu prefab en el inspector
+
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -162,21 +164,70 @@ public class EnemyBase : MonoBehaviour
 
     protected virtual void Die()
     {
+        // Trigger animación de muerte si existe
         if (animator != null) animator.SetTrigger("Dead");
+
+        // Intento de limpieza inmediata
         canMove = false;
-        if (rb != null) rb.linearVelocity = Vector2.zero;
+
+        // Parar corrutinas propias (esto solo afecta corrutinas iniciadas en este componente)
+        StopAllCoroutines();
+
+        // Detener Rigidbody2D si existe
+        if (rb != null)
+        {
+            // usa velocity en vez de linearVelocity por compatibilidad
+            rb.linearVelocity = Vector2.zero;
+#if UNITY_2020_1_OR_NEWER
+            rb.simulated = false;
+#else
+        rb.isKinematic = true;
+#endif
+        }
+
+        // Desactivar colisiones
         Collider2D[] cols = GetComponents<Collider2D>();
         foreach (var c in cols) c.enabled = false;
+
+        // Desactivar renderers (por si la animación o child renderers mantienen visible el sprite)
+        var sr = GetComponent<SpriteRenderer>();
+        if (sr != null) sr.enabled = false;
+
+        var childRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        foreach (var r in childRenderers) r.enabled = false;
+
+        // Desactivar animador para que no re-enable renderers/propiedades
+        if (animator != null) animator.enabled = false;
+
+        // Notificar sistema de oleadas / puntaje / xp
         if (WaveManager.Instance != null) WaveManager.Instance.NotifyEnemyKilled(gameObject);
         float xpGained = StatsManager.Instance.GetXPForEnemy(enemyLevel, baseXP);
         Debug.Log($"Enemy Level: {enemyLevel}, Base XP: {baseXP}, XP Gained: {xpGained}");
         StatsManager.Instance.GainXP(xpGained);
         ScoreManager.Instance.EnemyDied();
         HealthDecay.Instance.GetBackHP();
-     
+
+        // Limpieza de hijos con tag
         DestroyChildrenWithTag("MeleAtack");
+
+        // Instanciar gore si procede
+        if (gorePrefab != null) Instantiate(gorePrefab, transform.position, Quaternion.identity);
+
+        // Si el objeto tiene un cleanup específico (como HandleDeathCleanup en EnemyHelicopter), llamarlo.
+        var heli = GetComponent<EnemyHelicopter>();
+        if (heli != null)
+        {
+            // Le decimos al helicóptero que gestione su limpieza/pooling; le damos 0.05s para mantener tu timing original.
+            if (gorePrefab != null) Instantiate(gorePrefab, transform.position, Quaternion.identity);
+            heli.HandleDeathCleanup(0.05f, false);
+            
+            return;
+        }
+
+        // Si no hay cleanup específico, destruimos el objeto rápido
         Destroy(gameObject, 0.05f);
     }
+
 
 
     public float GetContactDamage() => adjustedContactDamage;

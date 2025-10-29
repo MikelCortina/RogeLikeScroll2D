@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 09d06a9093435d64b91e263138d6c804
+guid: 477bfcfff0a7ba143b7105dad69d1430
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8220671616104078300
-    second: asasdadad_0
+      213: 128158893553575062
+    second: sadadada_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,17 +96,43 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: asasdadad_0
+      name: sadadada_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 339
-        height: 295
+        width: 338
+        height: 387
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cdb1505a741b51270800000000000000
-      internalID: 8220671616104078300
+      spriteID: 694611da5df47c100800000000000000
+      internalID: 128158893553575062
       vertices: []
       indices: 
       edges: []
@@ -135,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      asasdadad_0: 8220671616104078300
+      sadadada_0: 128158893553575062
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
