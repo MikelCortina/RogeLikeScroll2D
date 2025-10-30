@@ -32,16 +32,16 @@ public class HUDController : MonoBehaviour
 
         if (Resources != null)
         {
-            Resources.OnCurrencyChanged += UpdateCurrencyDisplay;
+            StatsManager.Instance.OnCurrencyChanged += UpdateCurrencyDisplay;
             // Actualiza la UI inmediatamente con el valor actual
-            UpdateCurrencyDisplay(Resources.currency);
+            UpdateCurrencyDisplay(StatsManager.Instance.RuntimeStats.currency);
         }
     }
 
     void OnDisable()
     {
         if (Resources != null)
-            Resources.OnCurrencyChanged -= UpdateCurrencyDisplay;
+            StatsManager.Instance.OnCurrencyChanged -= UpdateCurrencyDisplay;
     }
 
     // Método público usado como callback del evento

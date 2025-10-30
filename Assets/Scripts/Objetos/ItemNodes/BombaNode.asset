@@ -17,7 +17,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 7078d532c0cd5af409d2234c97e5f6fd, type: 3}
   description: 
   effectToActivate: {fileID: 11400000, guid: 6bef2bf443f94594e9ecc413c622631d, type: 2}
-  cost: 0
+  cost: 10
   requiredEffectIdsToRemove: []
   prerequisiteNodeIds: []
   debug_unlocked: 0

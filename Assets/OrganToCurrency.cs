@@ -31,8 +31,8 @@ public class OrganToCurrency : MonoBehaviour
             }
             else
             {
-                Resources.AddCurrency(value);
-                Debug.Log($"[OrganToCurrency] Añadido {value} currency. Total ahora: {Resources.currency}");
+                StatsManager.Instance.AddCurrency(value);
+                Debug.Log($"[OrganToCurrency] Añadido {value} currency. Total ahora: {StatsManager.Instance.RuntimeStats.currency}");
             }
 
             // Destruye el objeto de forma segura

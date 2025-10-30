@@ -16,6 +16,7 @@ public class SkillNodeButton : MonoBehaviour
 
     private SkillTreeUI treeUI;
 
+
     // Inicializa el nodo desde SkillTreeUI
     public void Initialize(SkillTreeUI ui)
     {
@@ -36,16 +37,48 @@ public class SkillNodeButton : MonoBehaviour
 
     public void UpdateState()
     {
-        if (node == null || treeUI == null) return;
+        if (node == null)
+        {
+            Debug.LogWarning($"[SkillNodeButton] UpdateState: node NULL en {gameObject.name}");
+            return;
+        }
+        if (treeUI == null)
+        {
+            Debug.LogWarning($"[SkillNodeButton] UpdateState: treeUI NULL para node {node.nodeId} ({gameObject.name})");
+            return;
+        }
 
         bool unlocked = treeUI.IsUnlocked(node.nodeId);
         bool canUnlock = treeUI.CanUnlock(node);
 
-        // Si está desbloqueado, ocultar overlay. Si no, mostrar overlay solo si NO se puede desbloquear.
-        lockedOverlay.SetActive(!unlocked && !canUnlock);
+        // debug completo
+        int playerCurrency = -999;
+        try
+        {
+            playerCurrency = StatsManager.Instance != null ? StatsManager.Instance.RuntimeStats.currency : -1;
+        }
+        catch { playerCurrency = -999; }
 
-        // El botón será interactuable solo si se puede desbloquear y no está desbloqueado
-        button.interactable = !unlocked && canUnlock;
+        Debug.Log($"[SkillNodeButton] UpdateState -> node:{node.nodeId} unlocked:{unlocked} canUnlock:{canUnlock} cost:{node.cost} playerCurrency:{playerCurrency} lockedOverlayAssigned:{(lockedOverlay != null)} buttonAssigned:{(button != null)} onObject:{gameObject.name}");
+
+        // protección por si faltan referencias
+        if (lockedOverlay == null)
+        {
+            Debug.LogWarning($"[SkillNodeButton] lockedOverlay NO asignado en inspector para {node.nodeId} ({gameObject.name})");
+        }
+        else
+        {
+            lockedOverlay.SetActive(!unlocked && !canUnlock);
+        }
+
+        if (button == null)
+        {
+            Debug.LogWarning($"[SkillNodeButton] button NO asignado en inspector para {node.nodeId} ({gameObject.name})");
+        }
+        else
+        {
+            button.interactable = !unlocked && canUnlock;
+        }
     }
 
 

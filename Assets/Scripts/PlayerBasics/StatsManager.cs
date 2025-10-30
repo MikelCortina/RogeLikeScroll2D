@@ -1,15 +1,16 @@
-using UnityEngine;
 using System;
+using UnityEngine;
+using static PlayerResources;
 
 [System.Serializable]
 public class StatsData
 {
     [Header("HP")]
-    public float maxHP; public float currentHP;public float harvester, currentMaxHP;
+    public float maxHP; public float currentHP; public float harvester, currentMaxHP;
     [Header("Projectile")]
     public float projectileSpeed;
     [Header("Movimiento")]
-    public float moveForce;public float jumpForce;public float maxSpeed;public float friction;
+    public float moveForce; public float jumpForce; public float maxSpeed; public float friction;
     [Header("FireArm")]
     public float fireRate; public float radius;
     [Header("Damage")]
@@ -22,6 +23,8 @@ public class StatsData
     public float rangeDodgeChance; public float meleDodgeChance; // Currently unused
     [Header("Knockback")]
     public float knockback;
+    [Header("Currency")]
+    public int currency;
 
     [Header("Suerte")]
     public float luck, towerLuck; // Currently unused  
@@ -50,7 +53,8 @@ public class StatsData
             meleDodgeChance = this.meleDodgeChance,
             luck = this.luck,
             towerLuck = this.towerLuck,
-            knockback = this.knockback
+            knockback = this.knockback,
+            currency = this.currency
 
         };
     }
@@ -82,6 +86,8 @@ public class StatsManager : MonoBehaviour
     public event Action<float, float> OnHealthChanged; // Notifica el HP actual y maximo
     public event Action<int> OnLevelUp; // Notifica el nivel alcanzado
     public event Action OnPlayerDied; // Notifica la muerte del jugador
+    public event CurrencyChanged OnCurrencyChanged;
+
 
     private bool isInvulnerable = false;
 
@@ -106,7 +112,7 @@ public class StatsManager : MonoBehaviour
                 renderersToFlash = new SpriteRenderer[] { sr };
 
         }
-        RuntimeStats.currentMaxHP= RuntimeStats.maxHP;
+        RuntimeStats.currentMaxHP = RuntimeStats.maxHP;
     }
 
     // --- Este es el metodo que finalmente otorga al jugador la experiencia total que ganara por eliminar el enemigo---
@@ -134,7 +140,7 @@ public class StatsManager : MonoBehaviour
     private void LevelUp()
     {
         playerCurrentLevel++;
-     //   Debug.Log($"�Subiste al nivel {playerLevel}!");
+        //   Debug.Log($"�Subiste al nivel {playerLevel}!");
         OnLevelUp?.Invoke(playerCurrentLevel);
         // Aqu� puedes abrir UI de selecci�n de 3 upgrades
         UpgradeManager.Instance.ShowUpgradeOptions(3);
@@ -145,13 +151,13 @@ public class StatsManager : MonoBehaviour
     {
         // Escalamos de forma exponencial o lineal suave seg�n el nivel del enemigo
         float enemyXP = baseXP * Mathf.Pow(1, enemyLevel - 1);
-        return (enemyXP + enemyXP * (RuntimeStats.xpGainMultiplier/100));
+        return (enemyXP + enemyXP * (RuntimeStats.xpGainMultiplier / 100));
     }
 
 
     // --- Player Health Methods ---
 
-             // Aplica da�o al jugador, considerando la invulnerabilidad temporal
+    // Aplica da�o al jugador, considerando la invulnerabilidad temporal
     public void DamagePlayer(float amount)
     {
         if (amount <= 0 || isInvulnerable) return;
@@ -167,7 +173,7 @@ public class StatsManager : MonoBehaviour
         if (RuntimeStats.currentHP <= 0)
             PlayerDeath();
     }
-   
+
     // --- Player Escalado Methods ---
     public void HealPlayer(float amount)
     {
@@ -202,14 +208,14 @@ public class StatsManager : MonoBehaviour
     }
     public void AddCriticalPercentage(float delta)
     {
-        RuntimeStats.criticalChance += (RuntimeStats.criticalChance * (delta/100));
+        RuntimeStats.criticalChance += (RuntimeStats.criticalChance * (delta / 100));
     }
 
     public void AddProjectileSpeed(float delta)
     {
         RuntimeStats.projectileSpeed = Mathf.Max(0, RuntimeStats.projectileSpeed + delta);
     }
-    
+
     public void AddRadiusToGun(float delta)
     {
         RuntimeStats.radius = Mathf.Max(0, RuntimeStats.radius + delta);
@@ -224,11 +230,11 @@ public class StatsManager : MonoBehaviour
     }
     public void XpGainMultiplier(float delta)
     {
-        RuntimeStats.xpGainMultiplier = Mathf.Max(0,(RuntimeStats.xpGainMultiplier + delta));
+        RuntimeStats.xpGainMultiplier = Mathf.Max(0, (RuntimeStats.xpGainMultiplier + delta));
     }
     public void rangeDodgeChanceIncreaser(float delta)
     {
-        RuntimeStats.rangeDodgeChance += (RuntimeStats.rangeDodgeChance * (delta/100));
+        RuntimeStats.rangeDodgeChance += (RuntimeStats.rangeDodgeChance * (delta / 100));
     }
     public void meleDodgeChanceIncreaser(float delta)
     {
@@ -247,6 +253,14 @@ public class StatsManager : MonoBehaviour
         RuntimeStats.currentMaxHP = RuntimeStats.maxHP;
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.currentMaxHP);
         RuntimeStats.currentHP = RuntimeStats.currentMaxHP;
+    }
+
+    public void AddCurrency(int amount)
+    {
+        RuntimeStats.currency += amount;
+        OnCurrencyChanged?.Invoke(RuntimeStats.currency);
+        Debug.Log("Moneda agregada" + RuntimeStats.currency);
+        Debug.Log("StatsManager emitiendo evento: " + this);
     }
 
 

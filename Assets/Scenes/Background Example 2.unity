@@ -1174,17 +1174,6 @@ MonoBehaviour:
   gameplayLockMode: 0
   uiLockMode: 0
   hideCursorDuringGameplay: 1
---- !u!114 &362480673 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4543705472870778498, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
-  m_PrefabInstance: {fileID: 1783250485}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 362480627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbfa3cfaa9690404cb87cea084028b08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &368965633 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8672898236177908320, guid: 265c97465e0e7594e89a1e5b0fbc43f7, type: 3}
@@ -3047,13 +3036,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 621453522}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0af4fad9fb312a4468db2e345ce7f470, type: 3}
+  m_Script: {fileID: 11500000, guid: bdad1a7b9b4b57f40ba9746daf915c96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   currencyText: {fileID: 410631726}
-  currencyIcon: {fileID: 440160135}
-  currencySprite: {fileID: 1786102465050247127, guid: 12d718501d73aec45b68f2a21db173ea, type: 3}
-  Resources: {fileID: 362480673}
 --- !u!1001 &638515800
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10167,6 +10153,10 @@ PrefabInstance:
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.luck
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: templateStats.currency
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.fireRate
