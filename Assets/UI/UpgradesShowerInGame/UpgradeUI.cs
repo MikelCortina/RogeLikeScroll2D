@@ -1,92 +1,88 @@
+// UpgradeUI.cs
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class UpgradeUI : MonoBehaviour
 {
     [Header("Panel y Botones")]
     [SerializeField] private GameObject upgradePanel;
-    [SerializeField] private Button[] upgradeButtons; // Deben ser 3 botones
-    [SerializeField] private TextMeshProUGUI[] upgradeNameTexts; // Texto para el nombre de cada mejora
-    [SerializeField] private TextMeshProUGUI[] upgradeDescriptionTexts; // Texto para la descripción
+    [SerializeField] private Button[] upgradeButtons;
+    [SerializeField] private TextMeshProUGUI[] upgradeNameTexts;
+    [SerializeField] private TextMeshProUGUI[] upgradeDescriptionTexts;
 
     [Header("Colores según rareza")]
     [SerializeField] private Color rareColor = Color.blue;
-    [SerializeField] private Color epicColor = new Color(0.5f, 0f, 1f); // morado
+    [SerializeField] private Color epicColor = new Color(0.5f, 0f, 1f);
     [SerializeField] private Color legendaryColor = Color.yellow;
 
+    [Header("HUD")]
+    [SerializeField] private TextMeshProUGUI pendingLevelsText;
+
+    private List<List<Upgrade>> pendingUpgradeChoices = new List<List<Upgrade>>();
     private List<Upgrade> currentUpgrades;
 
     private void Awake()
     {
-        // Panel desactivado al inicio
         if (upgradePanel != null)
             upgradePanel.SetActive(false);
+
+        UpdatePendingLevelsText();
     }
 
     private void Start()
     {
         if (StatsManager.Instance != null)
-            StatsManager.Instance.OnLevelUp += ShowUpgrades;
+            StatsManager.Instance.OnLevelUp += QueueUpgrades;
     }
 
-    /// <summary>
-    /// Muestra el panel y actualiza los botones con las mejoras seleccionadas
-    /// </summary>
-    public void ShowUpgrades(int level)
+    private void Update()
     {
-        if (upgradePanel == null || upgradeButtons.Length != 3)
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            Debug.LogError("UpgradeUI no está configurada correctamente");
-            return;
+            if (pendingUpgradeChoices.Count > 0 && !upgradePanel.activeSelf)
+            {
+                currentUpgrades = pendingUpgradeChoices[0];
+                pendingUpgradeChoices.RemoveAt(0);
+                DisplayUpgradePanel(currentUpgrades);
+                UpdatePendingLevelsText();
+            }
         }
+    }
 
-        // Obtener 3 upgrades aleatorias del UpgradeManager
-        currentUpgrades = UpgradeManager.Instance.GetRandomUpgrades(3);
+    public void QueueUpgrades(int level)
+    {
+        var upgrades = UpgradeManager.Instance.GetRandomUpgrades(3);
+        pendingUpgradeChoices.Add(upgrades);
+        UpdatePendingLevelsText();
+    }
 
+    private void DisplayUpgradePanel(List<Upgrade> upgrades)
+    {
         for (int i = 0; i < upgradeButtons.Length; i++)
         {
-            Upgrade upgrade = currentUpgrades[i];
+            Upgrade upgrade = upgrades[i];
+            upgradeNameTexts[i].text = upgrade.upgradeName;
+            upgradeDescriptionTexts[i].text = upgrade.description;
 
-            // Actualizar textos
-            if (upgradeNameTexts.Length > i) upgradeNameTexts[i].text = upgrade.upgradeName;
-            if (upgradeDescriptionTexts.Length > i) upgradeDescriptionTexts[i].text = upgrade.description;
-
-            // Cambiar color del fondo según rareza
             Image buttonImage = upgradeButtons[i].GetComponent<Image>();
-            if (buttonImage != null)
+            switch (upgrade.quality)
             {
-                switch (upgrade.quality)
-                {
-                    case UpgradeQuality.Rare:
-                        buttonImage.color = rareColor;
-                        break;
-                    case UpgradeQuality.Epic:
-                        buttonImage.color = epicColor;
-                        break;
-                    case UpgradeQuality.Legendary:
-                        buttonImage.color = legendaryColor;
-                        break;
-                }
+                case UpgradeQuality.Rare: buttonImage.color = rareColor; break;
+                case UpgradeQuality.Epic: buttonImage.color = epicColor; break;
+                case UpgradeQuality.Legendary: buttonImage.color = legendaryColor; break;
             }
 
-            // Remover listeners antiguos y asignar el nuevo
-            int index = i; // captura local para lambda
+            int index = i;
             upgradeButtons[i].onClick.RemoveAllListeners();
             upgradeButtons[i].onClick.AddListener(() => SelectUpgrade(index));
         }
 
-        if (upgradePanel != null)
-            upgradePanel.SetActive(true);
-
-        // Pausar juego si quieres (opcional)
+        upgradePanel.SetActive(true);
         Time.timeScale = 0f;
     }
 
-    /// <summary>
-    /// Aplica la mejora seleccionada
-    /// </summary>
     private void SelectUpgrade(int index)
     {
         if (index < 0 || index >= currentUpgrades.Count) return;
@@ -94,10 +90,27 @@ public class UpgradeUI : MonoBehaviour
         Upgrade selectedUpgrade = currentUpgrades[index];
         UpgradeManager.Instance.ApplyUpgrade(selectedUpgrade);
 
-        // Cerrar panel
         upgradePanel.SetActive(false);
-
-        // Reanudar juego si estaba pausado
         Time.timeScale = 1f;
+
+        if (pendingUpgradeChoices.Count > 0)
+        {
+            currentUpgrades = pendingUpgradeChoices[0];
+            pendingUpgradeChoices.RemoveAt(0);
+            DisplayUpgradePanel(currentUpgrades);
+        }
+
+        UpdatePendingLevelsText();
+    }
+
+    private void UpdatePendingLevelsText()
+    {
+        if (pendingLevelsText != null)
+        {
+            pendingLevelsText.text = $"Mejoras pendientes: {pendingUpgradeChoices.Count}";
+        }
     }
 }
+
+// UpgradeManager.cs (sin cambios necesarios para esta funcionalidad)
+// Solo asegúrate de que GetRandomUpgrades(int count) esté implementado correctamente como ya lo tienes.
