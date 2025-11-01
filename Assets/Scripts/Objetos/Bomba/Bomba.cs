@@ -20,7 +20,7 @@ public class Bomba : ScriptableObject, IPersistentEffect
     [SerializeField] private Vector2 localFireOffset = Vector2.zero;
 
     [Header("Pooling")]
-    [SerializeField] private int poolSize = 10;
+    [SerializeField] private int poolSize = 30;
 
     // runtime
     private Coroutine activeCoroutine;

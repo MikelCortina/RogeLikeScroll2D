@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeId: DropperDrone
   displayName: DroperDrone
-  icon: {fileID: 8220671616104078300, guid: 09d06a9093435d64b91e263138d6c804, type: 3}
+  icon: {fileID: 0}
   description: 
   effectToActivate: {fileID: 11400000, guid: d86c45b01e4cb704396213c4060215d1, type: 2}
+  buttonPrefab: {fileID: 3389019123981112748, guid: d80fbbde7d2cad6479b97297081000ae, type: 3}
   cost: 0
   requiredEffectIdsToRemove:
   - {fileID: 11400000, guid: 37a0537d10feb1449988ff8d4ca62d87, type: 2}
