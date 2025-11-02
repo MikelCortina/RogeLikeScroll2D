@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeId: OscilatorDroneNode
   displayName: OscilatorDrone
-  icon: {fileID: 0}
+  icon: {fileID: -6683355446532405209, guid: 6027750f026c0b64588b624420bb8349, type: 3}
   description: 
   effectToActivate: {fileID: 11400000, guid: 8469309421653ff4fbdde429f7f80fe2, type: 2}
   buttonPrefab: {fileID: 6132550699764224401, guid: eb1c1efbd5cecf94497bfbc89867042e, type: 3}

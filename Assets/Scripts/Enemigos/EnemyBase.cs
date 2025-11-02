@@ -60,6 +60,7 @@ public class EnemyBase : MonoBehaviour
     protected bool isFacingRight = true;
     protected float adjustedMaxHealth;
     protected float adjustedContactDamage;
+    // NOTA: canMove sigue siendo protected para que tus derivados lo usen
     protected bool canMove = true;
 
     public float lastAttackTime = -999f;
@@ -75,6 +76,13 @@ public class EnemyBase : MonoBehaviour
     public Transform emergencySpawn;
 
     public GameObject gorePrefab; // asigna tu prefab en el inspector
+
+    // --- NUEVO: estado de "estar llevado" ---
+    private bool isCarried = false;
+    private Transform carrierTransform = null;
+    private Vector3 carrierLocalOffset = Vector3.zero;
+    private bool prevKinematic = false;
+    private bool prevCanMove = true;
 
     protected virtual void Awake()
     {
@@ -107,6 +115,22 @@ public class EnemyBase : MonoBehaviour
         if (transform.position.y < -4)
         {
             if (emergencySpawn != null) transform.position = emergencySpawn.position;
+        }
+
+        // Si estamos siendo llevados, sincronizamos la posición aquí (evita tocar la IA)
+        if (isCarried && carrierTransform != null)
+        {
+            // Mantener offset en world space
+            Vector3 desired = carrierTransform.TransformPoint(carrierLocalOffset);
+            // Usar MovePosition para respetar física lo más posible
+            if (rb != null)
+            {
+                rb.MovePosition(new Vector2(desired.x, desired.y));
+            }
+            else
+            {
+                transform.position = desired;
+            }
         }
     }
 
@@ -220,7 +244,7 @@ public class EnemyBase : MonoBehaviour
             // Le decimos al helicóptero que gestione su limpieza/pooling; le damos 0.05s para mantener tu timing original.
             if (gorePrefab != null) Instantiate(gorePrefab, transform.position, Quaternion.identity);
             heli.HandleDeathCleanup(0.05f, false);
-            
+
             return;
         }
 
@@ -345,6 +369,59 @@ public class EnemyBase : MonoBehaviour
         isKnockedBack = false;
         canMove = true;
         knockbackRoutine = null;
+    }
+    #endregion
+
+    #region Carried API (nuevo)
+    /// <summary>
+    /// Llamar para hacer que el enemigo "se mueva con" el carrier (ej. proyectil).
+    /// Mientras está carried:
+    ///  - se desactiva la IA (canMove = false)
+    ///  - se parenta al carrier (para seguir rot/pos) y se pone rb.isKinematic = true
+    ///  - cuando se suelta, se restaura el estado previo
+    /// </summary>
+    public void StartBeingCarried(Transform carrier, Vector3 optionalLocalOffset)
+    {
+        if (carrier == null) return;
+        if (isCarried && carrierTransform == carrier) return;
+
+        // guardar estado previo
+        prevKinematic = rb != null ? rb.isKinematic : false;
+        prevCanMove = canMove;
+
+        carrierTransform = carrier;
+        carrierLocalOffset = optionalLocalOffset;
+        isCarried = true;
+
+        // desactivar IA / movimiento para que no sobreescriba la posición
+        canMove = false;
+
+        // parentar y poner kinematic para evitar forces conflictivas
+        transform.SetParent(carrierTransform);
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.isKinematic = true;
+        }
+    }
+
+    public void StopBeingCarried()
+    {
+        if (!isCarried) return;
+
+        isCarried = false;
+
+        // desparentar y restaurar física/IA
+        transform.SetParent(null);
+
+        if (rb != null)
+        {
+            rb.isKinematic = prevKinematic;
+        }
+
+        canMove = prevCanMove;
+        carrierTransform = null;
     }
     #endregion
 

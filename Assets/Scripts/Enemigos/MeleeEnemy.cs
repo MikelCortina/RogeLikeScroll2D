@@ -14,7 +14,7 @@ public class MeleeEnemy : EnemyBase
     [SerializeField] private float startVerticalOffset = 0.5f; // si attackPofloat es null, start = transform.position + down * offset
     [SerializeField] private float attackHorizontalDistance = 0f; // distancia horizontal que cubrirá el arco en la dirección del jugador
 
-    private bool isAttacking = false;
+    public bool isAttacking = false;
 
 
     protected void FixedUpdate()

@@ -20,4 +20,4 @@ MonoBehaviour:
   arcHeight: 1.75
   randomRadius: 3
   localFireOffset: {x: 0, y: 0}
-  poolSize: 10
+  poolSize: 30

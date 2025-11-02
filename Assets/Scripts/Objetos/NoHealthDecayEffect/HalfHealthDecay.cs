@@ -10,7 +10,7 @@ public class HalfHealthDecayEffect : ScriptableObject, IPersistentEffect
         HealthDecay halfDecay = HealthDecay.Instance;
         if (halfDecay != null)
         {
-            halfDecay.enabled = true; // Desactiva el decay
+            halfDecay.enabled = true; 
             Debug.Log("[NoHealthDecayEffect] HealthDecay desactivado");
         }
     }

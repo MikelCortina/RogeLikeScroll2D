@@ -16,6 +16,10 @@ public class AreaShooter2D : MonoBehaviour
     public LayerMask enemyLayer;
     public string enemyTag = "enemigo";
 
+    // --- NUEVO: tag para proyectiles enemigos ---
+    [Header("Proyectiles enemigos")]
+    public string enemyProjectileTag = "enemyprojectile";
+
     [Header("Visual")]
     public float projectileSpeed;
     public Camera mainCamera;
@@ -29,7 +33,7 @@ public class AreaShooter2D : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
-        projectileSpeed = StatsManager.Instance.RuntimeStats.projectileSpeed;   
+        projectileSpeed = StatsManager.Instance.RuntimeStats.projectileSpeed;
         InitPool();
     }
 
@@ -95,18 +99,41 @@ public class AreaShooter2D : MonoBehaviour
         Vector2 hitPoint = (Vector2)firePoint.position + dir * fireRange; // punto por defecto (max range)
         Transform hitTransform = null;
 
-        if (hit.collider != null && hit.collider.CompareTag(enemyTag))
+        if (hit.collider != null)
         {
-            hitSomething = true;
-            hitPoint = hit.point;
-
-           EnemyBase enemy = hit.collider.GetComponentInParent<EnemyBase>();
-
-            if (enemy != null)
+            // Si es un enemigo normal
+            if (hit.collider.CompareTag(enemyTag))
             {
-                hitTransform = enemy.transform;
-                float dmg = StatsCommunicator.Instance.CalculateGunDamage();
-                enemy.TakeContactDamage(dmg);
+                hitSomething = true;
+                hitPoint = hit.point;
+
+                EnemyBase enemy = hit.collider.GetComponentInParent<EnemyBase>();
+
+                if (enemy != null)
+                {
+                    hitTransform = enemy.transform;
+                    float dmg = StatsCommunicator.Instance.CalculateGunDamage();
+                    enemy.TakeContactDamage(dmg);
+                }
+            }
+            // --- NUEVO: si el objeto golpeado es un proyectil enemigo, lo destruyo/desactivo ---
+            else if (hit.collider.CompareTag(enemyProjectileTag))
+            {
+                hitSomething = true;
+                hitPoint = hit.point;
+
+                // Intentamos desactivar si parece ser un proyectil reutilizable (pool)
+                Projectile2D enemyProjComponent = hit.collider.GetComponentInParent<Projectile2D>();
+                if (enemyProjComponent != null)
+                {
+                    // Desactivar el gameObject (compatible con pooling)
+                    enemyProjComponent.gameObject.SetActive(false);
+                }
+                else
+                {
+                    // Si no tiene componente Projectile2D, destruimos por seguridad
+                    Destroy(hit.collider.gameObject);
+                }
             }
         }
 

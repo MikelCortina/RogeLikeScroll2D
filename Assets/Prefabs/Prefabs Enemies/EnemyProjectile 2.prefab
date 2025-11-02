@@ -9,13 +9,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4238609308856723136}
-  - component: {fileID: -6153641545299876068}
   - component: {fileID: 591329429073423599}
   - component: {fileID: -4313122925935100773}
   - component: {fileID: 3753190625761520321}
+  - component: {fileID: -627023155672552110}
   m_Layer: 8
-  m_Name: EnemyProjectile
-  m_TagString: EnemyProjectile
+  m_Name: EnemyProjectile 2
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -35,29 +35,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-6153641545299876068
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 847502903425083811}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d59db1dbe0644054cb0dacf1211b9c94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lifeTime: 5
-  owner: {fileID: 5269551145280685858, guid: 990cc71107c99504f94f606b69eef64d, type: 3}
-  damageToDeal: 0
-  isHoming: 1
-  turningSpeed: 720
-  ignoreLayerNames:
-  - Enemigos
-  - EnemyTrigger
-  - EnemyProjectile
-  - Horse
-  - PlayerProjectile
 --- !u!212 &591329429073423599
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -176,3 +153,15 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &-627023155672552110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847502903425083811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa6220aebfcd86748849cd503213fe90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

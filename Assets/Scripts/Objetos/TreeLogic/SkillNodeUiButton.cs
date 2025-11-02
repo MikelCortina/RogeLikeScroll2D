@@ -48,9 +48,17 @@ public class SkillNodeButton : MonoBehaviour
 
         if (node != null)
         {
-            if (iconImage != null) iconImage.sprite = node.icon;
-            if (nameText != null) nameText.text = node.displayName;
-            if (costText != null) costText.text = node.cost > 0 ? node.cost.ToString() : "";
+            // Para el Image que controla el script
+            if (iconImage != null)
+                iconImage.sprite = node.icon;
+
+            // Para el Image principal del botón (Source Image del prefab)
+            var mainImage = GetComponent<Image>();
+            if (mainImage != null)
+                mainImage.sprite = node.icon;
+
+            nameText.text = node.displayName;
+            costText.text = node.cost > 0 ? node.cost.ToString() : "";
         }
         else
         {

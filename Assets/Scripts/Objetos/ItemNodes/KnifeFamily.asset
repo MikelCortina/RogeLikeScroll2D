@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e035a91d2713dce4281c851b30a9bce9, type: 3}
+  m_Name: KnifeFamily
+  m_EditorClassIdentifier: 
+  familyId: KnifeFamily
+  nodes:
+  - {fileID: 11400000, guid: 64827801536bdd8498f45bf9c0e4802c, type: 2}
+  - {fileID: 11400000, guid: 10bb401d3f1c84a48a42f2b564c90512, type: 2}
+  - {fileID: 11400000, guid: b4933027e1d973641b4bc19702b877c3, type: 2}

@@ -10,15 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c5c317566d6e4d4e80fc176bb7867a5, type: 3}
-  m_Name: ContactDrone
+  m_Name: EmpujeKnife
   m_EditorClassIdentifier: 
-  nodeId: ContactDroneNode
-  displayName: ContactDrone
-  icon: {fileID: 8108805326699794044, guid: 7ed0155a3af5fee4a86c97383a98c2e5, type: 3}
+  nodeId: EmpujeKnifeNode
+  displayName: EmpujeKnife
+  icon: {fileID: 0}
   description: 
-  effectToActivate: {fileID: 11400000, guid: baf58b071b586b84094211356bdb75fd, type: 2}
+  effectToActivate: {fileID: 11400000, guid: a99f8f7266cf83a42ac8c5a788a1da8b, type: 2}
   buttonPrefab: {fileID: 0}
   cost: 0
-  requiredEffectIdsToRemove: []
-  prerequisiteNodeIds: []
+  requiredEffectIdsToRemove:
+  - {fileID: 11400000, guid: 10bb401d3f1c84a48a42f2b564c90512, type: 2}
+  prerequisiteNodeIds:
+  - KunaiNode
   debug_unlocked: 0

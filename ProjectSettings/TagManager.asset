@@ -11,6 +11,7 @@ TagManager:
   - MeleAtack
   - Cable
   - Organos
+  - EnemyProjectile
   layers:
   - Default
   - TransparentFX
