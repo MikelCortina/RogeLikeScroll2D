@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e4eb0250d995724a9549dd11db2c075, type: 3}
   m_Name: HealPlayer
   m_EditorClassIdentifier: 
-  upgradeName: Heal
+  upgradeName: Manzana
   description: 'Recuperas 25 de vida
 
 '
+  quality: 0
   healAmount: 25

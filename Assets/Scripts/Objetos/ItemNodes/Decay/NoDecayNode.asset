@@ -15,8 +15,11 @@ MonoBehaviour:
   nodeId: NoDecayNode
   displayName: NoDecay
   icon: {fileID: -7799507095271033690, guid: 7af840d9f75329246b137ec1f94b69a5, type: 3}
-  description: 
+  description: 'No perderas vida por la arena
+
+'
   effectToActivate: {fileID: 11400000, guid: 5e4a682179b3abc4e94dc4dafce00ab6, type: 2}
+  buttonPrefab: {fileID: 0}
   cost: 0
   requiredEffectIdsToRemove:
   - {fileID: 11400000, guid: 4e0e1eab46567964b974720041e57f85, type: 2}

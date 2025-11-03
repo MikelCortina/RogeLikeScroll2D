@@ -171,8 +171,8 @@ MonoBehaviour:
   trailRenderer: {fileID: 4712692522052592155}
   hitParticlesPrefab: {fileID: 364105323876453921}
   hitParticleSortingOrderOffset: 1000
-  useAbsoluteHitParticleSorting: 0
-  hitParticleSortingLayer: Default
+  useAbsoluteHitParticleSorting: 1
+  hitParticleSortingLayer: 50
   hitParticleSortingOrder: 1000
   hitParticleSortingFudge: 1000
   forceRenderQueueToAlwaysOnTop: 0

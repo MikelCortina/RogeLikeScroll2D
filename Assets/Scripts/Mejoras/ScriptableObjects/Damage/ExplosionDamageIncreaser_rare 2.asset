@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e4048414a0da324295782cf1bdc37dc, type: 3}
   m_Name: ExplosionDamageIncreaser_rare 2
   m_EditorClassIdentifier: 
-  upgradeName: Explosion DamagePercentage_rare
-  description: "Ganas +2 de da\xF1o explosivo\n"
+  upgradeName: Piromania
+  description: "+2 de da\xF1o explosivo"
   quality: 0
   extraDamage: 2

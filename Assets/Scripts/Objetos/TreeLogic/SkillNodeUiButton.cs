@@ -37,7 +37,11 @@ public class SkillNodeButton : MonoBehaviour, IPointerEnterHandler, IPointerExit
         {
             if (iconImage != null) iconImage.sprite = node.icon;
             if (nameText != null) nameText.text = node.displayName;
-            if (costText != null) costText.text = node.cost > 0 ? node.cost.ToString() : "";
+            if (costText != null)
+            {
+                int effective = node != null ? (treeUI != null ? treeUI.GetNodeEffectiveCost(node) : (node.cost > 0 ? node.cost : 0)) : 0;
+                costText.text = effective > 0 ? effective.ToString() : "";
+            }
         }
 
         UpdateState();

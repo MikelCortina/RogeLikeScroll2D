@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static PlayerResources;
 
 [System.Serializable]
@@ -63,6 +64,8 @@ public class StatsData
 public class StatsManager : MonoBehaviour
 {
     public static StatsManager Instance { get; private set; }
+
+    public RunResetter runResetter;
 
     [Header("Template Stats")] //Estadisticas base de esta run, siempre las mismas, se reinician
     [SerializeField] private StatsData templateStats = new StatsData();
@@ -294,6 +297,7 @@ public class StatsManager : MonoBehaviour
     {
         OnPlayerDied?.Invoke();
         Debug.Log("Jugador muri�");
+        runResetter.OnPlayerDeath();
     }
     public void NotifyHealthChanged()
     {

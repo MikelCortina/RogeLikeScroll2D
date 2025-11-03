@@ -29,7 +29,17 @@ public class TooltipView : MonoBehaviour
         if (iconImage != null) iconImage.sprite = node?.icon;
         if (titleText != null) titleText.text = node != null ? (string.IsNullOrEmpty(node.displayName) ? node.nodeId : node.displayName) : "";
         if (descriptionText != null) descriptionText.text = node != null ? node.description ?? "" : "";
-        if (costText != null) costText.text = (node != null && node.cost > 0) ? $"Cost: {node.cost}" : "";
+
+        // <-- COSTE: usar costes runtime si treeUI está disponible, si no fallback a node.cost o vacío -->
+        int effectiveCost = 0;
+        if (node != null)
+        {
+            if (treeUI != null)
+                effectiveCost = Mathf.Max(0, treeUI.GetNodeEffectiveCost(node));
+            else
+                effectiveCost = node.cost > 0 ? node.cost : 0;
+        }
+        if (costText != null) costText.text = effectiveCost > 0 ? $"Cost: {effectiveCost}" : "";
 
         // --- limpiar entradas previas ---
         foreach (var go in spawnedEntries) if (go != null) Destroy(go);
@@ -56,7 +66,6 @@ public class TooltipView : MonoBehaviour
 
         Debug.Log($"[TooltipView] Creating {node.prerequisiteNodeIds.Count} prereq entries for node '{node.nodeId}'");
 
-        // detectar layout group para fallback
         var layout = prereqContainer != null ? prereqContainer.GetComponent<UnityEngine.UI.LayoutGroup>() : null;
         float fallbackHeight = 28f;
         float spacing = 2f;
@@ -93,7 +102,6 @@ public class TooltipView : MonoBehaviour
             inst.transform.SetParent(prereqContainer, false);
             inst.transform.localScale = Vector3.one;
 
-            // RectTransform razonable
             var rt = inst.GetComponent<RectTransform>();
             if (rt != null)
             {
@@ -101,30 +109,21 @@ public class TooltipView : MonoBehaviour
                 if (rt.sizeDelta.y <= 0f || rt.sizeDelta.x <= 0f) rt.sizeDelta = new Vector2(rt.sizeDelta.x <= 0f ? 100f : rt.sizeDelta.x, fallbackHeight);
             }
 
-            // asegurar LayoutElement
             var le = inst.GetComponent<UnityEngine.UI.LayoutElement>();
             if (le == null) le = inst.AddComponent<UnityEngine.UI.LayoutElement>();
             if (le != null && le.preferredHeight <= 0f) le.preferredHeight = fallbackHeight;
 
-            // ICON (si existe)
             var icon = inst.transform.Find("Icon")?.GetComponent<Image>();
 
-            // --- BUSCAR EL TextMeshProUGUI "correcto" y EVITAR DUPLICADOS ---
             TextMeshProUGUI chosenTMP = null;
-            // 1) buscar por hijo llamado "Name"
             var nameTransform = inst.transform.Find("Name");
-            if (nameTransform != null)
-            {
-                chosenTMP = nameTransform.GetComponent<TextMeshProUGUI>();
-            }
+            if (nameTransform != null) chosenTMP = nameTransform.GetComponent<TextMeshProUGUI>();
 
-            // 2) si no existe, buscar entre hijos y elegir el más probable
             if (chosenTMP == null)
             {
                 var tmps = inst.GetComponentsInChildren<TextMeshProUGUI>(true);
                 if (tmps != null && tmps.Length > 0)
                 {
-                    // preferir uno cuyo transform se llame algo que contenga "name" o "label"
                     for (int i = 0; i < tmps.Length; i++)
                     {
                         var lower = tmps[i].transform.name.ToLower();
@@ -134,12 +133,10 @@ public class TooltipView : MonoBehaviour
                             break;
                         }
                     }
-                    // si no encontramos por nombre, tomar el primero
                     if (chosenTMP == null) chosenTMP = tmps[0];
                 }
             }
 
-            // 3) Si no hay ningún TMP en prefab, crear solo UNO (fallback)
             if (chosenTMP == null)
             {
                 var go = new GameObject("Name", typeof(RectTransform));
@@ -150,42 +147,45 @@ public class TooltipView : MonoBehaviour
                 Debug.LogWarning($"[TooltipView] No TextMeshProUGUI found in prefab; created fallback TMP for {reqId}");
             }
 
-            // 4) LIMPIAR otros TMPs para evitar duplicados: solo mantener chosenTMP con texto, borrar el resto
             var allTmpsInInst = inst.GetComponentsInChildren<TextMeshProUGUI>(true);
             if (allTmpsInInst != null && allTmpsInInst.Length > 1)
             {
                 for (int i = 0; i < allTmpsInInst.Length; i++)
                 {
                     if (allTmpsInInst[i] == chosenTMP) continue;
-                    // limpiar o desactivar visualmente
                     try
                     {
-                        allTmpsInInst[i].text = ""; // quitar texto duplicado
-                        allTmpsInInst[i].gameObject.SetActive(false); // opcional: desactivar el GO si prefieres
+                        allTmpsInInst[i].text = "";
+                        allTmpsInInst[i].gameObject.SetActive(false);
                     }
-                    catch { /* ignorar posibles errores con objetos especiales */ }
+                    catch { }
                 }
                 Debug.Log($"[TooltipView] Cleared {allTmpsInInst.Length - 1} extra TMP(s) in instance '{inst.name}' to avoid duplicates.");
             }
 
-            // --- RELLENAR datos en chosenTMP ---
             ItemNode reqNode = FindItemNodeById(reqId, treeUI);
             if (reqNode != null)
             {
                 if (icon != null) { icon.enabled = true; icon.sprite = reqNode.icon; }
-                if (chosenTMP != null) chosenTMP.text = string.IsNullOrEmpty(reqNode.displayName) ? reqNode.nodeId : reqNode.displayName;
+                string display = string.IsNullOrEmpty(reqNode.displayName) ? reqNode.nodeId : reqNode.displayName;
+
+                // obtener coste efectivo del requisito también
+                int reqCost = 0;
+                if (treeUI != null) reqCost = Mathf.Max(0, treeUI.GetNodeEffectiveCost(reqNode));
+                else reqCost = reqNode.cost > 0 ? reqNode.cost : 0;
+
+                if (reqCost > 0) display += $" (Cost: {reqCost})";
+
+                if (chosenTMP != null) chosenTMP.text = display;
 
                 bool unlocked = treeUI != null && treeUI.IsUnlocked(reqNode.nodeId);
+                var cg = chosenTMP.GetComponent<CanvasGroup>();
                 if (unlocked)
                 {
-                    if (chosenTMP != null) chosenTMP.text = "Unlcoked: " + chosenTMP.text;
-                    var cg = chosenTMP.GetComponent<CanvasGroup>();
                     if (cg != null) cg.alpha = 1f;
                 }
                 else
                 {
-                    if (chosenTMP != null) chosenTMP.text = "Locked: " + chosenTMP.text;
-                    var cg = chosenTMP.GetComponent<CanvasGroup>();
                     if (cg != null) cg.alpha = 0.6f;
                 }
             }
@@ -195,7 +195,6 @@ public class TooltipView : MonoBehaviour
                 if (chosenTMP != null) chosenTMP.text = reqId;
             }
 
-            // garantizar orden
             inst.transform.SetSiblingIndex(created);
             spawnedEntries.Add(inst);
             created++;
@@ -203,7 +202,6 @@ public class TooltipView : MonoBehaviour
             Debug.Log($"[TooltipView] Instantiated prereq '{reqId}' -> instanceName='{inst.name}' childCountNow={prereqContainer.childCount}");
         }
 
-        // --- Layout: usar LayoutGroup si existe, si no aplicar fallback manual ---
         if (prereqContainer != null)
         {
             if (layout != null)
@@ -230,7 +228,6 @@ public class TooltipView : MonoBehaviour
             }
         }
 
-        // --- Debug final ---
         if (prereqContainer != null)
         {
             Debug.Log($"[TooltipView] Final prereqContainer childCount = {prereqContainer.childCount}");
@@ -244,7 +241,6 @@ public class TooltipView : MonoBehaviour
             }
         }
     }
-
 
 
     // intenta resolver ItemNode desde treeUI.skillFamilies (busca por nodeId)

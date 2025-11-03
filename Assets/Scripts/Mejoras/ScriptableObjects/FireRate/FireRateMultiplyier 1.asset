@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccbc5e0928f47134786bfb2edc2cc373, type: 3}
   m_Name: FireRateMultiplyier 1
   m_EditorClassIdentifier: 
-  upgradeName: Multiplica tu cadencia_Leg
-  description: X1.25 cadencia
+  upgradeName: Canion
+  description: X2cadencia
   quality: 2
   fireRateMultiplier: 2

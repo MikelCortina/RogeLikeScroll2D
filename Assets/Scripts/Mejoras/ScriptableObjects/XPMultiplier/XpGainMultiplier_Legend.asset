@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2d0d89f5ac634e4fad5bf17c5dccd87, type: 3}
   m_Name: XpGainMultiplier_Legend
   m_EditorClassIdentifier: 
-  upgradeName: XpGainMultiplier_Legend
+  upgradeName: Cerebro
   description: Aumento de XP ganada +10
   quality: 2
   xpIncrease: 10

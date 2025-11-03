@@ -15,8 +15,9 @@ MonoBehaviour:
   nodeId: 5BombaParabolicaNode
   displayName: 5BombaParab
   icon: {fileID: 21300000, guid: 7078d532c0cd5af409d2234c97e5f6fd, type: 3}
-  description: 
+  description: 5 explosivos... Esta claro que son para matar a gran escala
   effectToActivate: {fileID: 11400000, guid: eac3b9accf681a44486d965732157862, type: 2}
+  buttonPrefab: {fileID: 0}
   cost: 0
   requiredEffectIdsToRemove:
   - {fileID: 11400000, guid: 0397125020debd84184f7b09b1b2d3c6, type: 2}

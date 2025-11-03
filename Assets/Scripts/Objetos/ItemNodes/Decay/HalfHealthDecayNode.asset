@@ -15,8 +15,9 @@ MonoBehaviour:
   nodeId: HalfDecayNode
   displayName: HalfDecay
   icon: {fileID: 128158893553575062, guid: 477bfcfff0a7ba143b7105dad69d1430, type: 3}
-  description: 
+  description: La vida bajara la mitad e rapido
   effectToActivate: {fileID: 11400000, guid: 44c6ea432d3a4cd41b2bf6eb44715c86, type: 2}
+  buttonPrefab: {fileID: 0}
   cost: 0
   requiredEffectIdsToRemove: []
   prerequisiteNodeIds:

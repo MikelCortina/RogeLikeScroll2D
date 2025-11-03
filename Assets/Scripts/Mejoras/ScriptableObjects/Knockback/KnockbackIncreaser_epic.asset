@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a04f96459b548d4c9d7992ed1c0ed13, type: 3}
   m_Name: KnockbackIncreaser_epic
   m_EditorClassIdentifier: 
-  upgradeName: KnockBackIncrease_epic
+  upgradeName: Violencia
   description: 'Add 0.2 knockback
 
 '

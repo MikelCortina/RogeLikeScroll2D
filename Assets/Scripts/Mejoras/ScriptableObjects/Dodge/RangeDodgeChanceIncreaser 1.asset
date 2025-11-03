@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ed22154e0eacc84ca52dc2fc3d3eedd, type: 3}
   m_Name: RangeDodgeChanceIncreaser 1
   m_EditorClassIdentifier: 
-  upgradeName: RangeDodgeIncreaser_epic
-  description: Aumenta la probabilidad de RangeDodge en +2%
+  upgradeName: Reflejos
+  description: +4 de dodge a distancia
   quality: 1
   dodgeIncrease: 4

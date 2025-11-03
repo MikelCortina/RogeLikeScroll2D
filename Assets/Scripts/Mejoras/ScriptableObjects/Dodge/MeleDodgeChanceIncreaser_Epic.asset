@@ -12,9 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 356e181f8d122b247a7b5ed1834befeb, type: 3}
   m_Name: MeleDodgeChanceIncreaser_Epic
   m_EditorClassIdentifier: 
-  upgradeName: MeleDodgeIncreaseChance_Epic
-  description: 'Aumenta la probabilidad de Mele
-
-    Dodge +4%'
+  upgradeName: Espuelas
+  description: +4 de dodge a mele
   quality: 1
   dodgeIncrease: 4

@@ -15,8 +15,10 @@ MonoBehaviour:
   nodeId: KnifeNode
   displayName: Knifes
   icon: {fileID: 21300000, guid: dcc205e9cd4d8364186ff1973c47aef0, type: 3}
-  description: El caballo anza un cuchillo hacia adelante y hacia atras
+  description: "El caballo lanza un cuchillo hacia adelante y hacia atras, atraviesa
+    a los enemigos a su paso y les inflige da\xF1o de projectil"
   effectToActivate: {fileID: 11400000, guid: 2add402aeb5ec9343a30b5c77ac9b38e, type: 2}
+  buttonPrefab: {fileID: 0}
   cost: 0
   requiredEffectIdsToRemove: []
   prerequisiteNodeIds: []
