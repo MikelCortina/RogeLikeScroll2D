@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23310d797bab64e42a163eb9e9faaaae, type: 3}
+  m_Name: BombGas1
+  m_EditorClassIdentifier: 
+  bombProjectilePrefab: {fileID: 1979434595378990830, guid: 2d5eac993024c114d827a8f4fc3c3928, type: 3}
+  gasCloudPrefab: {fileID: 6651681685358524700, guid: a2b34ba9e0fdc1d488fd61ae7cec439c, type: 3}
+  spawnInterval: 3
+  spawnOffset: {x: 0.3, y: 0.5}
+  forward: {x: 1, y: 0}
+  minDistance: 2
+  maxDistance: 4
+  travelTime: 0.8
+  arcHeight: 1.5
+  explosionDelay: 0
+  defaultGasRadius: 2.5
+  gasDuration: 2
+  gasDamagePerSecond: 5
+  allowManualLaunch: 0

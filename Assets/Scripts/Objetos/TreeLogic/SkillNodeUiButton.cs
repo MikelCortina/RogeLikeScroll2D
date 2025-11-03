@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(CanvasGroup))]
-public class SkillNodeButton : MonoBehaviour
+public class SkillNodeButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler
 {
     [Header("UI Components")]
     public Image iconImage;
@@ -16,6 +17,7 @@ public class SkillNodeButton : MonoBehaviour
     public ItemNode node;
 
     private SkillTreeUI treeUI;
+    private bool pointerOver = false;
 
     // Inicializa el botón con referencia al SkillTreeUI.
     // Esto fija el listener de botón de forma segura.
@@ -57,8 +59,8 @@ public class SkillNodeButton : MonoBehaviour
             if (mainImage != null)
                 mainImage.sprite = node.icon;
 
-            nameText.text = node.displayName;
-            costText.text = node.cost > 0 ? node.cost.ToString() : "";
+            if (nameText != null) nameText.text = node.displayName;
+            if (costText != null) costText.text = node.cost > 0 ? node.cost.ToString() : "";
         }
         else
         {
@@ -75,7 +77,6 @@ public class SkillNodeButton : MonoBehaviour
     {
         if (node == null)
         {
-            // si no hay node, desactivar canvas group para que no obtenga eventos
             var cg = GetComponent<CanvasGroup>();
             if (cg != null) cg.interactable = false;
             return;
@@ -90,7 +91,6 @@ public class SkillNodeButton : MonoBehaviour
         bool unlocked = treeUI.IsUnlocked(node.nodeId);
         bool canUnlock = treeUI.CanUnlock(node);
 
-        // debug útil
         int playerCurrency = -999;
         try
         {
@@ -131,5 +131,31 @@ public class SkillNodeButton : MonoBehaviour
         }
 
         treeUI.TryUnlock(node);
+    }
+
+    // ---- Pointer handlers para tooltip ----
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        pointerOver = true;
+        if (TooltipController.Instance != null)
+            TooltipController.Instance.Show(node, eventData.position);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        pointerOver = false;
+        if (TooltipController.Instance != null)
+            TooltipController.Instance.Hide();
+    }
+
+    public void OnPointerMove(PointerEventData eventData)
+    {
+        if (pointerOver && TooltipController.Instance != null)
+            TooltipController.Instance.Reposition(eventData.position);
+    }
+
+    private void OnDisable()
+    {
+        if (TooltipController.Instance != null) TooltipController.Instance.Hide();
     }
 }
