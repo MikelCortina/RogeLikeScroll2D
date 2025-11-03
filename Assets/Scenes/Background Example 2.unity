@@ -3406,6 +3406,7 @@ GameObject:
   - component: {fileID: 621453523}
   - component: {fileID: 621453525}
   - component: {fileID: 621453527}
+  - component: {fileID: 621453529}
   - component: {fileID: 621453526}
   - component: {fileID: 621453528}
   m_Layer: 0
@@ -3666,6 +3667,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currencyText: {fileID: 410631726}
+--- !u!114 &621453529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 621453522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d57dfeadf327b414995f39903c43f855, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipPrefab: {fileID: 1331767570868475368, guid: a53d21cfaade90a4dbfff3eb3f871f73, type: 3}
+  uiCanvas: {fileID: 1323552199}
+  screenOffset: {x: 150, y: -100}
 --- !u!1001 &638515800
 PrefabInstance:
   m_ObjectHideFlags: 0

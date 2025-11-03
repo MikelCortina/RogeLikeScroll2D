@@ -138,7 +138,13 @@ public class SkillNodeButton : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         pointerOver = true;
         if (TooltipController.Instance != null)
-            TooltipController.Instance.Show(node, eventData.position);
+            TooltipController.Instance.Show(node, eventData.position, treeUI);
+    }
+
+    public void OnPointerMove(PointerEventData eventData)
+    {
+        if (pointerOver && TooltipController.Instance != null)
+            TooltipController.Instance.Reposition(eventData.position);
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -148,12 +154,7 @@ public class SkillNodeButton : MonoBehaviour, IPointerEnterHandler, IPointerExit
             TooltipController.Instance.Hide();
     }
 
-    public void OnPointerMove(PointerEventData eventData)
-    {
-        if (pointerOver && TooltipController.Instance != null)
-            TooltipController.Instance.Reposition(eventData.position);
-    }
-
+  
     private void OnDisable()
     {
         if (TooltipController.Instance != null) TooltipController.Instance.Hide();

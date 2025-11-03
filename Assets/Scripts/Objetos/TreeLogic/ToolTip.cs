@@ -1,4 +1,4 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -9,7 +9,7 @@ public class TooltipController : MonoBehaviour
     [Header("Prefab & Canvas")]
     [Tooltip("Prefab con TooltipView componente")]
     public GameObject tooltipPrefab;
-    [Tooltip("Canvas donde se instanciar· el tooltip. Si est· vacÌo, buscar· el primer Canvas activo.")]
+    [Tooltip("Canvas donde se instanciar√° el tooltip. Si est√° vac√≠o, buscar√° el primer Canvas activo.")]
     public Canvas uiCanvas;
 
     [Header("Positioning")]
@@ -39,25 +39,23 @@ public class TooltipController : MonoBehaviour
             canvasRect = uiCanvas.GetComponent<RectTransform>();
     }
 
-    public void Show(ItemNode node, Vector2 screenPosition)
+    public void Show(ItemNode node, Vector2 screenPosition, SkillTreeUI treeUI)
     {
         if (node == null || tooltipPrefab == null || uiCanvas == null) return;
 
         if (currentTooltip == null)
         {
-            currentTooltip = Instantiate(tooltipPrefab, uiCanvas.transform, worldPositionStays: false);
+            currentTooltip = Instantiate(tooltipPrefab, uiCanvas.transform, false);
             tooltipRect = currentTooltip.GetComponent<RectTransform>();
             tooltipView = currentTooltip.GetComponent<TooltipView>();
-            if (tooltipView == null)
-            {
-                Debug.LogWarning("[TooltipController] tooltipPrefab missing TooltipView component. Add TooltipView to prefab for best results.");
-                // try to find children by convention as fallback:
-                // (we avoid heavy Find code; recommended to add TooltipView)
-            }
+
+            var cg = currentTooltip.GetComponent<CanvasGroup>();
+            if (cg == null) cg = currentTooltip.AddComponent<CanvasGroup>();
+            cg.blocksRaycasts = false;
+            cg.interactable = false;
         }
 
-        // populate
-        if (tooltipView != null) tooltipView.SetData(node);
+        if (tooltipView != null) tooltipView.SetData(node, treeUI);
 
         currentTooltip.SetActive(true);
         Reposition(screenPosition);

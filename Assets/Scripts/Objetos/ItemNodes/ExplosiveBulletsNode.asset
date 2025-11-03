@@ -21,6 +21,6 @@ MonoBehaviour:
   cost: 0
   requiredEffectIdsToRemove: []
   prerequisiteNodeIds:
-  - 5BombaParabolicaNode
   - EmpujeKnifeNode
+  - 5BombaParabolicaNode
   debug_unlocked: 0
