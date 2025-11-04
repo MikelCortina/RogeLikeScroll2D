@@ -33,6 +33,7 @@ public class BombGasSpawnerPersistentEffect : ScriptableObject, IPersistentEffec
     private GameObject runtimeOwner;
     private Coroutine activeCoroutine;
 
+
     #region IPersistentEffect
 
     public void ApplyTo(GameObject owner)

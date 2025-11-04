@@ -153,6 +153,9 @@ MonoBehaviour:
   flashCount: 1
   emergencySpawn: {fileID: 1915086932696611674, guid: 3b4756fde7f31474c906a64d26a350c2, type: 3}
   gorePrefab: {fileID: 8529829014863662933, guid: a12236eabc5d67d4dbe543c9f0634e3f, type: 3}
+  deathParticlesPrefab: {fileID: 4508117539550737482, guid: da34d66431c8cd04aa98411a543a83bf, type: 3}
+  detachDeathParticles: 1
+  fallbackDeathParticlesLifetime: 3
   attackPofloat: {fileID: 3399346530017220392}
   attackPofloatEnd: {fileID: 312739910915352993}
   attackRadius: 0.14
@@ -161,6 +164,7 @@ MonoBehaviour:
   arcHeight: 0.075
   startVerticalOffset: 0.5
   attackHorizontalDistance: 0.1
+  isAttacking: 0
 --- !u!50 &4813197852411494764
 Rigidbody2D:
   serializedVersion: 5

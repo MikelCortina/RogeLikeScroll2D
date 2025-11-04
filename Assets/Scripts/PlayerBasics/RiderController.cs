@@ -174,7 +174,7 @@ public class RiderController : MonoBehaviour
         if (jumpPressed && grounded)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            rb.AddForce(Vector2.up * jumpForce * 1.5f, ForceMode2D.Impulse);
             jumpPressed = false;
         }
 

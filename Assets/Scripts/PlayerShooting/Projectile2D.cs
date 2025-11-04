@@ -12,19 +12,6 @@ public class Projectile2D : MonoBehaviour
 
     [Header("Visual Effects")]
     public TrailRenderer trailRenderer;         // assign in prefab (child of projectile)
-    public ParticleSystem hitParticlesPrefab;   // assign a SEPARATE prefab (NO child of projectile)
-    [Tooltip("Offset del orden en capa del sistema de partículas respecto al trail (por defecto = +1)")]
-    public int hitParticleSortingOrderOffset = 1;
-
-    [Header("Hit Particle Sorting (override)")]
-    [Tooltip("Si true, se usará hitParticleSortingLayer/hitParticleSortingOrder en lugar de trailSortingLayer + offset")]
-    public bool useAbsoluteHitParticleSorting = false;
-    public string hitParticleSortingLayer = "Default";
-    public int hitParticleSortingOrder = 100;
-    [Tooltip("Ajuste fino para desempates de orden (float)")]
-    public float hitParticleSortingFudge = 0f;
-    [Tooltip("Si true, creamos un material instanciado y forzamos su renderQueue a 4000 para asegurarlo encima de todo")]
-    public bool forceRenderQueueToAlwaysOnTop = false;
 
     [Header("Homing / Arrival")]
     public float arriveThreshold = 0.12f;    // distancia a la que consideramos "llegado"
@@ -64,13 +51,6 @@ public class Projectile2D : MonoBehaviour
             trailRenderer.sortingOrder = trailSortingOrder;
             trailRenderer.Clear();
             trailRenderer.emitting = false;
-        }
-
-        // Forzar que las partículas del prefab no se reproduzcan al instanciar el proyectil
-        if (hitParticlesPrefab != null)
-        {
-            var main = hitParticlesPrefab.main;
-            main.playOnAwake = false;
         }
     }
 
@@ -152,72 +132,9 @@ public class Projectile2D : MonoBehaviour
         ImpactAtPoint(transform.position);
     }
 
+    // Ahora solo devuelve el proyectil a la pool (sin instanciar partículas)
     private void ImpactAtPoint(Vector2 point)
     {
-        if (hitParticlesPrefab != null)
-        {
-            GameObject psGO = Instantiate(hitParticlesPrefab.gameObject, point, Quaternion.identity);
-            ParticleSystem ps = psGO.GetComponent<ParticleSystem>();
-            if (ps != null)
-            {
-                var main = ps.main;
-                main.simulationSpace = ParticleSystemSimulationSpace.World;
-
-                ParticleSystemRenderer psr = psGO.GetComponent<ParticleSystemRenderer>();
-                if (psr != null)
-                {
-                    // elegir layer/order: absoluto o relativo al trail
-                    if (useAbsoluteHitParticleSorting)
-                    {
-                        psr.sortingLayerName = hitParticleSortingLayer;
-                        psr.sortingOrder = hitParticleSortingOrder;
-                    }
-                    else
-                    {
-                        psr.sortingLayerName = trailSortingLayer;
-                        psr.sortingOrder = trailSortingOrder + hitParticleSortingOrderOffset;
-                    }
-
-                    // sortingFudge es un ajuste fino (float) que ayuda a desempatar en la ordenación
-                    psr.sortingFudge = hitParticleSortingFudge;
-
-                    // Si queremos forzar visualmente que quede por encima, instanciamos el material y subimos su renderQueue
-                    if (forceRenderQueueToAlwaysOnTop && psr.material != null)
-                    {
-                        // crear instancia del material (para no modificar sharedMaterial)
-                        Material matInstance = new Material(psr.material);
-                        // 4000 es la cola más alta por defecto (Overlay), asegurará que se dibuje encima
-                        matInstance.renderQueue = 4000;
-                        psr.material = matInstance;
-                    }
-                }
-
-                ps.transform.position = point;
-                ps.Play();
-
-                // Calcular tiempo de vida: duration + posible startLifetime máximo
-                float duration = main.duration;
-                float startLifetimeMax = 0f;
-                var startLifetime = main.startLifetime;
-
-                if (startLifetime.mode == ParticleSystemCurveMode.TwoConstants)
-                    startLifetimeMax = startLifetime.constantMax;
-                else if (startLifetime.mode == ParticleSystemCurveMode.Constant)
-                    startLifetimeMax = startLifetime.constant;
-                else
-                {
-                    try { startLifetimeMax = main.startLifetime.constantMax; } catch { startLifetimeMax = 0.5f; }
-                }
-
-                float destroyAfter = duration + startLifetimeMax + 0.1f;
-                Destroy(psGO, destroyAfter);
-            }
-            else
-            {
-                Destroy(psGO);
-            }
-        }
-
         ReturnToPoolWithTrailFade();
     }
 

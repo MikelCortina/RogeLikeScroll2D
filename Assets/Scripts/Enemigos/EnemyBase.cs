@@ -84,6 +84,11 @@ public class EnemyBase : MonoBehaviour
     private bool prevKinematic = false;
     private bool prevCanMove = true;
 
+    [Header("Death VFX")]
+    public ParticleSystem deathParticlesPrefab;      // asigna en el inspector (prefab de ParticleSystem)
+    public bool detachDeathParticles = true;         // true = desvincula partículas del enemigo (para que no se destruyan con él)
+    public float fallbackDeathParticlesLifetime = 3f; // si no se puede calcular la duración, se usa este valor
+
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -200,7 +205,6 @@ public class EnemyBase : MonoBehaviour
         // Detener Rigidbody2D si existe
         if (rb != null)
         {
-            // usa velocity en vez de linearVelocity por compatibilidad
             rb.linearVelocity = Vector2.zero;
 #if UNITY_2020_1_OR_NEWER
             rb.simulated = false;
@@ -212,6 +216,37 @@ public class EnemyBase : MonoBehaviour
         // Desactivar colisiones
         Collider2D[] cols = GetComponents<Collider2D>();
         foreach (var c in cols) c.enabled = false;
+
+        // --- INSTANTIAR PARTICULAS ANTES DE DESACTIVAR RENDERERS ----
+        if (deathParticlesPrefab != null)
+        {
+            ParticleSystem ps = Instantiate(deathParticlesPrefab, transform.position, Quaternion.identity);
+            if (detachDeathParticles)
+            {
+                ps.transform.SetParent(null);
+            }
+            else
+            {
+                // si no las desvinculas, parentéalas al enemigo (no recomendado si el enemigo se destruye rápido)
+                ps.transform.SetParent(transform);
+            }
+
+            // intentar calcular duración real de las partículas para destruir el objeto instanciado
+            try
+            {
+                var main = ps.main;
+                // startLifetime puede ser MinMaxCurve; usamos constantMax como aproximación
+                float startLifetimeMax = 0f;
+                try { startLifetimeMax = main.startLifetime.constantMax; } catch { startLifetimeMax = 0f; }
+                float duration = main.duration + startLifetimeMax;
+                if (duration <= 0f) duration = fallbackDeathParticlesLifetime;
+                Destroy(ps.gameObject, duration + 0.1f);
+            }
+            catch
+            {
+                Destroy(ps.gameObject, fallbackDeathParticlesLifetime);
+            }
+        }
 
         // Desactivar renderers (por si la animación o child renderers mantienen visible el sprite)
         var sr = GetComponent<SpriteRenderer>();
@@ -251,7 +286,6 @@ public class EnemyBase : MonoBehaviour
         // Si no hay cleanup específico, destruimos el objeto rápido
         Destroy(gameObject, 0.05f);
     }
-
 
 
     public float GetContactDamage() => adjustedContactDamage;
