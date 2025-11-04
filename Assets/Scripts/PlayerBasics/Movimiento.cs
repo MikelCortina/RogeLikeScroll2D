@@ -199,7 +199,7 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded)
         {
             if (Mathf.Abs(rb.linearVelocity.x) < speedThreshold)
-                PlayAnimationIfNotPlaying("Idle");
+                PlayAnimationIfNotPlaying("IdlePint");
             else if (rb.linearVelocity.x > speedThreshold)
                 PlayAnimationIfNotPlaying("HorsePaintRunRight");
             else if (rb.linearVelocity.x < -speedThreshold)
