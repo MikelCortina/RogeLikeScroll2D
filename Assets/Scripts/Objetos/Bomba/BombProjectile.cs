@@ -106,5 +106,7 @@ public class BombProjectile : MonoBehaviour
         {
             rb.simulated = true;
         }
+        rb.AddTorque(UnityEngine.Random.Range(-500f, 500f));
+
     }
 }

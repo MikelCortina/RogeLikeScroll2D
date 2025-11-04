@@ -201,7 +201,7 @@ public class PlayerMovement : MonoBehaviour
             if (Mathf.Abs(rb.linearVelocity.x) < speedThreshold)
                 PlayAnimationIfNotPlaying("Idle");
             else if (rb.linearVelocity.x > speedThreshold)
-                PlayAnimationIfNotPlaying("HorseRunRight");
+                PlayAnimationIfNotPlaying("HorsePaintRunRight");
             else if (rb.linearVelocity.x < -speedThreshold)
                 PlayAnimationIfNotPlaying("HorseRunLeft");
         }
