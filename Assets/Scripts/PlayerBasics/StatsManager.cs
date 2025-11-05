@@ -121,7 +121,14 @@ public class StatsManager : MonoBehaviour
     // --- Este es el metodo que finalmente otorga al jugador la experiencia total que ganara por eliminar el enemigo---
     public void GainXP(float xp)
     {
-        // Mostramos cu�nta XP se gana
+        // Si existe la UI y la cola está llena, descartamos la experiencia.
+        if (UpgradeUI.Instance != null && UpgradeUI.Instance.IsPendingFull)
+        {
+            Debug.Log("XP descartada: mejoras pendientes al máximo.");
+            return;
+        }
+
+        // Mostramos cuánta XP se gana
         Debug.Log($"Gained {xp} XP");
 
         currentXP += xp;

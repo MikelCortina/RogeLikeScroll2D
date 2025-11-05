@@ -1,5 +1,4 @@
-﻿// (El using y la cabecera permanecen igual que tu original)
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -45,7 +44,7 @@ public class SkillTreeUI : MonoBehaviour
     // runtime cost tracking: nodeId -> computed cost en esta run
     private Dictionary<string, int> runtimeCosts = new Dictionary<string, int>();
 
-    // mantiene el orden en que se instanciaron las familias (para encadenar costes entre familias)
+    // mantiene el orden en que se instanciaron las familias (para encadenar costes entre familias) [no usado en la versión simplificada]
     private List<string> spawnedFamilyOrder = new List<string>();
 
     private HashSet<string> unlocked = new HashSet<string>();
@@ -82,6 +81,12 @@ public class SkillTreeUI : MonoBehaviour
         [Tooltip("Lista de nodeIds requeridos (dos o más). Deben ser nodos finales (últimos) de distintas familias.")]
         public List<string> requiredNodeIds = new List<string>();
     }
+
+    // *** NUEVO: seguimiento del último coste comprado (solo informativo)
+    private int lastPurchasedCost = -1;
+
+    // *** NUEVO: coste global del siguiente objeto a comprar (siempre se duplica tras cada compra)
+    private int nextPurchaseCostRuntime = -1;
 
     private void Awake()
     {
@@ -181,6 +186,12 @@ public class SkillTreeUI : MonoBehaviour
 
         // limpiar costes runtime
         runtimeCosts.Clear();
+
+        // reset del último coste comprado en la run
+        lastPurchasedCost = -1;
+
+        // *** NUEVO: primer coste global = fijo
+        nextPurchaseCostRuntime = defaultFirstNodeCost;
     }
 
     // -------------------------
@@ -202,7 +213,6 @@ public class SkillTreeUI : MonoBehaviour
         return familiesFound.Count >= 2;
     }
 
-    // -> MODIFICADO: usar coste efectivo runtime
     public bool CanUnlock(ItemNode node)
     {
         if (node == null) return false;
@@ -246,7 +256,54 @@ public class SkillTreeUI : MonoBehaviour
 
         ApplyEffect(node);
         unlocked.Add(node.nodeId);
+
+        // *** NUEVO: actualizar tracking de compra y el coste global siguiente
+        if (cost > 0)
+        {
+            lastPurchasedCost = cost;
+            runtimeCosts[node.nodeId] = cost;
+
+            long doubled = (long)cost * 2L;
+            if (doubled > int.MaxValue) nextPurchaseCostRuntime = int.MaxValue;
+            else nextPurchaseCostRuntime = (int)doubled;
+
+            // *** NUEVO: actualizar el coste mostrado de TODOS los no comprados al nuevo global
+            UpdateAllUnpurchasedRuntimeCostsToGlobal();
+        }
+
         RefreshAllInstantiatedButtons();
+    }
+
+    private void UpdateAllUnpurchasedRuntimeCostsToGlobal()
+    {
+        if (nextPurchaseCostRuntime <= 0) nextPurchaseCostRuntime = defaultFirstNodeCost;
+
+        // Actualizar botones instanciados por contenedor
+        foreach (var kv in instantiatedButtonsPerContainer)
+        {
+            var list = kv.Value;
+            if (list == null) continue;
+            foreach (var b in list)
+            {
+                if (b == null || b.node == null) continue;
+                string id = b.node.nodeId;
+                if (!IsUnlocked(id))
+                {
+                    runtimeCosts[id] = nextPurchaseCostRuntime;
+                }
+            }
+        }
+
+        // Actualizar nodos mixtos instanciados (si aplican)
+        foreach (var kv in instantiatedMixedNodes)
+        {
+            var btn = kv.Value;
+            if (btn == null || btn.node == null) continue;
+            if (!IsUnlocked(btn.node.nodeId))
+            {
+                runtimeCosts[btn.node.nodeId] = nextPurchaseCostRuntime;
+            }
+        }
     }
 
     private void RemoveEffect(ItemNode node)
@@ -338,7 +395,7 @@ public class SkillTreeUI : MonoBehaviour
             var inst = Instantiate(prefabToUse, parent, worldPositionStays: false);
             inst.name = $"{prefabToUse.name}_inst_{node.nodeId}";
 
-            // asignar coste runtime si no existe
+            // asignar coste runtime si no existe (usará el coste global actual)
             ComputeAndAssignCostsForFamily(family);
 
             inst.SetNode(node);
@@ -406,7 +463,6 @@ public class SkillTreeUI : MonoBehaviour
         List<SkillNodeButton> created = new List<SkillNodeButton>();
         int createdCount = 0;
 
-        // antes de instanciar, registrar la familia en el orden (para el cálculo encadenado)
         spawnedFamilyOrder.Add(familyName);
 
         for (int i = 0; i < family.nodes.Length; i++)
@@ -423,7 +479,7 @@ public class SkillTreeUI : MonoBehaviour
                 continue;
             }
 
-            // calcular y asignar costes runtime (si no están calculados)
+            // calcular y asignar costes runtime (tomará el coste global actual)
             ComputeAndAssignCostsForFamily(family);
 
             var inst = Instantiate(prefabToUse, familyRoot.transform, worldPositionStays: false);
@@ -645,13 +701,11 @@ public class SkillTreeUI : MonoBehaviour
                     if (activeFamilyNames.Contains(familyName))
                         activeFamilyNames.Remove(familyName);
 
-                    // también quitar del orden de spawn si existe
                     if (spawnedFamilyOrder.Contains(familyName))
                         spawnedFamilyOrder.Remove(familyName);
                 }
             }
 
-            // al borrar una familia, eliminar sus costes runtime (si existieran)
             var btnsInside = t.GetComponentsInChildren<SkillNodeButton>();
             foreach (var b in btnsInside)
             {
@@ -705,6 +759,12 @@ public class SkillTreeUI : MonoBehaviour
         runtimeCosts.Clear();
         spawnedFamilyOrder.Clear();
         activeFamilyNames.Clear();
+
+        // reset último coste comprado también
+        lastPurchasedCost = -1;
+
+        // *** NUEVO: reset del coste global del siguiente objeto
+        nextPurchaseCostRuntime = defaultFirstNodeCost;
     }
 
     private void RefreshAllInstantiatedButtons()
@@ -738,7 +798,7 @@ public class SkillTreeUI : MonoBehaviour
     }
 
     // -------------------------
-    // Mixed nodes helpers (sin cambios funcionales importantes)
+    // Mixed nodes helpers
     // -------------------------
     private bool IsLastNodeInItsFamily(ItemNode node)
     {
@@ -802,11 +862,11 @@ public class SkillTreeUI : MonoBehaviour
     {
         if (mixedNodes == null || mixedNodes.Count == 0)
         {
-            if (instantiatedMixedNodes.Count > 0) Debug.Log("[SkillTreeUI] No hay mixedNodes definidos; destruyendo instancias mixtas existentes.");
-            foreach (var kv in instantiatedMixedNodes)
-            {
-                if (kv.Value != null) Destroy(kv.Value.gameObject);
-            }
+            if (instantiatedMixedNodes.Count > 0)
+                foreach (var kv in instantiatedMixedNodes)
+                {
+                    if (kv.Value != null) Destroy(kv.Value.gameObject);
+                }
             instantiatedMixedNodes.Clear();
             return;
         }
@@ -815,12 +875,10 @@ public class SkillTreeUI : MonoBehaviour
         {
             if (entry == null || entry.mixedNode == null || entry.requiredNodeIds == null || entry.requiredNodeIds.Count < 2)
             {
-                Debug.LogWarning("[SkillTreeUI] MixedNodeEntry inválido o con menos de 2 requeridos.");
                 continue;
             }
 
             string mixedId = entry.mixedNode.nodeId;
-            Debug.Log($"[SkillTreeUI] Comprobando mixedNode '{mixedId}' (requiere {entry.requiredNodeIds.Count} nodos).");
 
             List<SkillNodeButton> requiredButtons = new List<SkillNodeButton>();
             HashSet<string> familyNames = new HashSet<string>();
@@ -831,14 +889,12 @@ public class SkillTreeUI : MonoBehaviour
                 var btn = FindInstantiatedButtonByNodeId(reqId);
                 if (btn == null)
                 {
-                    Debug.Log($"[SkillTreeUI] Requerido '{reqId}' NO encontrado instanciado para mixed '{mixedId}'.");
                     allPresentAndLast = false;
                     break;
                 }
 
                 if (!IsLastNodeInItsFamily(btn.node))
                 {
-                    Debug.Log($"[SkillTreeUI] Requerido '{reqId}' encontrado pero NO es último nodo de su familia para mixed '{mixedId}'.");
                     allPresentAndLast = false;
                     break;
                 }
@@ -853,7 +909,6 @@ public class SkillTreeUI : MonoBehaviour
             {
                 if (!AllRequiredFamiliesPresent(requiredButtons))
                 {
-                    Debug.Log($"[SkillTreeUI] No todas las familias de los nodos requeridos para mixed '{mixedId}' están instanciadas todavía.");
                     allPresentAndLast = false;
                 }
             }
@@ -924,13 +979,22 @@ public class SkillTreeUI : MonoBehaviour
     }
 
     // -------------------------
-    // Utilities (nuevo metodo de coste runtime)
+    // Utilities (coste runtime global)
     // -------------------------
-    // Devuelve el coste efectivo (runtime) de un ItemNode: si se calculó, lo devuelve; si no, devuelve node.cost (o defaultFirstNodeCost)
+    // Devuelve el coste efectivo (runtime) de un ItemNode:
+    // 1) si se calculó en runtimeCosts, úsalo
+    // 2) si no, usa el coste global actual (nextPurchaseCostRuntime)
+    // 3) como último fallback, node.cost o defaultFirstNodeCost
     public int GetNodeEffectiveCost(ItemNode node)
     {
         if (node == null) return 0;
-        if (runtimeCosts.TryGetValue(node.nodeId, out int v)) return v;
+
+        if (runtimeCosts.TryGetValue(node.nodeId, out int v))
+            return v;
+
+        if (nextPurchaseCostRuntime > 0)
+            return nextPurchaseCostRuntime;
+
         if (node.cost > 0) return node.cost;
         return defaultFirstNodeCost;
     }
@@ -952,117 +1016,24 @@ public class SkillTreeUI : MonoBehaviour
     }
 
     // -------------------------
-    // Calculo de costes runtime por familia
+    // Cálculo de costes runtime por familia (versión simplificada: coste global)
     // -------------------------
-    // Calcula y asigna costes en runtime para todos los nodos de la familia si aún no existen.
     private void ComputeAndAssignCostsForFamily(SkillFamily family)
     {
         if (family == null) return;
-        string familyName = string.IsNullOrEmpty(family.name) ? family.GetInstanceID().ToString() : family.name;
 
-        // si ya habíamos calculado costes para los nodos de esta familia (al menos uno), no rehacer
-        bool anyUnassigned = false;
-        foreach (var n in family.nodes)
-        {
-            if (n == null) continue;
-            if (!runtimeCosts.ContainsKey(n.nodeId)) { anyUnassigned = true; break; }
-        }
-        if (!anyUnassigned) return;
+        if (nextPurchaseCostRuntime <= 0) nextPurchaseCostRuntime = defaultFirstNodeCost;
 
-        // determinar coste inicial anterior global (último coste calculado en la run)
-        int lastGlobalCost = -1;
-        if (runtimeCosts.Count > 0)
-        {
-            // tomar el último valor de runtimeCosts (no hay order intrínseco), preferimos usar spawnedFamilyOrder para hallar el último nodo calculado
-            // buscamos la última familia del spawnedFamilyOrder que tenga nodos con runtimeCosts y tomamos su último nodo coste
-            for (int i = spawnedFamilyOrder.Count - 1; i >= 0; i--)
-            {
-                string fam = spawnedFamilyOrder[i];
-                // buscar si fam coincide con familyName: si es la misma familia entonces lastGlobalCost será computed en el bucle de abajo
-                // buscamos nodos instanciados pertenecientes a esa familia en instantiatedButtonsPerContainer
-                bool found = false;
-                foreach (var kv in instantiatedButtonsPerContainer)
-                {
-                    var btns = kv.Value;
-                    if (btns == null) continue;
-                    foreach (var b in btns)
-                    {
-                        if (b == null || b.node == null) continue;
-                        var root = GetFamilyRootForButton(b.transform);
-                        if (root != null && root.name.Contains(fam))
-                        {
-                            if (runtimeCosts.TryGetValue(b.node.nodeId, out int c))
-                            {
-                                lastGlobalCost = c;
-                                found = true;
-                            }
-                        }
-                    }
-                    if (found) break;
-                }
-                if (found) break;
-            }
-        }
-
-        // Si no hay lastGlobalCost, intentamos tomar cualquier coste runtime existente
-        if (lastGlobalCost < 0 && runtimeCosts.Count > 0)
-        {
-            lastGlobalCost = runtimeCosts.Values.Last();
-        }
-
-        // Si aún no hay coste anterior, tomaremos el primero definido por el scriptable o el default
-        int previousCostInFamily = -1;
         for (int i = 0; i < family.nodes.Length; i++)
         {
             var node = family.nodes[i];
             if (node == null) continue;
 
-            if (runtimeCosts.ContainsKey(node.nodeId)) // ya asignado, actualizar previousCostInFamily
-            {
-                previousCostInFamily = runtimeCosts[node.nodeId];
-                continue;
-            }
+            // Si el nodo ya está desbloqueado, respetamos su coste histórico (ya en runtimeCosts)
+            if (unlocked.Contains(node.nodeId)) continue;
 
-            int computed = 0;
-            if (i == 0)
-            {
-                // primer nodo de la familia
-                if (spawnedFamilyOrder.Count > 1)
-                {
-                    // hay familias previas: encadenar con el último coste global si existe
-                    if (lastGlobalCost > 0)
-                        computed = lastGlobalCost * 2;
-                    else
-                    {
-                        // si no hay lastGlobalCost, usar node.cost o default
-                        computed = (node.cost > 0) ? node.cost : defaultFirstNodeCost;
-                    }
-                }
-                else
-                {
-                    // es la primera familia instanciada (o la lista spawnedFamilyOrder todavía tiene un único entry)
-                    computed = (node.cost > 0) ? node.cost : defaultFirstNodeCost;
-                }
-            }
-            else
-            {
-                // no es el primer nodo de la familia -> doble del anterior en esta familia
-                if (previousCostInFamily > 0)
-                    computed = previousCostInFamily * 2;
-                else
-                {
-                    // fallback: usar node.cost o default
-                    int basec = (node.cost > 0) ? node.cost : defaultFirstNodeCost;
-                    computed = basec * (int)Mathf.Pow(2, i); // aproximación
-                }
-            }
-
-            // evitar overflow y mantener dentro de int razonable
-            if (computed < 0 || computed > int.MaxValue / 2) computed = int.MaxValue / 2;
-
-            runtimeCosts[node.nodeId] = computed;
-            previousCostInFamily = computed;
-            lastGlobalCost = computed;
+            // Asignar/actualizar el coste mostrado al coste global actual
+            runtimeCosts[node.nodeId] = Mathf.Clamp(nextPurchaseCostRuntime, 0, int.MaxValue / 2);
         }
     }
 }

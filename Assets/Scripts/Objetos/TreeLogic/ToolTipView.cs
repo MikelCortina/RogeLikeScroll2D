@@ -39,7 +39,7 @@ public class TooltipView : MonoBehaviour
             else
                 effectiveCost = node.cost > 0 ? node.cost : 0;
         }
-        if (costText != null) costText.text = effectiveCost > 0 ? $"Cost: {effectiveCost}" : "";
+        if (costText != null) costText.text = effectiveCost > 0 ? $" {effectiveCost}" : "";
 
         // --- limpiar entradas previas ---
         foreach (var go in spawnedEntries) if (go != null) Destroy(go);
