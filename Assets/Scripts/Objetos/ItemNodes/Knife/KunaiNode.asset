@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeId: KunaiNode
   displayName: ReturningKunai
-  icon: {fileID: 21300000, guid: cf118bb26b8edd641ac5e758c73d434d, type: 3}
+  icon: {fileID: 5367214782706777499, guid: c23d80b0edca55246b0d7038fc7d6c82, type: 3}
   description: "Ahora los cuchillos vuelven al alcanzar su distancia maxima o chocar
     con las dunas, lo cual hace que da\xF1e a los enemigos a la vuelta"
   effectToActivate: {fileID: 11400000, guid: b0f0a05cea0abc74e8471b2c3750fb3e, type: 2}

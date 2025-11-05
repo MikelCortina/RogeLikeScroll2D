@@ -14,6 +14,11 @@ public class ProjectileReturn : MonoBehaviour
     private bool hasCollected = false;
     private bool returnRequested = false; // evitar múltiples solicitudes de retorno
 
+    // --- Para detectar y voltear según dirección ---
+    private bool facingRight = true;
+    private Vector2 lastPosition;
+    private float flipThreshold = 0.05f; // umbral para evitar jitter
+
     // Inicializar desde el effect
     public void Initialize(SpawnTwoProjectilesReturningEffect parent, int projectileIndex, float returnSpeed, float collectDistance, float maxDistance)
     {
@@ -23,6 +28,10 @@ public class ProjectileReturn : MonoBehaviour
         this.collectDistance = collectDistance;
         this.maxDistance = maxDistance;
         rb = GetComponent<Rigidbody2D>();
+
+        // establecer estado inicial de facing según la escala local
+        facingRight = transform.localScale.x >= 0f;
+        lastPosition = transform.position;
     }
 
     // Resetear estado cada vez que se relanza
@@ -33,15 +42,31 @@ public class ProjectileReturn : MonoBehaviour
         hasCollected = false;
         returnRequested = false;
 
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
+
         if (rb != null)
         {
             rb.simulated = true;
+            // intentar compatibilidad con 'linearVelocity' si tu proyecto la usa
+            try
+            {
+                var prop = rb.GetType().GetProperty("linearVelocity");
+                if (prop != null) prop.SetValue(rb, Vector2.zero, null);
+            }
+            catch { }
+
             rb.linearVelocity = Vector2.zero;
         }
 
         // activar collider en caso de que estuviera desactivado
         var col = GetComponent<Collider2D>();
         if (col != null) col.enabled = true;
+
+        // actualizar lastPosition para la detección de movimiento
+        lastPosition = transform.position;
+
+        // asegurar facingRight acorde a la escala actual (por si lo cambiaste en prefab)
+        facingRight = transform.localScale.x >= 0f;
 
         gameObject.name = $"ReturningProj_{index}_active";
         Debug.Log($"[ProjectileReturn] ResetState idx={index}, owner={(owner != null ? owner.name : "NULL")}");
@@ -73,7 +98,12 @@ public class ProjectileReturn : MonoBehaviour
             }
         }
 
-        if (!isReturning || owner == null) return;
+        if (!isReturning || owner == null)
+        {
+            // aunque no esté retornando, actualizamos facing para que mire según movimiento
+            HandleFacing();
+            return;
+        }
 
         Vector2 toOwner = (Vector2)owner.transform.position - (Vector2)transform.position;
         float dist = toOwner.magnitude;
@@ -81,6 +111,14 @@ public class ProjectileReturn : MonoBehaviour
         if (rb != null)
         {
             Vector2 vel = toOwner.normalized * returnSpeed;
+            // intentar compatibilidad con 'linearVelocity' si existe
+            try
+            {
+                var prop = rb.GetType().GetProperty("linearVelocity");
+                if (prop != null) prop.SetValue(rb, vel, null);
+            }
+            catch { }
+
             rb.linearVelocity = vel;
         }
         else
@@ -88,10 +126,66 @@ public class ProjectileReturn : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, owner.transform.position, returnSpeed * Time.deltaTime);
         }
 
+        // chequear facing mientras vuelve (apunta hacia la dirección de movimiento)
+        HandleFacing();
+
         if (dist <= collectDistance)
         {
             Collect();
         }
+    }
+
+    private void HandleFacing()
+    {
+        float moveX = 0f;
+
+        if (rb != null)
+        {
+            moveX = rb.linearVelocity.x;
+            // si velocity es prácticamente cero, intentar leer linearVelocity por reflexión (compatibilidad)
+            if (Mathf.Abs(moveX) < 0.0001f)
+            {
+                try
+                {
+                    var prop = rb.GetType().GetProperty("linearVelocity");
+                    if (prop != null)
+                    {
+                        var val = prop.GetValue(rb, null);
+                        if (val is Vector2 lv) moveX = lv.x;
+                    }
+                }
+                catch { }
+            }
+        }
+        else
+        {
+            // fallback por delta posición
+            Vector2 delta = (Vector2)transform.position - lastPosition;
+            moveX = delta.x / Mathf.Max(Time.deltaTime, 1e-6f);
+        }
+
+        // aplicamos umbral para evitar jitter
+        if (Mathf.Abs(moveX) > flipThreshold)
+        {
+            if (moveX > 0f && !facingRight)
+            {
+                Flip();
+            }
+            else if (moveX < 0f && facingRight)
+            {
+                Flip();
+            }
+        }
+
+        lastPosition = transform.position;
+    }
+
+    private void Flip()
+    {
+        facingRight = !facingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1f;
+        transform.localScale = scale;
     }
 
     private void Collect()
@@ -100,7 +194,17 @@ public class ProjectileReturn : MonoBehaviour
         hasCollected = true;
         isReturning = false;
         returnRequested = false;
-        if (rb != null) rb.linearVelocity = Vector2.zero;
+        if (rb != null)
+        {
+            try
+            {
+                var prop = rb.GetType().GetProperty("linearVelocity");
+                if (prop != null) prop.SetValue(rb, Vector2.zero, null);
+            }
+            catch { }
+
+            rb.linearVelocity = Vector2.zero;
+        }
         Debug.Log($"[ProjectileReturn] idx={index} collected");
         parentEffect?.NotifyCollected(index);
     }
@@ -124,7 +228,7 @@ public class ProjectileReturn : MonoBehaviour
             Debug.Log($"[ProjectileReturn] idx={index} OnTrigger with {other.name} ({other.tag}). Requesting return.");
             parentEffect?.RequestReturn(index);
         }
-        else if  (other.CompareTag("enemigo"))
+        else if (other.CompareTag("enemigo"))
         {
             EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
             if (enemy != null)
@@ -132,7 +236,6 @@ public class ProjectileReturn : MonoBehaviour
                 Debug.Log("KnifeProjectile2D: Impacto con enemigo, aplicando daño y destruyendo proyectil.");
                 float dmg = StatsCommunicator.Instance.CalculateGunDamage();
                 enemy.TakeContactDamage(dmg);
-              
             }
         }
     }

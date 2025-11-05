@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeId: EmpujeKnifeNode
   displayName: EmpujeKnife
-  icon: {fileID: 0}
+  icon: {fileID: -8447339325594720109, guid: 51d435404a14a894db48aab22ce86e69, type: 3}
   description: "Ahora lo kunais tambien alejan a los enemigos de ti dificultando
     recibir da\xF1o a mele"
   effectToActivate: {fileID: 11400000, guid: a99f8f7266cf83a42ac8c5a788a1da8b, type: 2}

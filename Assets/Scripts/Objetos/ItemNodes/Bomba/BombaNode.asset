@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeId: BombaParabolicaNode
   displayName: BombaParab
-  icon: {fileID: 21300000, guid: 7078d532c0cd5af409d2234c97e5f6fd, type: 3}
+  icon: {fileID: 1802791925802439004, guid: 1ea07aa1572b8564592591c3abe41351, type: 3}
   description: "Un peque\xF1o explosivo que se lanza con ojetivos puramente disuasorios"
   effectToActivate: {fileID: 11400000, guid: 6bef2bf443f94594e9ecc413c622631d, type: 2}
   buttonPrefab: {fileID: 0}

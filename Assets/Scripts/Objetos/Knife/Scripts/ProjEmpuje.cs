@@ -22,6 +22,11 @@ public class ProjectileEmpuje : MonoBehaviour
     // TRACKEO de enemigos "adjuntados" al proyectil
     private HashSet<EnemyBase> attachedEnemies = new HashSet<EnemyBase>();
 
+    // --- Para detectar y voltear según dirección ---
+    private bool facingRight = true;
+    private Vector2 lastPosition;
+    private float flipThreshold = 0.05f; // umbral para evitar jitter
+
     // Inicializar desde el effect
     public void Initialize(SpawnTwoProjectilesEmpujeEffect parent, int projectileIndex, float returnSpeed, float collectDistance, float maxDistance, float pushForce)
     {
@@ -32,6 +37,10 @@ public class ProjectileEmpuje : MonoBehaviour
         this.maxDistance = maxDistance;
         this.pushForce = pushForce;
         rb = GetComponent<Rigidbody2D>();
+
+        // establecer estado inicial de facing según la escala local
+        facingRight = transform.localScale.x >= 0f;
+        lastPosition = transform.position;
     }
 
     // Resetear estado cada vez que se relanza
@@ -43,15 +52,31 @@ public class ProjectileEmpuje : MonoBehaviour
         returnRequested = false;
         attachedEnemies.Clear();
 
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
+
         if (rb != null)
         {
             rb.simulated = true;
+            // Si tu proyecto usa "linearVelocity" explícitamente, mantenlo. Aquí intentamos también asegurar velocity por si acaso:
+            try
+            {
+                // intentar asignar linearVelocity si existe (si no, se lanzará y caerá al siguiente)
+                rb.GetType().GetProperty("linearVelocity")?.SetValue(rb, Vector2.zero, null);
+            }
+            catch { /* si no existe, lo ignoramos */ }
+
             rb.linearVelocity = Vector2.zero;
         }
 
         // activar collider en caso de que estuviera desactivado
         var col = GetComponent<Collider2D>();
         if (col != null) col.enabled = true;
+
+        // actualizar lastPosition para la detección de movimiento
+        lastPosition = transform.position;
+
+        // asegurar facingRight acorde a la escala actual (por si lo cambiaste en prefab)
+        facingRight = transform.localScale.x >= 0f;
 
         gameObject.name = $"EmpujeProj_{index}_active";
         Debug.Log($"[ProjectileEmpuje] ResetState idx={index}, owner={(owner != null ? owner.name : "NULL")}");
@@ -93,7 +118,12 @@ public class ProjectileEmpuje : MonoBehaviour
             }
         }
 
-        if (!isReturning || owner == null) return;
+        if (!isReturning || owner == null)
+        {
+            // Aun cuando no esté retornando, queremos detectar la dirección de movimiento para voltear sprite
+            HandleFacing();
+            return;
+        }
 
         Vector2 toOwner = (Vector2)owner.transform.position - (Vector2)transform.position;
         float dist = toOwner.magnitude;
@@ -101,6 +131,13 @@ public class ProjectileEmpuje : MonoBehaviour
         if (rb != null)
         {
             Vector2 vel = toOwner.normalized * returnSpeed;
+            // intentar mantener compatibilidad con 'linearVelocity' si tu proyecto la usa
+            try
+            {
+                rb.GetType().GetProperty("linearVelocity")?.SetValue(rb, vel, null);
+            }
+            catch { /* ignore */ }
+
             rb.linearVelocity = vel;
         }
         else
@@ -108,10 +145,67 @@ public class ProjectileEmpuje : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, owner.transform.position, returnSpeed * Time.deltaTime);
         }
 
+        // chequear facing mientras vuelve (apunta hacia la dirección de movimiento)
+        HandleFacing();
+
         if (dist <= collectDistance)
         {
             Collect();
         }
+    }
+
+    private void HandleFacing()
+    {
+        float moveX = 0f;
+        bool haveMotion = false;
+
+        if (rb != null)
+        {
+            moveX = rb.linearVelocity.x;
+            // si velocity es prácticamente cero, puede que el proyectil esté usando una propiedad 'linearVelocity' custom: intentar leerla
+            if (Mathf.Abs(moveX) < 0.0001f)
+            {
+                // intento reflect para linearVelocity (si existe)
+                var prop = rb.GetType().GetProperty("linearVelocity");
+                if (prop != null)
+                {
+                    var val = prop.GetValue(rb, null);
+                    if (val is Vector2 lv) moveX = lv.x;
+                }
+            }
+
+            haveMotion = Mathf.Abs(moveX) > 0f;
+        }
+        else
+        {
+            // fallback: calcular por delta posición
+            Vector2 delta = (Vector2)transform.position - lastPosition;
+            moveX = delta.x / Mathf.Max(Time.deltaTime, 1e-6f);
+            haveMotion = delta.sqrMagnitude > 0f;
+        }
+
+        // aplicamos umbral para evitar jitter
+        if (Mathf.Abs(moveX) > flipThreshold)
+        {
+            if (moveX > 0f && !facingRight)
+            {
+                Flip();
+            }
+            else if (moveX < 0f && facingRight)
+            {
+                Flip();
+            }
+        }
+
+        lastPosition = transform.position;
+    }
+
+    private void Flip()
+    {
+        facingRight = !facingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1f;
+        transform.localScale = scale;
     }
 
     private void Collect()
@@ -120,7 +214,15 @@ public class ProjectileEmpuje : MonoBehaviour
         hasCollected = true;
         isReturning = false;
         returnRequested = false;
-        if (rb != null) rb.linearVelocity = Vector2.zero;
+        if (rb != null)
+        {
+            try
+            {
+                rb.GetType().GetProperty("linearVelocity")?.SetValue(rb, Vector2.zero, null);
+            }
+            catch { }
+            rb.linearVelocity = Vector2.zero;
+        }
         Debug.Log($"[ProjectileEmpuje] idx={index} collected");
         parentEffect?.NotifyCollected(index);
 

@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeId: OscilatorDroneNode
   displayName: OscilatorDrone
-  icon: {fileID: -6683355446532405209, guid: 6027750f026c0b64588b624420bb8349, type: 3}
+  icon: {fileID: 2562202476968734119, guid: 2122fd402bee87847b82263c88c0b7b8, type: 3}
   description: Ahora el dron oscila? No creo que sea para abarcar mas espacio en
     combate
   effectToActivate: {fileID: 11400000, guid: 8469309421653ff4fbdde429f7f80fe2, type: 2}
-  buttonPrefab: {fileID: 6132550699764224401, guid: eb1c1efbd5cecf94497bfbc89867042e, type: 3}
+  buttonPrefab: {fileID: 0}
   cost: 0
   requiredEffectIdsToRemove:
   - {fileID: 11400000, guid: 8508622077dbba149aa3696f2079aa3c, type: 2}

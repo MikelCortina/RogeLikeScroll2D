@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Knife
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 1979434595378990830, guid: b8a0232368ff6444cb9a470c0080f654, type: 3}
-  speed: 8
+  speed: 6
   lifetime: 4
   spawnInterval: 2
   localSpawnOffset: {x: 0, y: 0}

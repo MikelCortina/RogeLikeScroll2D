@@ -8,9 +8,14 @@ public class KnifeProjectile2D : MonoBehaviour
 
     [Tooltip("Tiempo en segundos antes de destruir el proyectil automáticamente.")]
     public float lifetime = 4f;
+
+    private Rigidbody2D rb;
+    private bool facingRight = true;
+
     private void Awake()
     {
-        if (TryGetComponent<Rigidbody2D>(out var rb))
+        rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
         {
             Debug.Log("[KnifeProjectile2D] Rigidbody2D found.");
         }
@@ -23,11 +28,37 @@ public class KnifeProjectile2D : MonoBehaviour
         if (col != null) Debug.Log("[KnifeProjectile2D] Collider2D found, isTrigger=" + col.isTrigger);
         else Debug.LogWarning("[KnifeProjectile2D] No Collider2D on prefab!");
     }
+
     private void Start()
     {
         // Destruir automáticamente después de 'lifetime' segundos
         Destroy(gameObject, lifetime);
     }
+
+    private void Update()
+    {
+        // Detectar dirección y voltear sprite si cambia
+        if (rb != null)
+        {
+            if (rb.linearVelocity.x > 0 && !facingRight)
+            {
+                Flip();
+            }
+            else if (rb.linearVelocity.x < 0 && facingRight)
+            {
+                Flip();
+            }
+        }
+    }
+
+    private void Flip()
+    {
+        facingRight = !facingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
+    }
+
     private void OnEnable()
     {
         Debug.Log("[KnifeProjectile2D] enabled");
@@ -50,7 +81,7 @@ public class KnifeProjectile2D : MonoBehaviour
             {
                 Debug.Log("KnifeProjectile2D: Impacto con enemigo, aplicando daño y destruyendo proyectil.");
                 float dmg = StatsCommunicator.Instance.CalculateGunDamage();
-                enemy.TakeContactDamage(dmg);      
+                enemy.TakeContactDamage(dmg);
             }
         }
     }

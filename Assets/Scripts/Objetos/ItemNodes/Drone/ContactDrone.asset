@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeId: ContactDroneNode
   displayName: ContactDrone
-  icon: {fileID: 8108805326699794044, guid: 7ed0155a3af5fee4a86c97383a98c2e5, type: 3}
+  icon: {fileID: -5093623974958931509, guid: c3b4b3ff4f544fb48ac701e71434c2c1, type: 3}
   description: Los drones en batalla tienen finalidades puramente de inteligencia,
     o no? Si fuese un enemiigo intentaria no chocar con el de todas formas
   effectToActivate: {fileID: 11400000, guid: baf58b071b586b84094211356bdb75fd, type: 2}

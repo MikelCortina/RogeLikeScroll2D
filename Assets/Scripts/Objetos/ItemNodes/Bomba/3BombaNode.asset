@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeId: 3BombaParabolicaNode
   displayName: 3BombaParab
-  icon: {fileID: 21300000, guid: 7078d532c0cd5af409d2234c97e5f6fd, type: 3}
+  icon: {fileID: -4428738253031623342, guid: 79799727ec863c745819e5b9ae0c4305, type: 3}
   description: 3 explosivos siguen siendo disuarorios
   effectToActivate: {fileID: 11400000, guid: dd566fe0b0b132e49ba9bb529c6a11f3, type: 2}
   buttonPrefab: {fileID: 0}

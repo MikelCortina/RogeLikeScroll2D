@@ -88,6 +88,8 @@ public class SkillTreeUI : MonoBehaviour
     // *** NUEVO: coste global del siguiente objeto a comprar (siempre se duplica tras cada compra)
     private int nextPurchaseCostRuntime = -1;
 
+    public TextMeshProUGUI precioRefresh;
+
     private void Awake()
     {
         playerResources = GameObject.FindWithTag("Player")?.GetComponent<PlayerResources>();
@@ -127,6 +129,10 @@ public class SkillTreeUI : MonoBehaviour
     private void OnDestroy()
     {
         UnsubscribeCurrency();
+    }
+    private void Update()
+    {
+        precioRefresh.text = nextSpawnCost.ToString();
     }
 
     private IEnumerator SubscribeToCurrencyWhenReady()
