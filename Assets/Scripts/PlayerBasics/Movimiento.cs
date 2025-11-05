@@ -145,7 +145,7 @@ public class PlayerMovement : MonoBehaviour
 
             isJumping = true;
             isGrounded = false;
-            PlayAnimationOnce("HorseJump");
+            PlayAnimationOnce("HorseJumpPint");
             jumpPressed = false;
         }
 
@@ -203,7 +203,7 @@ public class PlayerMovement : MonoBehaviour
             else if (rb.linearVelocity.x > speedThreshold)
                 PlayAnimationIfNotPlaying("HorsePaintRunRight");
             else if (rb.linearVelocity.x < -speedThreshold)
-                PlayAnimationIfNotPlaying("HorseRunLeft");
+                PlayAnimationIfNotPlaying("HorseRunLeftPint");
         }
     }
 
