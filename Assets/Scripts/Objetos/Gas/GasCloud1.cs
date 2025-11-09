@@ -31,10 +31,7 @@ public class GasCloud : MonoBehaviour
 
     private void Awake()
     {
-        circle = GetComponent<CircleCollider2D>();
-        if (circle == null) circle = gameObject.AddComponent<CircleCollider2D>();
-        circle.isTrigger = true;
-        circle.radius = radius;
+
     }
 
     /// <summary>
@@ -66,9 +63,7 @@ public class GasCloud : MonoBehaviour
             this.radius = gasRadius > 0f ? gasRadius : this.radius;
         }
 
-        // aplicar al collider
-        if (circle == null) circle = GetComponent<CircleCollider2D>();
-        if (circle != null) circle.radius = this.radius;
+  
 
         // iniciar vida y ticks
         lifeCoroutine = StartCoroutine(CloudLife());
@@ -193,7 +188,7 @@ public class GasCloud : MonoBehaviour
         if (lifeCoroutine != null) StopCoroutine(lifeCoroutine);
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         Gizmos.color = new Color(0.6f, 0.8f, 1f, 0.3f);
         Gizmos.DrawSphere(transform.position, radius);
