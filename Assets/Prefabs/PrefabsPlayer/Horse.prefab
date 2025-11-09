@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5160224271494268727}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: JumpTrigger
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -31,6 +31,75 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6959890658855805926}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1774693017724405386
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8497763170363275345}
+  - component: {fileID: 80067863042682829}
+  - component: {fileID: 2233900039562085183}
+  m_Layer: 12
+  m_Name: Spawner
+  m_TagString: Horse
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8497763170363275345
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774693017724405386}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.26699984, y: 3.7138462, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6959890658855805926}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &80067863042682829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774693017724405386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b971f62955aba44d8d1cf6f5f27c74e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effectSpawner: {fileID: 2233900039562085183}
+  startOnStart: 1
+  startDelay: 0
+  spawnPointChild: {fileID: 0}
+--- !u!114 &2233900039562085183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774693017724405386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab656f502ff264f43a8a1c822c9f80cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effects:
+  - {fileID: 11400000, guid: 2add402aeb5ec9343a30b5c77ac9b38e, type: 2}
+  - {fileID: 11400000, guid: 6bef2bf443f94594e9ecc413c622631d, type: 2}
+  - {fileID: 11400000, guid: b0f0a05cea0abc74e8471b2c3750fb3e, type: 2}
+  - {fileID: 11400000, guid: baf58b071b586b84094211356bdb75fd, type: 2}
+  - {fileID: 11400000, guid: d86c45b01e4cb704396213c4060215d1, type: 2}
+  - {fileID: 11400000, guid: 8469309421653ff4fbdde429f7f80fe2, type: 2}
+  - {fileID: 11400000, guid: 63a6d127e2723e74aae6c063266ffc9e, type: 2}
 --- !u!1 &2519349346738342829
 GameObject:
   m_ObjectHideFlags: 0
@@ -44,9 +113,9 @@ GameObject:
   - component: {fileID: 73822119067335309}
   - component: {fileID: 7728351046413196590}
   - component: {fileID: 4315381702673546838}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Horse
-  m_TagString: Untagged
+  m_TagString: Horse
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -66,6 +135,7 @@ Transform:
   m_Children:
   - {fileID: 5160224271494268727}
   - {fileID: 2828532458705315687}
+  - {fileID: 8497763170363275345}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5076988797446205399
@@ -235,7 +305,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2828532458705315687}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Silla
   m_TagString: Player
   m_Icon: {fileID: 0}

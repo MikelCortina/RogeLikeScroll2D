@@ -1,4 +1,4 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 
 [RequireComponent(typeof(Transform))]
 public class HorseThrower : MonoBehaviour
@@ -9,6 +9,7 @@ public class HorseThrower : MonoBehaviour
     [Header("Control de inicio")]
     public bool startOnStart = true;
     public float startDelay = 0f;
+   
 
     private void Start()
     {
@@ -20,43 +21,43 @@ public class HorseThrower : MonoBehaviour
 
         if (startOnStart)
         {
-            // Ejecuta los efectos autom·ticos despuÈs de startDelay
+            // Ejecuta los efectos autom√°ticos despu√©s de startDelay
             Invoke(nameof(StartAutomaticEffects), startDelay);
         }
     }
 
     /// <summary>
-    /// Ejecuta todos los efectos activos autom·ticamente.
+    /// Ejecuta todos los efectos activos autom√°ticamente.
     /// </summary>
     private void StartAutomaticEffects()
     {
 
 
-        foreach (var effectSO in RunEffectManager.Instance.GetActiveEffects())
-        {
-            if (effectSO == null) continue;
+            foreach (var effectSO in RunEffectManager.Instance.GetActiveEffects())
+            {
+                if (effectSO == null) continue;
 
-            // Si es un efecto persistente
-            if (effectSO is IPersistentEffect persistentEffect)
-            {
-                Debug.Log($"[HorseThrower] Applying persistent effect: {effectSO.name}");
-                persistentEffect.ApplyTo(this.gameObject);
-            }
-            // Si es un efecto normal
-            else if (effectSO is IEffect effect)
-            {
-                Debug.Log($"[HorseThrower] Executing effect: {effectSO.name}");
-                effect.Execute(transform.position, this.gameObject);
-            }
-            else
-            {
-                Debug.LogWarning($"[HorseThrower] Effect {effectSO.name} no implementa IEffect ni IPersistentEffect");
+                // Si es un efecto persistente
+                if (effectSO is IPersistentEffect persistentEffect)
+                {
+                    Debug.Log($"[HorseThrower] Applying persistent effect: {effectSO.name}");
+                    persistentEffect.ApplyTo(this.gameObject);
+                }
+                // Si es un efecto normal
+                else if (effectSO is IEffect effect)
+                {
+                    Debug.Log($"[HorseThrower] Executing effect: {effectSO.name}");
+                    effect.Execute(transform.position, this.gameObject);
+                }
+                else
+                {
+                    Debug.LogWarning($"[HorseThrower] Effect {effectSO.name} no implementa IEffect ni IPersistentEffect");
+                }
             }
         }
-    }
 
     /// <summary>
-    /// MÈtodo para activar un efecto nuevo mid-run, autom·ticamente.
+    /// M√©todo para activar un efecto nuevo mid-run, autom√°ticamente.
     /// </summary>
     public void TriggerNewEffect(ScriptableObject newEffect)
     {

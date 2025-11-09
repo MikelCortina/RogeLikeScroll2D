@@ -125,7 +125,8 @@ public class ProjectileEmpuje : MonoBehaviour
             return;
         }
 
-        Vector2 toOwner = (Vector2)owner.transform.position - (Vector2)transform.position;
+        Vector2 targetPos = (Vector2)owner.transform.position + (Vector2)(owner.transform.rotation * new Vector2(0, 0.1f));
+        Vector2 toOwner = targetPos - (Vector2)transform.position;
         float dist = toOwner.magnitude;
 
         if (rb != null)

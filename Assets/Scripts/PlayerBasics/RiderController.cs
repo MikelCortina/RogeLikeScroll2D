@@ -14,16 +14,19 @@ public class RiderController : MonoBehaviour
     public bool jumpPressed;
 
     [Header("Referencias")]
-    public Transform horseTransform; // asignar o con Init()
-    public PlataformaChecker platCheck;   // referencia al script de comprobación de suelo alto
+    [Tooltip("Objeto o punto en la jerarquía al que se pegará el jinete (Ej: La posición de la montura).")]
+    public Transform targetTransform; // CAMBIO: Ahora es el objeto asignable
+    public PlataformaChecker platCheck;  // referencia al script de comprobación de suelo alto
 
     public bool canMove = false; // se activa tras tocar suelo
     private float moveInput;
     private bool hasTouchedGround = false;
 
     [Header("Opciones de reattach")]
-    [Tooltip("Si false, NO se reenganchara automáticamente al caballo tras colisiones")]
+    [Tooltip("Si false, NO se reenganchara automáticamente al objeto tras colisiones.")]
     public bool allowAutoReattach = true;
+    [Tooltip("Tag (etiqueta) que debe tener el objeto para permitir el reenganche (ej: 'Horse' o 'Mount').")]
+    public string mountTag = "Horse"; // CAMBIO: Tag asignable para reenganche
 
     [Header("layer / Step Smoothing")]
     public LayerMask Ground;
@@ -34,13 +37,13 @@ public class RiderController : MonoBehaviour
     public float stepSmoothSpeed = 10f;
 
     [Header("Cable (auto-move)")]
-    public float cableSpeed = 3f;          // velocidad en el cable
-    public int cableDirection = 1;         // 1 hacia la derecha, -1 hacia la izquierda
-    private bool onCable = false;          // true mientras esté en contacto con plataforma tag "cable"
+    public float cableSpeed = 3f;           // velocidad en el cable
+    public int cableDirection = 1;          // 1 hacia la derecha, -1 hacia la izquierda
+    private bool onCable = false;           // true mientras esté en contacto con plataforma tag "cable"
     public string cableTag = "cable";      // tag a comprobar (case-sensitive)
 
     [Header("Drop (pasar hacia abajo)")]
-    public Collider2D playerCollider;                  // asignar desde inspector o se obtiene en Awake
+    public Collider2D playerCollider;                   // asignar desde inspector o se obtiene en Awake
     public float dropIgnoreTime = 0.25f;               // tiempo que ignoramos la colisión
     public float dropDownImpulse = 2f;                 // impulso hacia abajo al soltarse
     private Coroutine dropCoroutine = null;
@@ -58,12 +61,13 @@ public class RiderController : MonoBehaviour
         }
     }
 
-    public void Init(Transform horse)
+    // CAMBIO: Ahora usa targetTransform
+    public void Init(Transform target)
     {
-        horseTransform = horse;
+        targetTransform = target;
         isAttached = true;
         jumpRequested = false;
-        if (horseTransform != null) transform.position = horseTransform.position;
+        if (targetTransform != null) transform.position = targetTransform.position;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
         rb.rotation = 0f;
@@ -102,7 +106,8 @@ public class RiderController : MonoBehaviour
 
         if (isAttached)
         {
-            if (horseTransform != null) transform.position = horseTransform.position;
+            // CAMBIO: Usar targetTransform en lugar de horseTransform
+            if (targetTransform != null) transform.position = targetTransform.position;
             rb.linearVelocity = Vector2.zero;
             rb.gravityScale = 0f;
             soloMove = false;
@@ -112,7 +117,8 @@ public class RiderController : MonoBehaviour
         else if (!hasTouchedGround && !isAttached)
         {
             Vector3 p = transform.position;
-            if (horseTransform != null) p.x = horseTransform.position.x;
+            // CAMBIO: Usar targetTransform para mantener la posición X al soltarse
+            if (targetTransform != null) p.x = targetTransform.position.x;
             transform.position = p;
             rb.gravityScale = 0.9f;
         }
@@ -230,13 +236,13 @@ public class RiderController : MonoBehaviour
         }
     }
 
-    // --- Gestión de contacto con plataformas "cable" ---
+    // --- Gestión de contacto con plataformas "cable" y reenganche ---
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Solo reattach si está habilitado y chocamos contra algo etiquetado como "Horse"
-        if (allowAutoReattach && !isAttached && other.CompareTag("Horse"))
+        // CAMBIO: Ahora usa mountTag para el reenganche
+        if (allowAutoReattach && !isAttached && other.CompareTag(mountTag))
         {
-            ReattachToHorse(other.transform);
+            ReattachToTarget(other.transform);
             return;
         }
 
@@ -254,8 +260,6 @@ public class RiderController : MonoBehaviour
                 rb.gravityScale = 0.1f;
             }
         }
-
-        // QUITADO: reattach al tocar "Ground" (provocaba reenganche al aterrizar)
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -269,9 +273,10 @@ public class RiderController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (allowAutoReattach && !isAttached && collision.collider.CompareTag("Horse"))
+        // CAMBIO: Ahora usa mountTag para el reenganche
+        if (allowAutoReattach && !isAttached && collision.collider.CompareTag(mountTag))
         {
-            ReattachToHorse(collision.transform);
+            ReattachToTarget(collision.transform);
             return;
         }
 
@@ -341,14 +346,15 @@ public class RiderController : MonoBehaviour
         dropCoroutine = null;
     }
 
-    private void ReattachToHorse(Transform horse)
+    // CAMBIO: Renombrado a ReattachToTarget y usa targetTransform
+    private void ReattachToTarget(Transform target)
     {
-        if (horse == null) return;
+        if (target == null) return;
 
-        horseTransform = horse;
+        targetTransform = target; // Asigna la nueva posición de la montura si es diferente
         isAttached = true;
         jumpRequested = false;
-        transform.position = horseTransform.position;
+        transform.position = targetTransform.position;
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 0f;
         rb.MoveRotation(0f);

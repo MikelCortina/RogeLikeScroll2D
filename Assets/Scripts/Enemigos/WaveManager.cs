@@ -29,10 +29,10 @@ public class WaveManager : MonoBehaviour
     [Tooltip("Anchura lateral en coordenada viewport (0..1). Ej: 0.15 -> 15% del ancho de pantalla a cada lado (además del outside offset).")]
     public float sideWidthViewport = 0.18f; // un poco más ancha por defecto
 
-    [Range(0f, 0.5f)]
+    [Range(0f, 1f)]
     [Tooltip("Cuánto (porcentaje, 0..0.5) fuera del viewport se colocan las zonas (ej. 0.08 = 8% fuera).")]
     public float outsideViewportOffset = 0.08f; // ahora configurable (antes estaba hardcoded)
-    [Range(0f, 0.5f)]
+    [Range(0f, 1f)]
     public float verticalViewportOffset = 0.08f; // ahora configurable (antes estaba hardcoded)
 
     [Tooltip("Cuántas zonas verticales por lado (división).")]

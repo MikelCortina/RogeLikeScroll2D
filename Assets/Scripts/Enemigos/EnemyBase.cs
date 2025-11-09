@@ -287,6 +287,14 @@ public class EnemyBase : MonoBehaviour
         Destroy(gameObject, 0.05f);
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (rb.linearVelocity.y > 0.2&& collision.gameObject.CompareTag("Ground"))
+        {
+            Die();
+        }
+    }
+
 
     public float GetContactDamage() => adjustedContactDamage;
     public float GetMaxHealth() => adjustedMaxHealth;

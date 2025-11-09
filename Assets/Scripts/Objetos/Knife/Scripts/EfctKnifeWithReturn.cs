@@ -143,7 +143,7 @@ public class SpawnTwoProjectilesReturningEffect : ScriptableObject, IPersistentE
         if (runtimeOwner == null) return;
 
         // Spawn exactamente en la posición del owner
-        Vector2 spawnPos = runtimeOwner.transform.position;
+        Vector2 spawnPos = (Vector2)runtimeOwner.transform.position + localSpawnOffset;
 
         // Direcciones: adelante y atrás según la rotación del owner
         Vector2 dirForward = runtimeOwner.transform.right.normalized;

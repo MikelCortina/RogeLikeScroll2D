@@ -19,5 +19,5 @@ MonoBehaviour:
   burstInterval: 2
   arcHeight: 1.75
   randomRadius: 3
-  localFireOffset: {x: 0, y: 0}
+  localFireOffset: {x: 0, y: 0.5}
   poolSize: 40

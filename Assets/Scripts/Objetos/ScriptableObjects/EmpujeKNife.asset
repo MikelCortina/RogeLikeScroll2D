@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: EmpujeKNife
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 1979434595378990830, guid: 73bcd8cd2f0ddc54e82e2f06afbafa17, type: 3}
-  launchSpeed: 8
+  launchSpeed: 6
   returnSpeed: 6
   collectDistance: 0.1
   pushForce: 1
   spawnInterval: 2
-  localSpawnOffset: {x: 0, y: 0}
+  localSpawnOffset: {x: 0, y: 0.1}
   localForward: {x: 1, y: 0}
-  maxDistance: 1.5
+  maxDistance: 2
