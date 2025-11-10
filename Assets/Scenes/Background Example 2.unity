@@ -1404,9 +1404,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ejectPoint: {fileID: 1575941445}
-  upwardSpeed: 3
-  sideSpeed: 0.5
-  randomSpread: 0.3
+  upwardSpeed: 2
+  sideSpeed: -0.5
+  randomSpread: -0.3
   maxAngularSpeed: 360
 --- !u!114 &362480692
 MonoBehaviour:
@@ -1421,7 +1421,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cartridgePrefab: {fileID: 99229679469388339, guid: 1b23432f6426d174e8cf4b964d410694, type: 3}
-  initialSize: 20
+  initialSize: 50
 --- !u!4 &368965633 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8672898236177908320, guid: 265c97465e0e7594e89a1e5b0fbc43f7, type: 3}
@@ -12035,7 +12035,7 @@ PrefabInstance:
       objectReference: {fileID: 2800000, guid: 2161ddf1e2bac3149ac571e145eaba75, type: 3}
     - target: {fileID: 1523387585126002504, guid: 2aeb17c690ee7ee46b737545ac5fbce8, type: 3}
       propertyPath: m_SortingOrder
-      value: 50
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1523387585126002504, guid: 2aeb17c690ee7ee46b737545ac5fbce8, type: 3}
       propertyPath: m_MaskInteraction
@@ -20517,6 +20517,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 535147671}
     - target: {fileID: 2888541443257957253, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: maxSpreadAngle
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2888541443257957253, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: aimSpreadRadius
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2888541443257957253, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: shootAudioSource
       value: 
       objectReference: {fileID: 1487499861}
@@ -20556,6 +20564,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4504788712007658705, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: myMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 2e171dd2c1a36274cbd6e665e6fa385b, type: 2}
     - target: {fileID: 4504788712007658705, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: hurtSounds.Array.size
       value: 2
@@ -20638,7 +20650,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.fireRate
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.friction
@@ -22306,7 +22318,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 437452083067568890, guid: a90351d09781af447a05e2f20f08c7e4, type: 3}
       propertyPath: duration
-      value: 30
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 3150090900148976700, guid: a90351d09781af447a05e2f20f08c7e4, type: 3}
       propertyPath: m_RenderPostProcessing

@@ -12,13 +12,18 @@ public class AreaShooter2D : MonoBehaviour
     [Tooltip("Punto de disparo para el hueso del lado derecho.")]
     public Transform firePointRight;
 
-    // El punto de disparo activo que se usará en el método Shoot
-    private Transform activeFirePoint;
+    [Tooltip("Grado máximo de imprecisión en grados.")]
+    [Range(0f, 45f)]
+    public float maxSpreadAngle = 5f;
 
+    [Tooltip("Radio de dispersión alrededor del cursor para disparos aleatorios.")]
+    [Range(0f, 3f)]
+    public float aimSpreadRadius = 0.5f;
+
+    private Transform activeFirePoint;
     public GameObject projectilePrefab;
     public int poolSize = 20;
 
-    // --- RAYCAST Y LAYERS (El resto de variables se mantienen igual) ---
     [Header("Raycast daño")]
     public float maxRange = 20f;
     public LayerMask enemyLayer;
@@ -34,22 +39,18 @@ public class AreaShooter2D : MonoBehaviour
     private float shootTimer = 0f;
     private List<GameObject> projectilePool;
 
-    [SerializeField] private AudioSource shootAudioSource; // AudioSource desde inspector
-    [SerializeField] private AudioClip shootClip;          // Clip de disparo desde inspector
+    [SerializeField] private AudioSource shootAudioSource;
+    [SerializeField] private AudioClip shootClip;
 
-    // --- NUEVA VARIABLE PARA ALTERNAR LOS PUNTOS DE DISPARO ---
-    private bool useLeftFirePoint = true; // Empieza usando el izquierdo
+    private bool useLeftFirePoint = true;
 
-    public CartridgeEjector2D cartridgeEjector2D; // Referencia al eyectador de cartuchos
+    public CartridgeEjector2D cartridgeEjector2D;
 
     void Start()
     {
         mainCamera = Camera.main;
         projectileSpeed = StatsManager.Instance.RuntimeStats.projectileSpeed;
-
-        // Inicializar el punto de disparo activo al inicio
         activeFirePoint = firePointLeft;
-
         InitPool();
     }
 
@@ -63,28 +64,26 @@ public class AreaShooter2D : MonoBehaviour
         if (shootTimer <= 0f && Input.GetMouseButton(0))
         {
             Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 randomOffset = Random.insideUnitCircle * aimSpreadRadius;
+            Vector2 randomizedTargetPos = mouseWorldPos + randomOffset;
 
             ToggleFirePoint();
-            Shoot(mouseWorldPos);
+            Shoot(randomizedTargetPos);
 
             if (cartridgeEjector2D != null)
             {
                 cartridgeEjector2D.Eject();
             }
+
             float fireRate = Mathf.Max(0.0001f, StatsManager.Instance.RuntimeStats.fireRate);
             shootTimer = 1f / fireRate;
         }
     }
 
-    /// <summary>
-    /// Alterna el punto de disparo activo entre el izquierdo y el derecho.
-    /// </summary>
     private void ToggleFirePoint()
     {
-        // Cambiamos el estado
         useLeftFirePoint = !useLeftFirePoint;
 
-        // Asignamos el punto activo
         if (useLeftFirePoint && firePointLeft != null)
         {
             activeFirePoint = firePointLeft;
@@ -95,19 +94,17 @@ public class AreaShooter2D : MonoBehaviour
         }
         else if (firePointLeft != null)
         {
-            // Si el derecho es nulo, aseguramos usar el izquierdo
             activeFirePoint = firePointLeft;
             useLeftFirePoint = true;
         }
         else
         {
-            activeFirePoint = null; // Ambos nulos, no hay punto de disparo
+            activeFirePoint = null;
         }
     }
 
     void InitPool()
     {
-        // ... (Se mantiene igual)
         projectilePool = new List<GameObject>();
         for (int i = 0; i < poolSize; i++)
         {
@@ -119,7 +116,6 @@ public class AreaShooter2D : MonoBehaviour
 
     GameObject GetPooledProjectile()
     {
-        // ... (Se mantiene igual)
         foreach (var proj in projectilePool)
             if (!proj.activeInHierarchy) return proj;
 
@@ -131,47 +127,46 @@ public class AreaShooter2D : MonoBehaviour
 
     void Shoot(Vector2 targetPos)
     {
-        // Ahora comprueba el punto de disparo activo
         if (activeFirePoint == null) return;
 
-        // --- SONIDO ---
         if (shootAudioSource != null && shootClip != null)
         {
             shootAudioSource.PlayOneShot(shootClip);
         }
 
-        // Calcular dirección del disparo usando el activeFirePoint
         Vector2 dir = (targetPos - (Vector2)activeFirePoint.position).normalized;
 
-        // --- RAYCAST con radio ---
+        float spread = Random.Range(-maxSpreadAngle, maxSpreadAngle);
+        dir = Quaternion.Euler(0, 0, spread) * dir;
+
         float fireRange = maxRange;
         float rayRadius = 0.1f;
         RaycastHit2D hit = Physics2D.CircleCast(activeFirePoint.position, rayRadius, dir, fireRange, enemyLayer);
 
-        // ... (Lógica de impacto y daño se mantiene igual)
-
-        // Datos para el visual: por defecto no hay impacto
         bool hitSomething = false;
-        Vector2 hitPoint = (Vector2)activeFirePoint.position + dir * fireRange; // punto por defecto (max range)
+        Vector2 hitPoint = (Vector2)activeFirePoint.position + dir * fireRange;
         Transform hitTransform = null;
 
         if (hit.collider != null)
         {
-            // Lógica de impacto y daño...
+            float knockback = StatsManager.Instance.RuntimeStats.knockback;
+
             if (hit.collider.CompareTag(enemyTag))
             {
-                // ... (Daño a enemigo)
                 hitSomething = true;
                 hitPoint = hit.point;
                 EnemyBase enemy = hit.collider.GetComponentInParent<EnemyBase>();
+
                 if (enemy != null)
                 {
                     hitTransform = enemy.transform;
                     float dmg = StatsCommunicator.Instance.CalculateGunDamage();
                     enemy.TakeContactDamage(dmg);
+
+                    Vector2 knockbackDir = ((Vector2)enemy.transform.position - (Vector2)transform.position).normalized;
+                    enemy.ApplyKnockback(knockbackDir * knockback / 10);
                 }
             }
-            // Lógica de impacto y destrucción de proyectil enemigo...
             else if (hit.collider.CompareTag(enemyProjectileTag))
             {
                 hitSomething = true;
@@ -188,7 +183,6 @@ public class AreaShooter2D : MonoBehaviour
             }
         }
 
-        // --- EJECUTAR EFECTOS ACTIVOS ---
         EffectSpawner effectSpawner = GetComponent<EffectSpawner>();
         if (effectSpawner != null)
         {
@@ -198,9 +192,7 @@ public class AreaShooter2D : MonoBehaviour
             }
         }
 
-        // --- EFECTO VISUAL DEL PROYECTIL ---
         GameObject visual = GetPooledProjectile();
-        // Usa el activeFirePoint para la posición de inicio
         visual.transform.position = activeFirePoint.position;
         visual.SetActive(true);
 
@@ -211,7 +203,6 @@ public class AreaShooter2D : MonoBehaviour
         }
 
 #if UNITY_EDITOR
-        // Usa el activeFirePoint para el Debug.DrawRay
         Debug.DrawRay(activeFirePoint.position, dir * fireRange, Color.yellow, 0.15f);
 #endif
     }

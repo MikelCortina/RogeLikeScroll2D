@@ -114,6 +114,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 593139137076382234}
+  - {fileID: 2380044690447005436}
   m_Father: {fileID: 4918181592111997634}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2464608360367037929
@@ -390,6 +391,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7406780123466325251}
+  - {fileID: 2442848849623676293}
   m_Father: {fileID: 4918181592111997634}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2582658172504476225
@@ -588,6 +590,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2762365034313194581}
+  - {fileID: 8673135085865256445}
   m_Father: {fileID: 4918181592111997634}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &346094308417186598
@@ -942,6 +945,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7693110137982954484}
+  - {fileID: 6855575508192082167}
   m_Father: {fileID: 4918181592111997634}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1184783990699390922
@@ -1218,6 +1222,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7189683481624619212}
+  - {fileID: 5295479601754151991}
   m_Father: {fileID: 4918181592111997634}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3875993429587905483
@@ -1494,6 +1499,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3025238470292734359}
+  - {fileID: 993870018184561376}
   m_Father: {fileID: 4918181592111997634}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7347982601487251980
@@ -1692,6 +1698,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3720538800894728399}
+  - {fileID: 8458509948221412784}
   m_Father: {fileID: 4918181592111997634}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6244601861586854423
@@ -1890,6 +1897,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5269909137361913040}
+  - {fileID: 3869437561830649946}
   m_Father: {fileID: 4918181592111997634}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5918720158170741721
@@ -2166,6 +2174,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4606400421281860937}
+  - {fileID: 7913653463096691511}
   m_Father: {fileID: 4918181592111997634}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8283605871744775664
@@ -2541,3 +2550,569 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 3.6149783, y: 1}
   m_EdgeRadius: 0
+--- !u!1001 &121284714889668650
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 292769564844889476}
+    m_Modifications:
+    - target: {fileID: 4952176022902121648, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_Name
+      value: Sistema de sangre
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00763831
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+--- !u!4 &8673135085865256445 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+  m_PrefabInstance: {fileID: 121284714889668650}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &905610953340450919
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 798491731607166711}
+    m_Modifications:
+    - target: {fileID: 4952176022902121648, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_Name
+      value: Sistema de sangre
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00763831
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+--- !u!4 &8458509948221412784 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+  m_PrefabInstance: {fileID: 905610953340450919}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1450502418713028320
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 175720979230385438}
+    m_Modifications:
+    - target: {fileID: 4952176022902121648, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_Name
+      value: Sistema de sangre
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00763831
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+--- !u!4 &7913653463096691511 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+  m_PrefabInstance: {fileID: 1450502418713028320}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &2796784007004493088
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2344142250976597470}
+    m_Modifications:
+    - target: {fileID: 4952176022902121648, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_Name
+      value: Sistema de sangre
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00763831
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+--- !u!4 &6855575508192082167 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+  m_PrefabInstance: {fileID: 2796784007004493088}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &3498904395883819488
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 6413213950733953376}
+    m_Modifications:
+    - target: {fileID: 4952176022902121648, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_Name
+      value: Sistema de sangre
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00763831
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+--- !u!4 &5295479601754151991 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+  m_PrefabInstance: {fileID: 3498904395883819488}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5494612893698563469
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 6122035121166645235}
+    m_Modifications:
+    - target: {fileID: 4952176022902121648, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_Name
+      value: Sistema de sangre
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00763831
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+--- !u!4 &3869437561830649946 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+  m_PrefabInstance: {fileID: 5494612893698563469}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6347110850659965010
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2400026978923732270}
+    m_Modifications:
+    - target: {fileID: 4952176022902121648, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_Name
+      value: Sistema de sangre
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00763831
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+--- !u!4 &2442848849623676293 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+  m_PrefabInstance: {fileID: 6347110850659965010}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6409844580966128427
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5285697072262612318}
+    m_Modifications:
+    - target: {fileID: 4952176022902121648, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_Name
+      value: Sistema de sangre
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947192569300100168, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: ShapeModule.type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947192569300100168, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: ShapeModule.radiusThickness
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00763831
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+--- !u!4 &2380044690447005436 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+  m_PrefabInstance: {fileID: 6409844580966128427}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &8374766912640020279
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4172067025824501025}
+    m_Modifications:
+    - target: {fileID: 4952176022902121648, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_Name
+      value: Sistema de sangre
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00763831
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+--- !u!4 &993870018184561376 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8787589015723781591, guid: 67d22ad7faca0f24a820fb3f8cdb6b40, type: 3}
+  m_PrefabInstance: {fileID: 8374766912640020279}
+  m_PrefabAsset: {fileID: 0}

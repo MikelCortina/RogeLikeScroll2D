@@ -38,8 +38,18 @@ Material:
     m_Ints: []
     m_Floats:
     - _Blur_Offset: 0
+    - _Desync: 0
+    - _Distorsion: 0
+    - _DistortioAmount: 100
+    - _Inferior: 0
+    - _Intensity: 0
+    - _LineAmount: 0
+    - _OffSetSuperior: 0
     - _Screen_Lines_Speed: 0.05
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 0}
+    - _Direccion: {r: 3, g: 3, b: 0, a: 0}
+    - _Disortion: {r: 0.3, g: 0.5, b: 0, a: 0}
+    - _LineAmount: {r: 0, g: 150, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
