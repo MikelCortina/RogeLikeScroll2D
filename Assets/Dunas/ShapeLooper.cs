@@ -17,8 +17,10 @@ public class ShapeLooper : MonoBehaviour
     public float speed = -2f;
 
     [Header("Puntos")]
-    [Tooltip("Si el borde derecho del tile es <= PontoDeDestino se reposiciona.")]
-    public float PontoDeDestino = -20f;
+    [Header("Puntos")]
+    [Tooltip("Distancia desde el borde izquierdo de la cámara donde se reposiciona el tile.")]
+    public float PontoDeDestinoOffset = -10f; // ahora es un offset relativo a la cámara
+    private float PontoDeDestino; // calculado cada frame
     [Tooltip("Valor opcional inicial (se rellena con la posición X de tile[0] si está vacío).")]
     public float PontoOriginal = 0f;
 
@@ -66,6 +68,10 @@ public class ShapeLooper : MonoBehaviour
     {
         if (tiles == null || tiles.Count == 0) return;
 
+        // Calcular PontoDeDestino relativo a la cámara
+        if (Camera.main != null)
+            PontoDeDestino = Camera.main.transform.position.x + PontoDeDestinoOffset;
+
         float dx = speed * Time.deltaTime;
 
         // Mover todos los tiles
@@ -90,8 +96,6 @@ public class ShapeLooper : MonoBehaviour
         // Seguridad: limitar el número de reposiciones por frame
         int repCount = 0;
 
-        // Vamos reposicionando uno a uno, pero recalculando el "más a la derecha" en cada paso
-        // para evitar colocar mal cuando varios atraviesan en el mismo frame.
         while (toReposition.Count > 0 && repCount < maxRepositionsPerFrame)
         {
             Transform t = toReposition[0];
@@ -101,7 +105,7 @@ public class ShapeLooper : MonoBehaviour
 
             float w = GetWidth(t);
 
-            // calcular el borde derecho actual más a la derecha entre todos los tiles (incluyendo los que ya estaban)
+            // calcular el borde derecho más a la derecha
             float maxRight = float.NegativeInfinity;
             foreach (var tile in tiles)
             {
@@ -110,14 +114,11 @@ public class ShapeLooper : MonoBehaviour
                 if (tileRight > maxRight) maxRight = tileRight;
             }
 
-            // Si no había otros tiles válidos (caso extremo), usar PontoOriginal como referencia
             if (maxRight == float.NegativeInfinity)
                 maxRight = PontoOriginal - (w / 2f);
 
-            // Nueva posición centrada a la derecha del más derecho
             float newCenterX = maxRight + spacing + (w / 2f) + epsilon;
 
-            // Protección: no reposicionar por detrás de PontoOriginal (opcional, evita deriva hacia la izquierda)
             if (newCenterX < PontoOriginal - 0.001f)
                 newCenterX = PontoOriginal;
 
@@ -131,6 +132,7 @@ public class ShapeLooper : MonoBehaviour
             Debug.LogWarning("ShapeLooper: se alcanzó maxRepositionsPerFrame en un frame. Revisa tamaños/velocidad/limites.");
         }
     }
+
 
     /// <summary>
     /// Intenta obtener el ancho X usando Renderer.bounds; si no hay Renderer devuelve 1f como fallback.
