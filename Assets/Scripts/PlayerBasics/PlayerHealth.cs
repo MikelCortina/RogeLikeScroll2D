@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,12 +9,24 @@ public class PlayerHealth : MonoBehaviour
 
     public HealthChangedEvent OnHealthChanged;
     public UnityEvent OnDeath;
+
+    public AudioClip[] hurtSounds; // 🎵 Lista de sonidos de daño
+    public float soundCooldown = 0.3f; // ⏳ Tiempo mínimo entre sonidos
+    private float lastSoundTime;
+
+    private AudioSource audioSource;
+
+
     private IEnumerator Start()
     {
         yield return new WaitUntil(() => StatsManager.Instance != null);
         StatsManager.Instance.OnHealthChanged += HandleHealthChanged;
         StatsManager.Instance.OnPlayerDied += HandleDeath;
         //Debug.Log("Todo correcto");
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
     }
     private void OnEnable()
     {
@@ -35,16 +47,47 @@ public class PlayerHealth : MonoBehaviour
     {
         float finalDamage = StatsCommunicator.Instance.CalculateMeleTakenDamage(amount);
         StatsManager.Instance.DamagePlayer(finalDamage);
+        PlayRandomHurtSound();
+        StartCoroutine(HitPause(0.02f)); // Pausa de 0.1 segundos
     }
 
     public void TakeRangeDamage(float amount)
     {
         float finalDamage = StatsCommunicator.Instance.CalculateRangeTakenDamage(amount);
         StatsManager.Instance.DamagePlayer(finalDamage);
+        PlayRandomHurtSound();
+        StartCoroutine(HitPause(0.02f));
     }
 
-    //Cuando te curas se llama a este metodo, desde habilidades, items en el suelo etc.
-    public void Heal(float amount)
+    private IEnumerator HitPause(float duration)
+    {
+        float originalTimeScale = Time.timeScale;
+        Time.timeScale = 0f; // Pausa el juego
+        yield return new WaitForSecondsRealtime(duration); // espera tiempo real
+        Time.timeScale = originalTimeScale; // reanuda el juego
+    }
+    private void PlayRandomHurtSound()
+    {
+        // Cooldown para evitar spam
+        if (Time.time - lastSoundTime < soundCooldown)
+            return;
+
+        if (hurtSounds.Length == 0)
+            return;
+
+        // Selecciona un sonido aleatorio
+        AudioClip clip = hurtSounds[Random.Range(0, hurtSounds.Length)];
+
+        // Reproduce el sonido
+        audioSource.PlayOneShot(clip);
+
+        // Registra el último momento en que se reprodujo
+        lastSoundTime = Time.time;
+    }
+
+
+//Cuando te curas se llama a este metodo, desde habilidades, items en el suelo etc.
+public void Heal(float amount)
     {
         StatsManager.Instance.HealPlayer(amount);
     }

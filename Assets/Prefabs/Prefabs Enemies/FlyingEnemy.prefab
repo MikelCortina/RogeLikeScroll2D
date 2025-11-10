@@ -62,7 +62,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.6150116, y: -1.102, z: 0}
-  m_LocalScale: {x: 0.06, y: 0.075, z: 1}
+  m_LocalScale: {x: 0.15, y: 0.15, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3766110797246970965}
@@ -118,6 +118,7 @@ MonoBehaviour:
   deathParticlesPrefab: {fileID: 4508117539550737482, guid: da34d66431c8cd04aa98411a543a83bf, type: 3}
   detachDeathParticles: 1
   fallbackDeathParticlesLifetime: 3
+  impactSound: {fileID: 8300000, guid: f9ad9e41167c5e145bafb2ef8570c19b, type: 3}
   flyingSpeed: 1
   hoverAmplitude: 0.125
   hoverFrequency: 1.2

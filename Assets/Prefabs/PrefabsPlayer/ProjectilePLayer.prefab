@@ -182,7 +182,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7110180989152884876}
   - component: {fileID: 4712692522052592155}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -258,8 +258,8 @@ TrailRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 0.017234901
+        time: 0.016712189
+        value: 0.035991006
         inSlope: -0.0931429
         outSlope: -0.0931429
         tangentMode: 0

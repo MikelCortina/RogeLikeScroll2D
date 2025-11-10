@@ -156,6 +156,7 @@ MonoBehaviour:
   deathParticlesPrefab: {fileID: 4508117539550737482, guid: da34d66431c8cd04aa98411a543a83bf, type: 3}
   detachDeathParticles: 1
   fallbackDeathParticlesLifetime: 3
+  impactSound: {fileID: 8300000, guid: f9ad9e41167c5e145bafb2ef8570c19b, type: 3}
   attackPofloat: {fileID: 3399346530017220392}
   attackPofloatEnd: {fileID: 312739910915352993}
   attackRadius: 0.14

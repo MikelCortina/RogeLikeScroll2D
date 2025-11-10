@@ -89,6 +89,9 @@ public class EnemyBase : MonoBehaviour
     public bool detachDeathParticles = true;         // true = desvincula partículas del enemigo (para que no se destruyan con él)
     public float fallbackDeathParticlesLifetime = 3f; // si no se puede calcular la duración, se usa este valor
 
+    public AudioClip impactSound; // 🎵 Asigna aquí el sonido de impacto
+    private AudioSource audioSource;
+
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -104,6 +107,12 @@ public class EnemyBase : MonoBehaviour
     {
         GameObject playerObj = FindPlayerByLayerOrTag();
         if (playerObj != null) target = playerObj.transform;
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     private void OnValidate()
@@ -186,9 +195,33 @@ public class EnemyBase : MonoBehaviour
     #region Health & Damage
     public void TakeContactDamage(float amount)
     {
+
         currentHealth -= amount;
         Flash();
-        if (currentHealth <= 0) Die();
+
+
+        // 🔊 Reproducir sonido de impacto
+        if (impactSound != null)
+        {
+            audioSource.PlayOneShot(impactSound);
+        }
+
+        if (currentHealth > 0)
+        {
+            ParticleSystem ps = Instantiate(deathParticlesPrefab, transform.position, Quaternion.identity);
+        }
+
+        if (currentHealth <= 0)
+            Die();
+        HitPause(0.02f);
+
+    }
+    private IEnumerator HitPause(float duration)
+    {
+        float originalTimeScale = Time.timeScale;
+        Time.timeScale = 0f; // Pausa el juego
+        yield return new WaitForSecondsRealtime(duration); // espera tiempo real
+        Time.timeScale = originalTimeScale; // reanuda el juego
     }
 
     protected virtual void Die()
@@ -292,6 +325,17 @@ public class EnemyBase : MonoBehaviour
         if (rb.linearVelocity.y > 0.2&& collision.gameObject.CompareTag("Ground"))
         {
             Die();
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // Verifica si el objeto que entra en el trigger tiene el componente PlayerHealth
+        PlayerHealth playerHealth = other.gameObject.GetComponent<PlayerHealth>();
+
+        if (playerHealth != null)
+        {
+
+            playerHealth.TakeMeleDamage(contactDamage);
         }
     }
 

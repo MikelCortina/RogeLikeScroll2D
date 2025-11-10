@@ -40,6 +40,8 @@ public class AreaShooter2D : MonoBehaviour
     // --- NUEVA VARIABLE PARA ALTERNAR LOS PUNTOS DE DISPARO ---
     private bool useLeftFirePoint = true; // Empieza usando el izquierdo
 
+    public CartridgeEjector2D cartridgeEjector2D; // Referencia al eyectador de cartuchos
+
     void Start()
     {
         mainCamera = Camera.main;
@@ -62,12 +64,13 @@ public class AreaShooter2D : MonoBehaviour
         {
             Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
-            // 1. Alternar el punto de disparo activo antes de disparar
             ToggleFirePoint();
-
-            // 2. Usar el punto activo en el método Shoot
             Shoot(mouseWorldPos);
 
+            if (cartridgeEjector2D != null)
+            {
+                cartridgeEjector2D.Eject();
+            }
             float fireRate = Mathf.Max(0.0001f, StatsManager.Instance.RuntimeStats.fireRate);
             shootTimer = 1f / fireRate;
         }
