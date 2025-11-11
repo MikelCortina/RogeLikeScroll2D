@@ -20,6 +20,7 @@ public class PlayerHealth : MonoBehaviour
 
     private IEnumerator Start()
     {
+        myMaterial.SetFloat("_Distorsion", 0f); // Activa
         yield return new WaitUntil(() => StatsManager.Instance != null);
         StatsManager.Instance.OnHealthChanged += HandleHealthChanged;
         StatsManager.Instance.OnPlayerDied += HandleDeath;
@@ -60,7 +61,7 @@ public class PlayerHealth : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(amount); // espera tiempo real
 
-        myMaterial.SetFloat("_Distorsion", 0f); // Activa
+        myMaterial.SetFloat("_Distorsion", 0f); // Falso
     }
     public void TakeRangeDamage(float amount)
     {

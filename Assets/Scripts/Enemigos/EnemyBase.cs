@@ -193,7 +193,7 @@ public class EnemyBase : MonoBehaviour
     #endregion
 
     #region Health & Damage
-    public void TakeContactDamage(float amount)
+    public void TakeContactDamage(float amount, bool sound)
     {
 
         currentHealth -= amount;
@@ -201,7 +201,7 @@ public class EnemyBase : MonoBehaviour
 
 
         // 🔊 Reproducir sonido de impacto
-        if (impactSound != null)
+        if (impactSound != null && sound)
         {
             audioSource.PlayOneShot(impactSound);
         }

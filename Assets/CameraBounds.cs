@@ -65,6 +65,9 @@ public class CameraZoomAndBounds : MonoBehaviour
 
         // Actualizar bordes
         UpdateBounds();
+        //Debug.Log("OrthographicSize: " + cam.orthographicSize);
+
+
     }
 
     void UpdateBounds()

@@ -266,7 +266,7 @@ public class ProjectileEmpuje : MonoBehaviour
             {
                 Debug.Log("ProjectileEmpuje: Impacto con enemigo, aplicando daño.");
                 float dmg = StatsCommunicator.Instance.CalculateGunDamage();
-                enemy.TakeContactDamage(dmg);
+                enemy.TakeContactDamage(dmg, false);
 
                 // Si NO está en fase de retorno, lo "adjuntamos" para que se mueva con el proyectil
                 if (!isReturning)

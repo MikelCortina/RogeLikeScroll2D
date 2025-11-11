@@ -17,13 +17,6 @@ public class ParallaxController : MonoBehaviour
     [Header("Objetos que se moverán con la cámara")]
     public Transform[] objectsToOffset; // enemigos o spawn points
 
-    [Header("Zoom dinámico")]
-    public Vector3 cameraStartOffset = new Vector3(0f, 0f, -10f);
-    public Vector3 cameraEndOffset = new Vector3(0f, 1f, -10f);
-    public float cameraStartSize = 5f;
-    public float cameraEndSize = 7f;
-    public float cameraTransitionDuration = 3f;
-
     [System.Serializable]
     public class Layer
     {
@@ -40,9 +33,6 @@ public class ParallaxController : MonoBehaviour
 
     private Camera cam;
     private float screenHalfWidthWorld;
-    private float cameraTransitionElapsed = 0f;
-    private float previousHalfHeight;
-    private float previousHalfWidth;
 
     public static ParallaxController Instance { get; private set; }
 
@@ -66,9 +56,6 @@ public class ParallaxController : MonoBehaviour
         }
 
         screenHalfWidthWorld = cam.orthographicSize * cam.aspect;
-
-        previousHalfHeight = cameraStartSize;
-        previousHalfWidth = cameraStartSize * cam.aspect;
 
         // Calcular tileWidth para cada layer
         foreach (var layer in layers)
@@ -175,50 +162,13 @@ public class ParallaxController : MonoBehaviour
                 if (b != null)
                     b.position += new Vector3(cameraMove, 0f, 0f);
         }
-    }
 
-    void LateUpdate()
-    {
-        if (cam == null || cameraTransform == null) return;
-
-        // Lerp del zoom y posición Y
-        cameraTransitionElapsed += Time.deltaTime;
-        float t = Mathf.Clamp01(cameraTransitionElapsed / cameraTransitionDuration);
-
-        cam.orthographicSize = Mathf.Lerp(cameraStartSize, cameraEndSize, t);
-
-        Vector3 camPos = cameraTransform.position;
-        camPos.y = Mathf.Lerp(cameraStartOffset.y, cameraEndOffset.y, t);
-        camPos.z = cameraStartOffset.z;
-        cameraTransform.position = camPos;
-
-        // Calcular delta suavizado
-        float currentHalfHeight = cam.orthographicSize;
-        float currentHalfWidth = cam.orthographicSize * cam.aspect;
-
-        float deltaY = currentHalfHeight - previousHalfHeight;
-        float deltaX = currentHalfWidth - previousHalfWidth;
-
-        if (!float.IsNaN(deltaX) && !float.IsNaN(deltaY))
+        // Mover objetos spawnables horizontalmente
+        if (objectsToOffset != null)
         {
-            // Mover collision borders
-            if (collisionBorders != null)
-            {
-                foreach (var b in collisionBorders)
-                    if (b != null)
-                        b.position += new Vector3(deltaX, deltaY, 0f);
-            }
-
-            // Mover objetos spawnables
-            if (objectsToOffset != null)
-            {
-                foreach (var obj in objectsToOffset)
-                    if (obj != null)
-                        obj.position += new Vector3(deltaX, deltaY, 0f);
-            }
+            foreach (var obj in objectsToOffset)
+                if (obj != null)
+                    obj.position += new Vector3(cameraMove, 0f, 0f);
         }
-
-        previousHalfHeight = currentHalfHeight;
-        previousHalfWidth = currentHalfWidth;
     }
 }

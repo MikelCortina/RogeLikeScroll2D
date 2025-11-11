@@ -164,7 +164,7 @@ public class KnifeProjectile2D : MonoBehaviour
 
                 float dmg = StatsCommunicator.Instance.CalculateGunDamage();
 
-                enemy.TakeContactDamage(dmg);
+                enemy.TakeContactDamage(dmg, false);
 
             }
 

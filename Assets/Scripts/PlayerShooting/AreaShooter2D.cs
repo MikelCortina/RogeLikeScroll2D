@@ -46,6 +46,10 @@ public class AreaShooter2D : MonoBehaviour
 
     public CartridgeEjector2D cartridgeEjector2D;
 
+    public ParticleSystem fireSpriteRight;
+    public ParticleSystem fireSpriteLeft;
+
+
     void Start()
     {
         mainCamera = Camera.main;
@@ -127,6 +131,8 @@ public class AreaShooter2D : MonoBehaviour
 
     void Shoot(Vector2 targetPos)
     {
+        fireSpriteLeft.Play();
+        fireSpriteRight.Play();
         if (activeFirePoint == null) return;
 
         if (shootAudioSource != null && shootClip != null)
@@ -161,10 +167,10 @@ public class AreaShooter2D : MonoBehaviour
                 {
                     hitTransform = enemy.transform;
                     float dmg = StatsCommunicator.Instance.CalculateGunDamage();
-                    enemy.TakeContactDamage(dmg);
+                    enemy.TakeContactDamage(dmg, true);
 
                     Vector2 knockbackDir = ((Vector2)enemy.transform.position - (Vector2)transform.position).normalized;
-                    enemy.ApplyKnockback(knockbackDir * knockback / 10);
+                    enemy.ApplyKnockback(knockbackDir * knockback / 7.5f);
                 }
             }
             else if (hit.collider.CompareTag(enemyProjectileTag))

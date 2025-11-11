@@ -237,7 +237,7 @@ public class ProjectileReturn : MonoBehaviour
             {
                 Debug.Log("KnifeProjectile2D: Impacto con enemigo, aplicando daño y destruyendo proyectil.");
                 float dmg = StatsCommunicator.Instance.CalculateGunDamage();
-                enemy.TakeContactDamage(dmg);
+                enemy.TakeContactDamage(dmg, false);
             }
         }
     }

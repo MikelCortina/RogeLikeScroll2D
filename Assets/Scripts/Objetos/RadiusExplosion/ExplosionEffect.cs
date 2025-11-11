@@ -45,7 +45,7 @@ public class ExplosionEffect : ProjectileEffect
             // Aplica daño a EnemyBase si existe
             if (enemy != null)
             {
-                enemy.TakeContactDamage(damage);
+                enemy.TakeContactDamage(damage, false);
                 Debug.Log(damage);
                 // Llamamos a ApplyKnockback para que la propia IA gestione el estado de knockback
                 enemy.ApplyKnockback(dir * knockback);

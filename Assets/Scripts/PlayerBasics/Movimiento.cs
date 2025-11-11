@@ -43,10 +43,14 @@ public class PlayerMovement : MonoBehaviour
     private float applyJumpHorizontalTimer = 0f;
     private float jumpHorizontalRemaining = 0f;
 
+    [SerializeField] private AudioSource gallopAudioSource;
+    [SerializeField] private AudioClip gallopClip;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+ 
     }
 
     void Update()
@@ -145,6 +149,10 @@ public class PlayerMovement : MonoBehaviour
 
             isJumping = true;
             isGrounded = false;
+           // if (gallopAudioSource.isPlaying)
+          //  {
+              //  gallopAudioSource.Stop();
+          //  }
             PlayAnimationOnce("HorseJumpPint");
             jumpPressed = false;
         }
@@ -199,11 +207,37 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded)
         {
             if (Mathf.Abs(rb.linearVelocity.x) < speedThreshold)
+            {
                 PlayAnimationIfNotPlaying("IdlePint");
+
+               /* if (gallopAudioSource.isPlaying)
+                {
+                    gallopAudioSource.Stop();
+                }*/
+            }
+              
             else if (rb.linearVelocity.x > speedThreshold)
+            {
                 PlayAnimationIfNotPlaying("HorsePaintRunRight");
+                // Reproducir el sonido si no está ya sonando
+              /*  if (!gallopAudioSource.isPlaying)
+                {
+                    gallopAudioSource.clip = gallopClip;
+                    gallopAudioSource.loop = true; // lo hace sonar en bucle
+                    gallopAudioSource.Play();
+                }*/
+
+            }
+
             else if (rb.linearVelocity.x < -speedThreshold)
+            {
+               /* if (gallopAudioSource.isPlaying)
+                {
+                    gallopAudioSource.Stop();
+                }*/
                 PlayAnimationIfNotPlaying("HorseRunLeftPint");
+            }
+               
         }
     }
 

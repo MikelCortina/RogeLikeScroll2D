@@ -127,6 +127,13 @@ public class RiderController : MonoBehaviour
         {
             rb.gravityScale = 0.9f;
         }
+        if (targetTransform != null && !isAttached)
+        {
+            if (transform.position.y < targetTransform.position.y)
+            {
+               isAttached= true;
+            }
+        }
     }
 
     void FixedUpdate()
