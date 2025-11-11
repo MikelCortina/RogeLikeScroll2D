@@ -12,8 +12,8 @@ public class EnemyFlyingShooter : EnemyBase
     [Header("Shooting")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private float minFireRange = 3f;
-    [SerializeField] private float maxFireRange = 7f;
+    [SerializeField] private float minFireRange = 1f;
+    [SerializeField] private float maxFireRange = 4f;
     private float fireRange;
     [SerializeField] private float projectileSpeed = 9f;
     [SerializeField] private float burstDelay = 0.12f;
@@ -29,9 +29,8 @@ public class EnemyFlyingShooter : EnemyBase
         if (rb != null)
         {
             rb.gravityScale = 0f; // aseguramos que no caiga
-            // revisa en Inspector que Body Type sea Dynamic para que AddForce/velocity funcione
         }
-        baseY = transform.position.y;
+        baseY = transform.position.y; // Inicializamos baseY
     }
 
     protected override void Start()
@@ -56,17 +55,13 @@ public class EnemyFlyingShooter : EnemyBase
 
         if (distToTarget <= detectRadius)
         {
-            if (distToTarget > fireRange)
+            if (distToTarget > fireRange || !IsVisibleFrom(Camera.main, gameObject))
             {
                 // Si estamos fuera del rango de disparo, movernos hacia el target
                 canMove = true;
             }
-            else if (distToTarget < fireRange * 0.8f)
-            {
-                // Si estamos demasiado cerca, movernos ligeramente hacia atrás para mantener variedad
-                canMove = true;
-            }
-            else
+
+            else if (IsVisibleFrom(Camera.main, gameObject))
             {
                 // Dentro del rango ideal, no moverse horizontalmente
                 canMove = false;
@@ -84,28 +79,34 @@ public class EnemyFlyingShooter : EnemyBase
     {
         if (target == null) return;
 
-        // Si estamos en knockback, no ejecutar la IA de movimiento (dejar que la f�sica aplique la fuerza)
+        // Si estamos en knockback, no ejecutar la IA de movimiento
         if (IsCurrentlyKnockedBack()) return;
 
-        // Hover
-        hoverOffset = Mathf.Sin(Time.time * hoverFrequency) * hoverAmplitude;
-        float targetY = baseY + hoverOffset;
+        // --- LÓGICA DE HOVER MODIFICADA ---
 
         if (canMove)
         {
+            // 1. Calcular hover solo si se está moviendo/reposicionando
+            hoverOffset = Mathf.Sin(Time.time * hoverFrequency) * hoverAmplitude;
+            float targetY = baseY + hoverOffset;
+
             FlyTowardsTarget(targetY);
         }
-        else
+        else // Está parado para disparar
         {
-            // Solo hover: mover suavemente la posici�n vertical sin anular la f�sica horizontal
+            // 2. Detenemos el hover y fijamos la altura actual
+            baseY = transform.position.y; // <--- FIJAMOS LA POSICIÓN BASE ACTUAL
+            hoverOffset = 0f;
+
+            // Solo hover (mantenemos la Y sin la oscilación, y preservamos la X si hay alguna inercia)
             Vector2 currentVel = rb.linearVelocity;
-            float desiredYVel = (targetY - transform.position.y) * 5f; // 5f = suavizado; ajusta si necesitas m�s/menos seguimiento
-            // limitamos para evitar valores enormes
+
+            // Calculamos la velocidad deseada en Y para mantener la altura actual (baseY)
+            float desiredYVel = (baseY - transform.position.y) * 5f;
             desiredYVel = Mathf.Clamp(desiredYVel, -flyingSpeed * 2f, flyingSpeed * 2f);
 
-            // asignamos la componente vertical mientras preservamos la horizontal f�sica
+            // Asignamos la componente vertical mientras preservamos la horizontal física (si hay inercia o knockback residual)
             rb.linearVelocity = new Vector2(currentVel.x, desiredYVel);
-            // NOTA: no uso MovePosition aqu� para no interferir con fuerzas/knockback
         }
     }
 
@@ -174,7 +175,6 @@ public class EnemyFlyingShooter : EnemyBase
         Rigidbody2D prb = proj.GetComponent<Rigidbody2D>();
         if (prb != null)
         {
-            // Usa la propiedad correcta y no forces que puedan ser anuladas
             prb.linearVelocity = aimDir * projectileSpeed;
         }
 
@@ -186,7 +186,8 @@ public class EnemyFlyingShooter : EnemyBase
     {
         if (rb != null)
         {
-            rb.linearVelocity = Vector2.zero;
+            // Solo detenemos la velocidad horizontal para que el hover vertical siga funcionando
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         }
     }
 
@@ -198,12 +199,13 @@ public class EnemyFlyingShooter : EnemyBase
         if (firePoint != null) Gizmos.DrawSphere(firePoint.position, 0.05f);
     }
 
-    // Helper para verificar el estado de knockback heredado (isKnockedBack es privado en la base)
-    // Si en el futuro quieres exponerlo mejor, convierte isKnockedBack en protected en EnemyBase.
+    // Helper para verificar el estado de knockback heredado 
+    // (Asume que EnemyBase tiene una propiedad 'isKnockedBack' o similar)
     private bool IsCurrentlyKnockedBack()
     {
-        // Intentamos obtener el componente y comprobar su estado a trav�s de reflexi�n segura.
-        // Mejor: si prefieres, cambia `isKnockedBack` en EnemyBase a `protected` o a�ade un getter p�blico.
+        // En un escenario de código real, es mejor tener una propiedad 'protected' o 'public'
+        // en EnemyBase para acceder a 'isKnockedBack'. Mantenemos la lógica de reflexión
+        // que tenías como fallback, pero se recomienda cambiar EnemyBase.
         var baseType = typeof(EnemyBase);
         var field = baseType.GetField("isKnockedBack", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         if (field != null)
@@ -211,8 +213,6 @@ public class EnemyFlyingShooter : EnemyBase
             object val = field.GetValue(this);
             if (val is bool b) return b;
         }
-        // fallback: si no podemos leerlo, asumimos false para no bloquear movimiento
         return false;
     }
 }
-

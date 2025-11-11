@@ -320,13 +320,7 @@ public class EnemyBase : MonoBehaviour
         Destroy(gameObject, 0.05f);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (rb.linearVelocity.y > 0.2&& collision.gameObject.CompareTag("Ground"))
-        {
-            Die();
-        }
-    }
+ 
     private void OnTriggerEnter2D(Collider2D other)
     {
         // Verifica si el objeto que entra en el trigger tiene el componente PlayerHealth
@@ -345,27 +339,21 @@ public class EnemyBase : MonoBehaviour
     #endregion
 
     #region Movement / Attack Utilities
-    protected bool IsBlockedByAlly(Vector2 direction)
-    {
-        if (direction.magnitude < 0.01f) return false;
-        Collider2D[] hit = Physics2D.OverlapCircleAll(rb.position + direction.normalized * followSpacing, followSpacing);
-        foreach (var col in hit)
-        {
-            if (col != null && col.gameObject != this.gameObject && col.GetComponent<EnemyBase>() != null) return true;
-        }
-        return false;
-    }
-
+    
     protected void MoveTowardsPlayer()
     {
         if (target == null || !canMove || isKnockedBack) return;
         Vector2 direction = (target.position - transform.position).normalized;
         direction.Normalize();
         FlipIfNeeded(direction.x);
-        float speedMultiplier = IsBlockedByAlly(direction) ? groupSpeedMultiplier : 1f;
+        //float speedMultiplier = IsBlockedByAlly(direction) ? groupSpeedMultiplier : 1f;
         float worldSpeed = parallaxController != null ? parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier : 1f;
         Vector2 velocity = rb.linearVelocity;
-        velocity.x = direction.x * moveSpeed * speedMultiplier - worldSpeed;
+        velocity.x = direction.x * moveSpeed;//* speedMultiplier - worldSpeed;
+        if (direction.x < 0f)
+        {
+            velocity.x = direction.x * moveSpeed * 3.3f; //speedMultiplier - worldSpeed;
+        }
 
         rb.linearVelocity = velocity;
         ApplyInclinationAndStepSmoothing();
@@ -528,6 +516,20 @@ public class EnemyBase : MonoBehaviour
         s.x *= -1f;
         transform.localScale = s;
     }
+
+
+    public static bool IsVisibleFrom(Camera cam, GameObject obj)
+    {
+        if (cam == null || obj == null) return false;
+
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cam);
+        Renderer renderer = obj.GetComponent<Renderer>();
+
+        if (renderer == null) return false;
+
+        return GeometryUtility.TestPlanesAABB(planes, renderer.bounds);
+    }
+
 
     protected virtual void OnDrawGizmosSelected()
     {

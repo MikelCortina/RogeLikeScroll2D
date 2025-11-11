@@ -19,7 +19,7 @@ public class WaveManager : MonoBehaviour
     private Transform[] spawnPointsValue2;
     private Transform[] spawnPointsValue10;
     private Transform[] spawnPointsValue20;
-   
+
 
     [Header("Side zones (camera-based)")]
     [Tooltip("Si está activo, se usan zonas laterales calculadas desde la cámara cuando no hay spawnPoints específicos asignados.")]
@@ -31,7 +31,7 @@ public class WaveManager : MonoBehaviour
     [Range(0f, 1f)]
     [Tooltip("Cuánto (porcentaje, 0..0.5) fuera del viewport se colocan las zonas (ej. 0.08 = 8% fuera).")]
     public float outsideViewportOffset = 0.08f; // ahora configurable (antes estaba hardcoded)
-    [Range(0f, 1f)]
+    [Range(0f, 2f)]
     public float verticalViewportOffset = 0.08f; // ahora configurable (antes estaba hardcoded)
 
     [Tooltip("Cuántas zonas verticales por lado (división).")]
@@ -42,7 +42,7 @@ public class WaveManager : MonoBehaviour
 
     [Header("Zonas configurables por inspector")]
     [Tooltip("Configura, para cada subcuadro (de arriba a abajo), qué valores de waveSpace están permitidos. " +
-             "LeftZones y RightZones deben tener la misma cantidad que zonesPerSide (se sincronizan automáticamente).")]
+                "LeftZones y RightZones deben tener la misma cantidad que zonesPerSide (se sincronizan automáticamente).")]
     public List<ZoneConfig> leftZoneConfigs = new List<ZoneConfig>();
     public List<ZoneConfig> rightZoneConfigs = new List<ZoneConfig>();
 
@@ -63,9 +63,10 @@ public class WaveManager : MonoBehaviour
     public float gracePeriodAfterClear = 1.5f;
     public float maxWaitAfterSpawn = 60f;
 
-  
 
     [Header("Opciones de desbloqueo")]
+    [Tooltip("Valor inicial de Wave Space para la primera ola.")]
+    public float initialWaveSpace = 1.5f; // <<-- Nuevo campo para el valor inicial
     [Tooltip("Si está activo, suma el coste del último enemigo desbloqueado a currentWaveSpace al empezar la siguiente ola.")]
     public bool addLastUnlockedCostToNextWave = true;
 
@@ -82,7 +83,7 @@ public class WaveManager : MonoBehaviour
     private Coroutine runningWaveCoroutine;
 
     // --- Nuevo estado para lógica de espacio y desbloqueo ---
-    public float currentWaveSpace = 1.5f; // empieza con 1 unidad de espacio
+    public float currentWaveSpace { get; private set; } = 0f; // Ahora privado
     private List<bool> enemyUnlocked = new List<bool>();
     private int lastUnlockedIndex = -1;
 
@@ -155,8 +156,13 @@ public class WaveManager : MonoBehaviour
         for (int i = 0; i < enemyPrefabs.Length; i++)
             enemyUnlocked.Add(i == 0);
 
+        // --- CORRECCIÓN CLAVE AQUÍ ---
         float firstCost = Mathf.Max(1f, GetWaveSpaceFromPrefab(enemyPrefabs[0]));
-        currentWaveSpace = firstCost;
+
+        // El currentWaveSpace se inicializa con el valor del Inspector (initialWaveSpace),
+        // pero se asegura de que sea al menos el coste del primer enemigo.
+        currentWaveSpace = Mathf.Max(initialWaveSpace, firstCost);
+
         lastUnlockedIndex = enemyUnlocked[0] ? 0 : -1;
     }
 
@@ -174,7 +180,7 @@ public class WaveManager : MonoBehaviour
 
         AddLastUnlockedCostToWave();
 
-        enemiesToSpawnThisWave = EstimateEnemiesThisWave();
+        // No es necesario llamar EstimateEnemiesThisWave aquí, se hace al principio de SpawnWaveRoutine.
         enemiesAlive = 0;
 
         runningWaveCoroutine = StartCoroutine(SpawnWaveRoutine(currentWave));
@@ -182,10 +188,11 @@ public class WaveManager : MonoBehaviour
 
     private void AddLastUnlockedCostToWave()
     {
-        if (currentWave <= 1 || lastUnlockedIndex < 0 || lastUnlockedIndex >= enemyPrefabs.Length)
+        if (!addLastUnlockedCostToNextWave || currentWave <= 1 || lastUnlockedIndex < 0 || lastUnlockedIndex >= enemyPrefabs.Length)
             return;
 
         float lastCost = Mathf.Max(1f, GetWaveSpaceFromPrefab(enemyPrefabs[lastUnlockedIndex]));
+        // Lógica de adición: añade el coste o una porción del coste a la siguiente ola.
         float addAmount = lastCost > 1f ? lastCost * 0.5f : lastCost;
 
         currentWaveSpace += addAmount;
@@ -215,6 +222,7 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator SpawnWaveRoutine(int waveNumber)
     {
+        // Obtener alphaSpawnChance
         alphaSpawnChance = StatsManager.Instance != null ? StatsManager.Instance.RuntimeStats.luck / 100f : alphaSpawnChance;
         EnemyLevelManager.Instance?.IncreaseEnemyLevel(1);
 
@@ -227,17 +235,18 @@ public class WaveManager : MonoBehaviour
         if (alphaEnemyPrefabs != null && alphaEnemyPrefabs.Length > 0 && UnityEngine.Random.value <= alphaSpawnChance)
             SpawnAlphaEnemy();
 
- 
 
         // Spawn basado en remainingSpace
         float remainingSpace = currentWaveSpace;
         int spawned = 0;
         int safetyCounter = 0;
 
+        // 1. Intentar desbloquear y spawnear si hay espacio
         List<int> newlyUnlockedSpawned = TryUnlockAndSpawnWithRemaining(ref remainingSpace);
         spawned += newlyUnlockedSpawned.Count;
         if (spawned > 0) yield return new WaitForSeconds(spawnInterval);
 
+        // 2. Bucle principal de spawn
         while (true)
         {
             safetyCounter++;
@@ -248,9 +257,11 @@ public class WaveManager : MonoBehaviour
             }
 
             float minUnlockedCost = GetMinUnlockedWaveSpace();
+            // Salir si el espacio restante no cubre el enemigo desbloqueado más barato
             if (minUnlockedCost <= 0f || remainingSpace + 1e-6f < minUnlockedCost)
                 break;
 
+            // Encontrar candidatos para spawn
             List<int> candidates = new List<int>();
             for (int i = 0; i < enemyPrefabs.Length; i++)
             {
@@ -264,6 +275,7 @@ public class WaveManager : MonoBehaviour
                 break;
             }
 
+            // Seleccionar y spawnear
             int pickIndex = candidates[UnityEngine.Random.Range(0, candidates.Count)];
             float pickCost = GetWaveSpaceFromPrefab(enemyPrefabs[pickIndex]);
 
@@ -272,17 +284,19 @@ public class WaveManager : MonoBehaviour
             spawned++;
             yield return new WaitForSeconds(spawnInterval);
 
+            // Intentar desbloquear y spawnear de nuevo tras un spawn regular
             List<int> unlockedDuringSpawn = TryUnlockAndSpawnWithRemaining(ref remainingSpace);
             spawned += unlockedDuringSpawn.Count;
             if (unlockedDuringSpawn.Count > 0) yield return new WaitForSeconds(spawnInterval);
         }
 
-   
+
+        // 3. Desbloqueo final (sin usar remainingSpace para la condición de desbloqueo, solo para el spawn)
         List<int> postWaveUnlocked = TryUnlockWithoutSpawning();
         foreach (int idx in postWaveUnlocked)
         {
             float cost = Mathf.Max(1f, GetWaveSpaceFromPrefab(enemyPrefabs[idx]));
-            if (remainingSpace + 1e-6f >= cost)
+            if (remainingSpace + 1e-6f >= cost) // Solo spawnea si aún hay espacio restante
             {
                 SpawnEnemyByIndex(idx);
                 remainingSpace -= cost;
@@ -378,6 +392,7 @@ public class WaveManager : MonoBehaviour
             else
             {
                 // fallback heurístico: mapear waveSpace a zona por valor (si no hay ninguna configuración que permita)
+                // Se utiliza una lógica simple de mapeo (clamp(waveSpace - 1))
                 zoneIndex = Mathf.Clamp(Mathf.RoundToInt(waveSpace) - 1, 0, zonesPerSide - 1);
             }
 
@@ -470,6 +485,7 @@ public class WaveManager : MonoBehaviour
     private float GetWaveSpaceFromPrefab(GameObject prefab)
     {
         if (prefab == null) return 1f;
+        // Se asegura de que waveSpace sea al menos 1
         return prefab.TryGetComponent(out EnemyBase eb) ? Mathf.Max(1f, eb.waveSpace) : 1f;
     }
 
@@ -486,7 +502,8 @@ public class WaveManager : MonoBehaviour
             {
                 if (enemyUnlocked[i]) continue;
 
-                float cost = Mathf.Max(1f, GetWaveSpaceFromPrefab(enemyPrefabs[i]));
+                float cost = GetWaveSpaceFromPrefab(enemyPrefabs[i]);
+                // Desbloquea si el coste es cubierto por el espacio restante
                 if (remainingSpace + 1e-6f >= cost)
                 {
                     enemyUnlocked[i] = true;
@@ -512,8 +529,9 @@ public class WaveManager : MonoBehaviour
         for (int i = 0; i < enemyPrefabs.Length; i++)
         {
             if (enemyUnlocked[i]) continue;
-            float cost = Mathf.Max(1f, GetWaveSpaceFromPrefab(enemyPrefabs[i]));
+            float cost = GetWaveSpaceFromPrefab(enemyPrefabs[i]);
 
+            // Desbloquea si el coste es cubierto por el espacio TOTAL de la ola
             if (currentWaveSpace + 1e-6f >= cost)
             {
                 enemyUnlocked[i] = true;
@@ -543,7 +561,6 @@ public class WaveManager : MonoBehaviour
         enemiesAlive = 0;
         enemiesToSpawnThisWave = 0;
 
-     
         InitializeUnlocks();
 
         if (startImmediately) StartCoroutine(StartFirstWaveAfterDelay());
@@ -597,8 +614,8 @@ public class WaveManager : MonoBehaviour
                 bool allows = false;
                 if (z < configs.Count)
                     allows = configs[z] != null &&
-                             (configs[z].allowAny ||
-                             (configs[z].allowedWaveSpaceValues != null && configs[z].allowedWaveSpaceValues.Count > 0));
+                                    (configs[z].allowAny ||
+                                    (configs[z].allowedWaveSpaceValues != null && configs[z].allowedWaveSpaceValues.Count > 0));
 
                 if (allows)
                 {
@@ -614,5 +631,3 @@ public class WaveManager : MonoBehaviour
     }
 
 }
-
-

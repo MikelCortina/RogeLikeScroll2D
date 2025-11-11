@@ -51,8 +51,7 @@ public class PlayerHealth : MonoBehaviour
         StatsManager.Instance.DamagePlayer(finalDamage);
         PlayRandomHurtSound();
         StartCoroutine(ShaderAnim(0.1f));
-        StartCoroutine(HitPause(0.02f)); // Pausa de 0.1 segundos
-                                         //myMaterial.SetFloat("_Distorsion", 0f); // Activa
+  
     }
 
     public IEnumerator ShaderAnim(float amount)
@@ -68,7 +67,7 @@ public class PlayerHealth : MonoBehaviour
         float finalDamage = StatsCommunicator.Instance.CalculateRangeTakenDamage(amount);
         StatsManager.Instance.DamagePlayer(finalDamage);
         PlayRandomHurtSound();
-        StartCoroutine(HitPause(0.02f));
+      
     }
 
     private IEnumerator HitPause(float duration)

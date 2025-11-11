@@ -125,7 +125,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 847502903425083811, guid: be4fd9c0788596c448c1ef3a7d42d5d1, type: 3}
   firePoint: {fileID: 4374116530489601792}
   minFireRange: 3
-  maxFireRange: 7
+  maxFireRange: 4
   projectileSpeed: 1.5
   burstDelay: 0.12
   burstCount: 1
