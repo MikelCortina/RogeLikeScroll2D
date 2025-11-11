@@ -19,8 +19,7 @@ public class WaveManager : MonoBehaviour
     private Transform[] spawnPointsValue2;
     private Transform[] spawnPointsValue10;
     private Transform[] spawnPointsValue20;
-    [Tooltip("Puntos exclusivos para spawnear gusanos (towers).")]
-    public Transform[] tower;
+   
 
     [Header("Side zones (camera-based)")]
     [Tooltip("Si está activo, se usan zonas laterales calculadas desde la cámara cuando no hay spawnPoints específicos asignados.")]
@@ -64,8 +63,7 @@ public class WaveManager : MonoBehaviour
     public float gracePeriodAfterClear = 1.5f;
     public float maxWaitAfterSpawn = 60f;
 
-    [Header("Tower Spawner (componente)")]
-    public TowerSpawner towerSpawner;
+  
 
     [Header("Opciones de desbloqueo")]
     [Tooltip("Si está activo, suma el coste del último enemigo desbloqueado a currentWaveSpace al empezar la siguiente ola.")]
@@ -84,7 +82,7 @@ public class WaveManager : MonoBehaviour
     private Coroutine runningWaveCoroutine;
 
     // --- Nuevo estado para lógica de espacio y desbloqueo ---
-    private float currentWaveSpace = 1f; // empieza con 1 unidad de espacio
+    public float currentWaveSpace = 1.5f; // empieza con 1 unidad de espacio
     private List<bool> enemyUnlocked = new List<bool>();
     private int lastUnlockedIndex = -1;
 
@@ -138,11 +136,6 @@ public class WaveManager : MonoBehaviour
     private void Start()
     {
         mainCam = Camera.main;
-
-        if (towerSpawner == null)
-            towerSpawner = GetComponent<TowerSpawner>();
-        if (towerSpawner == null)
-            towerSpawner = FindObjectOfType<TowerSpawner>();
 
         InitializeUnlocks();
         StartCoroutine(StartFirstWaveAfterDelay());
@@ -234,19 +227,7 @@ public class WaveManager : MonoBehaviour
         if (alphaEnemyPrefabs != null && alphaEnemyPrefabs.Length > 0 && UnityEngine.Random.value <= alphaSpawnChance)
             SpawnAlphaEnemy();
 
-        // Tower spawn
-        bool towerSpawnedThisWave = false;
-        if (towerSpawner != null && towerSpawner.TrySpawnTowerForWave(currentWave, out GameObject towerGo))
-        {
-            if (towerGo.TryGetComponent(out EnemyBase enemy))
-            {
-                if (EnemyLevelManager.Instance != null)
-                    enemy.enemyLevel = Mathf.RoundToInt(EnemyLevelManager.Instance.enemyLevel);
-            }
-            enemiesAlive++;
-            OnEnemySpawned?.Invoke(towerGo);
-            towerSpawnedThisWave = true;
-        }
+ 
 
         // Spawn basado en remainingSpace
         float remainingSpace = currentWaveSpace;
@@ -296,9 +277,7 @@ public class WaveManager : MonoBehaviour
             if (unlockedDuringSpawn.Count > 0) yield return new WaitForSeconds(spawnInterval);
         }
 
-        if (towerSpawner != null && !towerSpawnedThisWave)
-            towerSpawner.IncrementRounds();
-
+   
         List<int> postWaveUnlocked = TryUnlockWithoutSpawning();
         foreach (int idx in postWaveUnlocked)
         {
@@ -564,7 +543,7 @@ public class WaveManager : MonoBehaviour
         enemiesAlive = 0;
         enemiesToSpawnThisWave = 0;
 
-        towerSpawner?.ResetRounds();
+     
         InitializeUnlocks();
 
         if (startImmediately) StartCoroutine(StartFirstWaveAfterDelay());

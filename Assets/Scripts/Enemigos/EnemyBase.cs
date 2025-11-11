@@ -359,24 +359,19 @@ public class EnemyBase : MonoBehaviour
     protected void MoveTowardsPlayer()
     {
         if (target == null || !canMove || isKnockedBack) return;
-        Vector2 direction = (target.position - transform.position);
+        Vector2 direction = (target.position - transform.position).normalized;
         direction.Normalize();
         FlipIfNeeded(direction.x);
         float speedMultiplier = IsBlockedByAlly(direction) ? groupSpeedMultiplier : 1f;
         float worldSpeed = parallaxController != null ? parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier : 1f;
         Vector2 velocity = rb.linearVelocity;
         velocity.x = direction.x * moveSpeed * speedMultiplier - worldSpeed;
+
         rb.linearVelocity = velocity;
         ApplyInclinationAndStepSmoothing();
     }
 
-    void DestroyChildrenWithTag(string tag)
-    {
-        foreach (Transform child in transform.Cast<Transform>().ToArray())
-        {
-            if (child.CompareTag(tag)) Destroy(child.gameObject);
-        }
-    }
+   
 
     protected void ApplyInclinationAndStepSmoothing()
     {
@@ -399,6 +394,14 @@ public class EnemyBase : MonoBehaviour
         {
             float newRotation = Mathf.LerpAngle(rb.rotation, 0f, rotationSpeed * Time.fixedDeltaTime * 0.5f);
             rb.MoveRotation(newRotation);
+        }
+    }
+
+    void DestroyChildrenWithTag(string tag)
+    {
+        foreach (Transform child in transform.Cast<Transform>().ToArray())
+        {
+            if (child.CompareTag(tag)) Destroy(child.gameObject);
         }
     }
 

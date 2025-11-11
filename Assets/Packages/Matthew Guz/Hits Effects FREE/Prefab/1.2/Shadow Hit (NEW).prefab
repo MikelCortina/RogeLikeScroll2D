@@ -4902,6 +4902,7 @@ GameObject:
   - component: {fileID: 3311357102662398410}
   - component: {fileID: 4508117539550737482}
   - component: {fileID: 7581533474373291659}
+  - component: {fileID: 5505254907288230623}
   m_Layer: 0
   m_Name: Shadow Hit (NEW)
   m_TagString: Untagged
@@ -9786,6 +9787,18 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &5505254907288230623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 447409866740539227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 592c1c0778328a444a36af5ff810f7f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2950936280286081808
 GameObject:
   m_ObjectHideFlags: 0

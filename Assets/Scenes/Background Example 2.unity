@@ -17854,9 +17854,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0bc6e82c23a834e4bbf682bf9fcffbfb, type: 2}
   - {fileID: 11400000, guid: a6c0c7974271fe445afec55e3ec5b990, type: 2}
   titleText: {fileID: 0}
-  spawnBaseCost: 1
+  spawnBaseCost: 20
   maxSpawnCost: 1000000000
-  defaultFirstNodeCost: 0
+  defaultFirstNodeCost: 20
   playerResources: {fileID: 362480665}
   panZoom: {fileID: 1720464087}
   mixedNodes:
@@ -20904,7 +20904,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.fireRate
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.friction
@@ -22659,7 +22659,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 437452083067568890, guid: a90351d09781af447a05e2f20f08c7e4, type: 3}
       propertyPath: duration
-      value: 60
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3150090900148976700, guid: a90351d09781af447a05e2f20f08c7e4, type: 3}
       propertyPath: m_Antialiasing
