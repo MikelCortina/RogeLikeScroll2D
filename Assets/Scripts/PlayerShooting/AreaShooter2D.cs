@@ -147,16 +147,38 @@ public class AreaShooter2D : MonoBehaviour
 
         float fireRange = maxRange;
         float rayRadius = 0.1f;
-        RaycastHit2D hit = Physics2D.CircleCast(activeFirePoint.position, rayRadius, dir, fireRange, enemyLayer);
+
+        // 🔹 En lugar de un solo hit, obtenemos todos los impactos
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(activeFirePoint.position, rayRadius, dir, fireRange, enemyLayer);
 
         bool hitSomething = false;
         Vector2 hitPoint = (Vector2)activeFirePoint.position + dir * fireRange;
         Transform hitTransform = null;
 
-        if (hit.collider != null)
-        {
-            float knockback = StatsManager.Instance.RuntimeStats.knockback;
+        float knockback = StatsManager.Instance.RuntimeStats.knockback;
 
+        // 🔹 Recorremos todos los impactos en orden de distancia
+        foreach (RaycastHit2D hit in hits)
+        {
+            if (hit.collider == null) continue;
+
+            // Si es proyectil enemigo → destruirlo y seguir
+            if (hit.collider.CompareTag(enemyProjectileTag))
+            {
+                Projectile2D enemyProjComponent = hit.collider.GetComponentInParent<Projectile2D>();
+                if (enemyProjComponent != null)
+                {
+                    enemyProjComponent.gameObject.SetActive(false);
+                }
+                else
+                {
+                    Destroy(hit.collider.gameObject);
+                }
+                // No rompemos → seguimos buscando enemigos detrás
+                continue;
+            }
+
+            // Si es enemigo → aplicar daño y detener el rayo ahí
             if (hit.collider.CompareTag(enemyTag))
             {
                 hitSomething = true;
@@ -172,23 +194,13 @@ public class AreaShooter2D : MonoBehaviour
                     Vector2 knockbackDir = ((Vector2)enemy.transform.position - (Vector2)transform.position).normalized;
                     enemy.ApplyKnockback(knockbackDir * knockback / 7.5f);
                 }
-            }
-            else if (hit.collider.CompareTag(enemyProjectileTag))
-            {
-                //hitSomething = true;
-                hitPoint = hit.point;
-                Projectile2D enemyProjComponent = hit.collider.GetComponentInParent<Projectile2D>();
-                if (enemyProjComponent != null)
-                {
-                    enemyProjComponent.gameObject.SetActive(false);
-                }
-                else
-                {
-                    Destroy(hit.collider.gameObject);
-                }
+
+                // 💥 Solo el primer enemigo recibe daño → rompemos aquí
+                break;
             }
         }
 
+        // 🔹 Efectos visuales, igual que antes
         EffectSpawner effectSpawner = GetComponent<EffectSpawner>();
         if (effectSpawner != null)
         {
@@ -212,4 +224,5 @@ public class AreaShooter2D : MonoBehaviour
         Debug.DrawRay(activeFirePoint.position, dir * fireRange, Color.yellow, 0.15f);
 #endif
     }
+
 }

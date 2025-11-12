@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class WaveManager : MonoBehaviour
 {
     public static WaveManager Instance { get; private set; }
@@ -19,7 +18,6 @@ public class WaveManager : MonoBehaviour
     private Transform[] spawnPointsValue2;
     private Transform[] spawnPointsValue10;
     private Transform[] spawnPointsValue20;
-
 
     [Header("Side zones (camera-based)")]
     [Tooltip("Si está activo, se usan zonas laterales calculadas desde la cámara cuando no hay spawnPoints específicos asignados.")]
@@ -63,16 +61,20 @@ public class WaveManager : MonoBehaviour
     public float gracePeriodAfterClear = 1.5f;
     public float maxWaitAfterSpawn = 60f;
 
-
     [Header("Opciones de desbloqueo")]
     [Tooltip("Valor inicial de Wave Space para la primera ola.")]
     public float initialWaveSpace = 1.5f; // <<-- Nuevo campo para el valor inicial
     [Tooltip("Si está activo, suma el coste del último enemigo desbloqueado a currentWaveSpace al empezar la siguiente ola.")]
     public bool addLastUnlockedCostToNextWave = true;
 
+    [Header("Debug / Inspector overrides")]
+    [Tooltip("Si > 0, sobrescribe lo calculado para enemiesToSpawnThisWave al inicio de la ola (solo para debug).")]
+    public int inspectorEnemiesToSpawnOverride = 0;
+
     // --- Estado ---
     public int currentWave { get; private set; } = 0;
     public int enemiesAlive { get; private set; } = 0;
+    // Para que puedas verlo en inspector (solo debug), lo dejamos público pero con private set.
     public int enemiesToSpawnThisWave { get; private set; } = 0;
 
     public event Action<int, int> OnWaveStarted;
@@ -83,7 +85,7 @@ public class WaveManager : MonoBehaviour
     private Coroutine runningWaveCoroutine;
 
     // --- Nuevo estado para lógica de espacio y desbloqueo ---
-    public float currentWaveSpace { get; private set; } = 0f; // Ahora privado
+    public float currentWaveSpace { get; private set; } = 0f; // Ahora privado set
     private List<bool> enemyUnlocked = new List<bool>();
     private int lastUnlockedIndex = -1;
 
@@ -227,6 +229,13 @@ public class WaveManager : MonoBehaviour
         EnemyLevelManager.Instance?.IncreaseEnemyLevel(1);
 
         enemiesToSpawnThisWave = EstimateEnemiesThisWave();
+
+        // Override desde inspector (debug)
+        if (inspectorEnemiesToSpawnOverride > 0)
+        {
+            enemiesToSpawnThisWave = inspectorEnemiesToSpawnOverride;
+        }
+
         enemiesAlive = 0;
 
         OnWaveStarted?.Invoke(waveNumber, enemiesToSpawnThisWave);
@@ -383,7 +392,9 @@ public class WaveManager : MonoBehaviour
                     eligibleZoneIndices.Add(i);
             }
 
-            int zoneIndex;
+            int zoneIndex = -1;
+            bool usedOtherSide = false;
+
             if (eligibleZoneIndices.Count > 0)
             {
                 // elegimos aleatoriamente entre las zonas válidas
@@ -391,15 +402,37 @@ public class WaveManager : MonoBehaviour
             }
             else
             {
-                // fallback heurístico: mapear waveSpace a zona por valor (si no hay ninguna configuración que permita)
-                // Se utiliza una lógica simple de mapeo (clamp(waveSpace - 1))
-                zoneIndex = Mathf.Clamp(Mathf.RoundToInt(waveSpace) - 1, 0, zonesPerSide - 1);
+                // No hay zonas válidas en el lado elegido -> intentar el otro lado
+                List<ZoneConfig> otherConfigs = chooseLeft ? rightZoneConfigs : leftZoneConfigs;
+                List<int> otherEligible = new List<int>();
+                for (int i = 0; i < zonesPerSide; i++)
+                {
+                    if (i >= otherConfigs.Count) continue;
+                    if (ZoneConfigAllowsWaveSpace(otherConfigs[i], waveSpace))
+                        otherEligible.Add(i);
+                }
+
+                if (otherEligible.Count > 0)
+                {
+                    // usar la otra side (esto evita ignorar la config)
+                    chooseLeft = !chooseLeft;
+                    configs = otherConfigs;
+                    zoneIndex = otherEligible[UnityEngine.Random.Range(0, otherEligible.Count)];
+                    usedOtherSide = true;
+                }
+                else
+                {
+                    // Ningún lado tiene subzonas que permitan este waveSpace -> no spawnear en side zones.
+                    // Devolvemos fallback seguro (transform + jitter).
+                    Vector2 jitter = UnityEngine.Random.insideUnitCircle * spawnRandomRadius;
+                    return transform.position + (Vector3)jitter;
+                }
             }
 
             Vector3 worldPos = GetRandomPositionInSideZone(chooseLeft, zoneIndex);
             // aplicar jitter
-            Vector2 jitter = UnityEngine.Random.insideUnitCircle * spawnRandomRadius;
-            return worldPos + (Vector3)jitter;
+            Vector2 jitter2 = UnityEngine.Random.insideUnitCircle * spawnRandomRadius;
+            return worldPos + (Vector3)jitter2;
         }
 
         // fallback al transform del WaveManager

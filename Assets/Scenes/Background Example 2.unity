@@ -19078,7 +19078,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0bc6e82c23a834e4bbf682bf9fcffbfb, type: 2}
   - {fileID: 11400000, guid: a6c0c7974271fe445afec55e3ec5b990, type: 2}
   titleText: {fileID: 0}
-  spawnBaseCost: 20
+  spawnBaseCost: 2
   maxSpawnCost: 1000000000
   defaultFirstNodeCost: 20
   playerResources: {fileID: 362480665}
@@ -25630,7 +25630,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftSpawnChance
-      value: 0.25
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: alphaSpawnChance
@@ -25733,6 +25733,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5269551145280685858, guid: b33e06020da332b42b1814be4a987b55, type: 3}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: leftZoneConfigs.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: platformPrefabs.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -25818,19 +25822,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[0].name
-      value: Bottom
+      value: Zone 0
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[1].name
-      value: MidBottom
+      value: Zone 1
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[2].name
-      value: MidTop
+      value: Zone 2
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[3].name
-      value: Top
+      value: Zone 3
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: rightZoneConfigs.Array.data[0].name
@@ -25850,15 +25854,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[0].allowedWaveSpaceValues.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[1].allowedWaveSpaceValues.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[2].allowedWaveSpaceValues.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: rightZoneConfigs.Array.data[0].allowedWaveSpaceValues.Array.size

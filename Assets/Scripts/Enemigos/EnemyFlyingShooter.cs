@@ -19,6 +19,10 @@ public class EnemyFlyingShooter : EnemyBase
     [SerializeField] private float burstDelay = 0.12f;
     [SerializeField] private int burstCount = 1;
 
+    [Header("Behavior Options")]
+    [Tooltip("Si está activado, el enemigo puede disparar mientras se mueve. Si está desactivado, dejará de moverse para disparar (comportamiento previo).")]
+    [SerializeField] private bool canShootWhileMoving = true;
+
     // Internal
     private float hoverOffset = 0f;
     private float baseY = 0f;
@@ -74,7 +78,7 @@ public class EnemyFlyingShooter : EnemyBase
             return; // Salimos de Update, no hacemos lógica de ataque hasta que esté visible
         }
 
-        // Prioridad 2: cuando está visible, atacamos como antes
+        // Prioridad 2: cuando está visible, atacamos (ahora permitimos disparar mientras se mueve)
         float distToTarget = Vector2.Distance(transform.position, target.position);
         if (distToTarget <= detectRadius)
         {
@@ -84,8 +88,17 @@ public class EnemyFlyingShooter : EnemyBase
             }
             else
             {
-                canMove = false;
-                StopMovementPhysics();
+                // Cambio: si canShootWhileMoving = true, permitimos que siga moviéndose y dispare.
+                if (!canShootWhileMoving)
+                {
+                    canMove = false;
+                    StopMovementPhysics();
+                }
+                else
+                {
+                    canMove = true; // seguirá moviéndose mientras ataca
+                }
+
                 TryAttack();
             }
         }
