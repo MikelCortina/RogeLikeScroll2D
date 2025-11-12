@@ -19078,9 +19078,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0bc6e82c23a834e4bbf682bf9fcffbfb, type: 2}
   - {fileID: 11400000, guid: a6c0c7974271fe445afec55e3ec5b990, type: 2}
   titleText: {fileID: 0}
-  spawnBaseCost: 2
+  spawnBaseCost: 0
   maxSpawnCost: 1000000000
-  defaultFirstNodeCost: 20
+  defaultFirstNodeCost: 0
   playerResources: {fileID: 362480665}
   panZoom: {fileID: 1720464087}
   mixedNodes:
@@ -22894,6 +22894,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bone Trasero
       objectReference: {fileID: 0}
+    - target: {fileID: -3807545296260828748, guid: 73275f687f521be49bcf6aef578e95c7, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 386791141387813222, guid: 73275f687f521be49bcf6aef578e95c7, type: 3}
       propertyPath: m_Name
       value: Bone Frontal
@@ -24998,7 +25002,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1701672908580987719, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1797872340337694627, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: baseSpeed
