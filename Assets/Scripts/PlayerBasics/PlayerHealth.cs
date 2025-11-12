@@ -11,7 +11,7 @@ public class PlayerHealth : MonoBehaviour
     public UnityEvent OnDeath;
 
     public AudioClip[] hurtSounds; // 🎵 Lista de sonidos de daño
-    public float soundCooldown = 0.3f; // ⏳ Tiempo mínimo entre sonidos
+    public float soundCooldown = 0f; // ⏳ Tiempo mínimo entre sonidos
     private float lastSoundTime;
 
     private AudioSource audioSource;

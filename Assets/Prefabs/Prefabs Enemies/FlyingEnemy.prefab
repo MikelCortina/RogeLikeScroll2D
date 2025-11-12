@@ -119,16 +119,18 @@ MonoBehaviour:
   detachDeathParticles: 1
   fallbackDeathParticlesLifetime: 3
   impactSound: {fileID: 8300000, guid: f9ad9e41167c5e145bafb2ef8570c19b, type: 3}
+  killSound: {fileID: 8300000, guid: dd50e16ef9cbd5a4489ae826fa85c10d, type: 3}
   flyingSpeed: 1
   hoverAmplitude: 0.125
   hoverFrequency: 1.2
   projectilePrefab: {fileID: 847502903425083811, guid: be4fd9c0788596c448c1ef3a7d42d5d1, type: 3}
   firePoint: {fileID: 4374116530489601792}
-  minFireRange: 3
-  maxFireRange: 4
+  minFireRange: 2
+  maxFireRange: 3
   projectileSpeed: 1.5
   burstDelay: 0.12
   burstCount: 1
+  attackHeightOffset: 2
 --- !u!114 &3979893125059676651
 MonoBehaviour:
   m_ObjectHideFlags: 0

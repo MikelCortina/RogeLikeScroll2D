@@ -22072,11 +22072,11 @@ PrefabInstance:
       objectReference: {fileID: 1799970758}
     - target: {fileID: 2888541443257957253, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: maxSpreadAngle
-      value: 1.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2888541443257957253, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: aimSpreadRadius
-      value: 0.1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2888541443257957253, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: fireSpriteRight
@@ -22126,6 +22126,10 @@ PrefabInstance:
       propertyPath: myMaterial
       value: 
       objectReference: {fileID: 2100000, guid: 2e171dd2c1a36274cbd6e665e6fa385b, type: 2}
+    - target: {fileID: 4504788712007658705, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: soundCooldown
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 4504788712007658705, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: hurtSounds.Array.size
       value: 1
@@ -25638,7 +25642,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: initialWaveSpace
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: tower.Array.size
@@ -25686,7 +25690,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: enemyPrefabs.Array.size
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'spawnPoints.Array.data[0]'
@@ -25850,11 +25854,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[1].allowedWaveSpaceValues.Array.size
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[2].allowedWaveSpaceValues.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: rightZoneConfigs.Array.data[0].allowedWaveSpaceValues.Array.size
@@ -25874,11 +25878,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'leftZoneConfigs.Array.data[1].allowedWaveSpaceValues.Array.data[0]'
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'leftZoneConfigs.Array.data[1].allowedWaveSpaceValues.Array.data[1]'
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'leftZoneConfigs.Array.data[1].allowedWaveSpaceValues.Array.data[2]'

@@ -175,7 +175,7 @@ public class AreaShooter2D : MonoBehaviour
             }
             else if (hit.collider.CompareTag(enemyProjectileTag))
             {
-                hitSomething = true;
+                //hitSomething = true;
                 hitPoint = hit.point;
                 Projectile2D enemyProjComponent = hit.collider.GetComponentInParent<Projectile2D>();
                 if (enemyProjComponent != null)

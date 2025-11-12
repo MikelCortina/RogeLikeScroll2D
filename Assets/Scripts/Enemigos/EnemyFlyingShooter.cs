@@ -23,6 +23,8 @@ public class EnemyFlyingShooter : EnemyBase
     private float hoverOffset = 0f;
     private float baseY = 0f;
 
+    [SerializeField] private float attackHeightOffset = 0.5f; // altura preferida sobre el jugador
+
     protected override void Awake()
     {
         base.Awake();
@@ -51,19 +53,37 @@ public class EnemyFlyingShooter : EnemyBase
     {
         if (target == null) return;
 
-        float distToTarget = Vector2.Distance(transform.position, target.position);
+        // Prioridad 1: entrar en la cámara
+        bool visible = IsVisibleFrom(Camera.main, gameObject);
 
+        if (!visible)
+        {
+            // Movernos hacia el centro de la cámara
+            Vector3 camCenter = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, Camera.main.nearClipPlane));
+            Vector2 direction = (Vector2)(camCenter - transform.position);
+            if (direction.magnitude > 0.05f)
+            {
+                canMove = true;
+                FlyTowardsTarget(transform.position.y); // Mantener altura actual
+            }
+            else
+            {
+                canMove = false;
+                StopMovementPhysics();
+            }
+            return; // Salimos de Update, no hacemos lógica de ataque hasta que esté visible
+        }
+
+        // Prioridad 2: cuando está visible, atacamos como antes
+        float distToTarget = Vector2.Distance(transform.position, target.position);
         if (distToTarget <= detectRadius)
         {
-            if (distToTarget > fireRange || !IsVisibleFrom(Camera.main, gameObject))
+            if (distToTarget > fireRange)
             {
-                // Si estamos fuera del rango de disparo, movernos hacia el target
                 canMove = true;
             }
-
-            else if (IsVisibleFrom(Camera.main, gameObject))
+            else
             {
-                // Dentro del rango ideal, no moverse horizontalmente
                 canMove = false;
                 StopMovementPhysics();
                 TryAttack();
@@ -78,35 +98,31 @@ public class EnemyFlyingShooter : EnemyBase
     private void FixedUpdate()
     {
         if (target == null) return;
-
-        // Si estamos en knockback, no ejecutar la IA de movimiento
         if (IsCurrentlyKnockedBack()) return;
-
-        // --- LÓGICA DE HOVER MODIFICADA ---
 
         if (canMove)
         {
-            // 1. Calcular hover solo si se está moviendo/reposicionando
+            // Hover relativo al jugador
+            float desiredBaseY = target.position.y + attackHeightOffset;
+            baseY = Mathf.Lerp(baseY, desiredBaseY, 0.1f); // suavizamos movimiento vertical
+
             hoverOffset = Mathf.Sin(Time.time * hoverFrequency) * hoverAmplitude;
             float targetY = baseY + hoverOffset;
 
+            // Limitar altura máxima y mínima (opcional, según cámara)
+            float camMinY = Camera.main.ViewportToWorldPoint(Vector3.zero).y + 0.5f;
+            float camMaxY = Camera.main.ViewportToWorldPoint(Vector3.one).y - 0.5f;
+            targetY = Mathf.Clamp(targetY, camMinY, camMaxY);
+
             FlyTowardsTarget(targetY);
         }
-        else // Está parado para disparar
+        else
         {
-            // 2. Detenemos el hover y fijamos la altura actual
-            baseY = transform.position.y; // <--- FIJAMOS LA POSICIÓN BASE ACTUAL
+            baseY = transform.position.y;
             hoverOffset = 0f;
-
-            // Solo hover (mantenemos la Y sin la oscilación, y preservamos la X si hay alguna inercia)
-            Vector2 currentVel = rb.linearVelocity;
-
-            // Calculamos la velocidad deseada en Y para mantener la altura actual (baseY)
             float desiredYVel = (baseY - transform.position.y) * 5f;
             desiredYVel = Mathf.Clamp(desiredYVel, -flyingSpeed * 2f, flyingSpeed * 2f);
-
-            // Asignamos la componente vertical mientras preservamos la horizontal física (si hay inercia o knockback residual)
-            rb.linearVelocity = new Vector2(currentVel.x, desiredYVel);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, desiredYVel);
         }
     }
 

@@ -30,8 +30,8 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] protected ParallaxController parallaxController;
 
     [Header("Grouping / Collision Avoidance")]
-    [SerializeField] protected float followSpacing = 0.4f; // separación mínima entre enemigos
-    [SerializeField] protected float groupSpeedMultiplier = 0.8f; // ralentiza si hay enemigos delante
+    [SerializeField] protected float followSpacing = 0.4f;
+    [SerializeField] protected float groupSpeedMultiplier = 0.8f;
 
     [Header("Terrain Adaptation")]
     public LayerMask Ground;
@@ -47,7 +47,7 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] protected Animator animator;
 
     [Header("Knockback")]
-    [SerializeField] private float knockbackRecoveryTime = 0.25f; // tiempo que dura el knockback (puedes ajustar)
+    [SerializeField] private float knockbackRecoveryTime = 0.25f;
     private bool isKnockedBack = false;
     private Coroutine knockbackRoutine = null;
 
@@ -60,7 +60,6 @@ public class EnemyBase : MonoBehaviour
     protected bool isFacingRight = true;
     protected float adjustedMaxHealth;
     protected float adjustedContactDamage;
-    // NOTA: canMove sigue siendo protected para que tus derivados lo usen
     protected bool canMove = true;
 
     public float lastAttackTime = -999f;
@@ -74,10 +73,8 @@ public class EnemyBase : MonoBehaviour
     [SerializeField] private int flashCount = 5;
 
     public Transform emergencySpawn;
+    public GameObject gorePrefab;
 
-    public GameObject gorePrefab; // asigna tu prefab en el inspector
-
-    // --- NUEVO: estado de "estar llevado" ---
     private bool isCarried = false;
     private Transform carrierTransform = null;
     private Vector3 carrierLocalOffset = Vector3.zero;
@@ -85,21 +82,29 @@ public class EnemyBase : MonoBehaviour
     private bool prevCanMove = true;
 
     [Header("Death VFX")]
-    public ParticleSystem deathParticlesPrefab;      // asigna en el inspector (prefab de ParticleSystem)
-    public bool detachDeathParticles = true;         // true = desvincula partículas del enemigo (para que no se destruyan con él)
-    public float fallbackDeathParticlesLifetime = 3f; // si no se puede calcular la duración, se usa este valor
+    public ParticleSystem deathParticlesPrefab;
+    public bool detachDeathParticles = true;
+    public float fallbackDeathParticlesLifetime = 3f;
 
-    public AudioClip impactSound; // 🎵 Asigna aquí el sonido de impacto
+    [Header("Audio")]
+    public AudioClip impactSound;
+    public AudioClip killSound; // 🔊 Sonido de muerte del enemigo
     private AudioSource audioSource;
+
+    private void OnEnable() => EnemyUpdateManager.Register(this);
+    private void OnDisable() => EnemyUpdateManager.Unregister(this);
 
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         float multiplier = 1f;
-        if (useLevelScaling && EnemyLevelManager.Instance != null) multiplier = EnemyLevelManager.Instance.GetEnemyMultiplier();
+        if (useLevelScaling && EnemyLevelManager.Instance != null)
+            multiplier = EnemyLevelManager.Instance.GetEnemyMultiplier();
+
         adjustedMaxHealth = Mathf.Max(1, Mathf.RoundToInt(maxHealth * multiplier));
         adjustedContactDamage = Mathf.Max(1, Mathf.CeilToInt(contactDamage * multiplier));
         currentHealth = adjustedMaxHealth;
+
         if (animator == null) animator = GetComponentInChildren<Animator>();
     }
 
@@ -131,12 +136,9 @@ public class EnemyBase : MonoBehaviour
             if (emergencySpawn != null) transform.position = emergencySpawn.position;
         }
 
-        // Si estamos siendo llevados, sincronizamos la posición aquí (evita tocar la IA)
         if (isCarried && carrierTransform != null)
         {
-            // Mantener offset en world space
             Vector3 desired = carrierTransform.TransformPoint(carrierLocalOffset);
-            // Usar MovePosition para respetar física lo más posible
             if (rb != null)
             {
                 rb.MovePosition(new Vector2(desired.x, desired.y));
@@ -147,6 +149,8 @@ public class EnemyBase : MonoBehaviour
             }
         }
     }
+
+    public void Tick() { }
 
     #region Flash
     public void Flash()
@@ -195,16 +199,11 @@ public class EnemyBase : MonoBehaviour
     #region Health & Damage
     public void TakeContactDamage(float amount, bool sound)
     {
-
         currentHealth -= amount;
         Flash();
 
-
-        // 🔊 Reproducir sonido de impacto
-        if (impactSound != null && sound)
-        {
-            audioSource.PlayOneShot(impactSound);
-        }
+        // 🔊 Sonido de impacto
+      
 
         if (currentHealth > 0)
         {
@@ -213,62 +212,58 @@ public class EnemyBase : MonoBehaviour
 
         if (currentHealth <= 0)
             Die();
-        HitPause(0.02f);
+        else if (impactSound != null && sound)
+        {
+            audioSource.PlayOneShot(impactSound);
+        }
 
+       // StartCoroutine(HitPause(0.02f));
     }
-    private IEnumerator HitPause(float duration)
+
+    IEnumerator HitPause(float duration)
     {
-        float originalTimeScale = Time.timeScale;
-        Time.timeScale = 0f; // Pausa el juego
-        yield return new WaitForSecondsRealtime(duration); // espera tiempo real
-        Time.timeScale = originalTimeScale; // reanuda el juego
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(duration);
+        Time.timeScale = 1f;
     }
 
     protected virtual void Die()
     {
-        // Trigger animación de muerte si existe
+        // Animación
         if (animator != null) animator.SetTrigger("Dead");
 
-        // Intento de limpieza inmediata
-        canMove = false;
+        // 🔊 Sonido de muerte (no se corta al destruir el enemigo)
+        if (killSound != null)
+        {
+            AudioSource.PlayClipAtPoint(killSound, transform.position);
+        }
 
-        // Parar corrutinas propias (esto solo afecta corrutinas iniciadas en este componente)
+        canMove = false;
         StopAllCoroutines();
 
-        // Detener Rigidbody2D si existe
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
 #if UNITY_2020_1_OR_NEWER
             rb.simulated = false;
 #else
-        rb.isKinematic = true;
+            rb.isKinematic = true;
 #endif
         }
 
-        // Desactivar colisiones
         Collider2D[] cols = GetComponents<Collider2D>();
         foreach (var c in cols) c.enabled = false;
 
-        // --- INSTANTIAR PARTICULAS ANTES DE DESACTIVAR RENDERERS ----
+        // Efecto de partículas de muerte
         if (deathParticlesPrefab != null)
         {
             ParticleSystem ps = Instantiate(deathParticlesPrefab, transform.position, Quaternion.identity);
-            if (detachDeathParticles)
-            {
-                ps.transform.SetParent(null);
-            }
-            else
-            {
-                // si no las desvinculas, parentéalas al enemigo (no recomendado si el enemigo se destruye rápido)
-                ps.transform.SetParent(transform);
-            }
+            if (detachDeathParticles) ps.transform.SetParent(null);
+            else ps.transform.SetParent(transform);
 
-            // intentar calcular duración real de las partículas para destruir el objeto instanciado
             try
             {
                 var main = ps.main;
-                // startLifetime puede ser MinMaxCurve; usamos constantMax como aproximación
                 float startLifetimeMax = 0f;
                 try { startLifetimeMax = main.startLifetime.constantMax; } catch { startLifetimeMax = 0f; }
                 float duration = main.duration + startLifetimeMax;
@@ -281,85 +276,69 @@ public class EnemyBase : MonoBehaviour
             }
         }
 
-        // Desactivar renderers (por si la animación o child renderers mantienen visible el sprite)
+        // Ocultar sprites y detener animador
         var sr = GetComponent<SpriteRenderer>();
         if (sr != null) sr.enabled = false;
 
         var childRenderers = GetComponentsInChildren<SpriteRenderer>(true);
         foreach (var r in childRenderers) r.enabled = false;
 
-        // Desactivar animador para que no re-enable renderers/propiedades
         if (animator != null) animator.enabled = false;
 
-        // Notificar sistema de oleadas / puntaje / xp
+        // Notificar sistemas
         if (WaveManager.Instance != null) WaveManager.Instance.NotifyEnemyKilled(gameObject);
         float xpGained = StatsManager.Instance.GetXPForEnemy(enemyLevel, baseXP);
-        Debug.Log($"Enemy Level: {enemyLevel}, Base XP: {baseXP}, XP Gained: {xpGained}");
         StatsManager.Instance.GainXP(xpGained);
         ScoreManager.Instance.EnemyDied();
         HealthDecay.Instance.GetBackHP();
 
-        // Limpieza de hijos con tag
         DestroyChildrenWithTag("MeleAtack");
 
-        // Instanciar gore si procede
+        // Gore opcional
         if (gorePrefab != null) Instantiate(gorePrefab, transform.position, Quaternion.identity);
 
-        // Si el objeto tiene un cleanup específico (como HandleDeathCleanup en EnemyHelicopter), llamarlo.
         var heli = GetComponent<EnemyHelicopter>();
         if (heli != null)
         {
-            // Le decimos al helicóptero que gestione su limpieza/pooling; le damos 0.05s para mantener tu timing original.
             if (gorePrefab != null) Instantiate(gorePrefab, transform.position, Quaternion.identity);
             heli.HandleDeathCleanup(0.05f, false);
-
             return;
         }
 
-        // Si no hay cleanup específico, destruimos el objeto rápido
         Destroy(gameObject, 0.05f);
     }
 
- 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Verifica si el objeto que entra en el trigger tiene el componente PlayerHealth
         PlayerHealth playerHealth = other.gameObject.GetComponent<PlayerHealth>();
-
         if (playerHealth != null)
         {
-
             playerHealth.TakeMeleDamage(contactDamage);
         }
     }
-
 
     public float GetContactDamage() => adjustedContactDamage;
     public float GetMaxHealth() => adjustedMaxHealth;
     #endregion
 
     #region Movement / Attack Utilities
-    
     protected void MoveTowardsPlayer()
     {
         if (target == null || !canMove || isKnockedBack) return;
         Vector2 direction = (target.position - transform.position).normalized;
         direction.Normalize();
         FlipIfNeeded(direction.x);
-        //float speedMultiplier = IsBlockedByAlly(direction) ? groupSpeedMultiplier : 1f;
         float worldSpeed = parallaxController != null ? parallaxController.baseSpeed * parallaxController.cameraMoveMultiplier : 1f;
         Vector2 velocity = rb.linearVelocity;
-        velocity.x = direction.x * moveSpeed;//* speedMultiplier - worldSpeed;
+        velocity.x = direction.x * moveSpeed;
         if (direction.x < 0f)
         {
-            velocity.x = direction.x * moveSpeed * 3.3f; //speedMultiplier - worldSpeed;
+            velocity.x = direction.x * moveSpeed * 3.1f;
         }
 
         rb.linearVelocity = velocity;
         ApplyInclinationAndStepSmoothing();
     }
-
-   
 
     protected void ApplyInclinationAndStepSmoothing()
     {
@@ -403,18 +382,13 @@ public class EnemyBase : MonoBehaviour
     protected void TryAttack()
     {
         float timeSinceLast = Time.time - lastAttackTime;
-        if (timeSinceLast < attackCooldown)
-        {
-            return;
-        }
+        if (timeSinceLast < attackCooldown) return;
         lastAttackTime = Time.time;
         if (animator != null) animator.SetTrigger("Attack");
         PerformAttack();
     }
 
-    protected virtual void PerformAttack()
-    {
-    }
+    protected virtual void PerformAttack() { }
     #endregion
 
     #region Knockback Handling
@@ -423,10 +397,8 @@ public class EnemyBase : MonoBehaviour
         if (rb == null) return;
         if (recoveryTime > 0f) knockbackRecoveryTime = recoveryTime;
 
-        // Aplicar la fuerza (impulso) al rigidbody
         rb.AddForce(force, ForceMode2D.Impulse);
 
-        // Gestionar estado para que la IA no sobrescriba la velocidad
         if (knockbackRoutine != null) StopCoroutine(knockbackRoutine);
         knockbackRoutine = StartCoroutine(KnockbackCoroutine(knockbackRecoveryTime));
     }
@@ -435,34 +407,19 @@ public class EnemyBase : MonoBehaviour
     {
         isKnockedBack = true;
         canMove = false;
-        // opcional: parar animación de movimiento si usas una trigger/param
-        if (animator != null)
-        {
-            // ejemplo: animator.ResetTrigger("Walk"); // ajusta según tus animaciones
-        }
-
         yield return new WaitForSeconds(duration);
-
         isKnockedBack = false;
         canMove = true;
         knockbackRoutine = null;
     }
     #endregion
 
-    #region Carried API (nuevo)
-    /// <summary>
-    /// Llamar para hacer que el enemigo "se mueva con" el carrier (ej. proyectil).
-    /// Mientras está carried:
-    ///  - se desactiva la IA (canMove = false)
-    ///  - se parenta al carrier (para seguir rot/pos) y se pone rb.isKinematic = true
-    ///  - cuando se suelta, se restaura el estado previo
-    /// </summary>
+    #region Carried API
     public void StartBeingCarried(Transform carrier, Vector3 optionalLocalOffset)
     {
         if (carrier == null) return;
         if (isCarried && carrierTransform == carrier) return;
 
-        // guardar estado previo
         prevKinematic = rb != null ? rb.isKinematic : false;
         prevCanMove = canMove;
 
@@ -470,10 +427,8 @@ public class EnemyBase : MonoBehaviour
         carrierLocalOffset = optionalLocalOffset;
         isCarried = true;
 
-        // desactivar IA / movimiento para que no sobreescriba la posición
         canMove = false;
 
-        // parentar y poner kinematic para evitar forces conflictivas
         transform.SetParent(carrierTransform);
         if (rb != null)
         {
@@ -486,17 +441,9 @@ public class EnemyBase : MonoBehaviour
     public void StopBeingCarried()
     {
         if (!isCarried) return;
-
         isCarried = false;
-
-        // desparentar y restaurar física/IA
         transform.SetParent(null);
-
-        if (rb != null)
-        {
-            rb.isKinematic = prevKinematic;
-        }
-
+        if (rb != null) rb.isKinematic = prevKinematic;
         canMove = prevCanMove;
         carrierTransform = null;
     }
@@ -517,19 +464,14 @@ public class EnemyBase : MonoBehaviour
         transform.localScale = s;
     }
 
-
     public static bool IsVisibleFrom(Camera cam, GameObject obj)
     {
         if (cam == null || obj == null) return false;
-
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cam);
         Renderer renderer = obj.GetComponent<Renderer>();
-
         if (renderer == null) return false;
-
         return GeometryUtility.TestPlanesAABB(planes, renderer.bounds);
     }
-
 
     protected virtual void OnDrawGizmosSelected()
     {
