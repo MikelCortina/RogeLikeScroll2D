@@ -25,7 +25,7 @@ public class StatsData
     [Header("Knockback")]
     public float knockback;
     [Header("Currency")]
-    public int currency;
+    public int currency; public int organValue;
 
     [Header("Suerte")]
     public float luck, towerLuck; // Currently unused  
@@ -55,7 +55,8 @@ public class StatsData
             luck = this.luck,
             towerLuck = this.towerLuck,
             knockback = this.knockback,
-            currency = this.currency
+            currency = this.currency,
+            organValue = this.organValue,
 
         };
     }

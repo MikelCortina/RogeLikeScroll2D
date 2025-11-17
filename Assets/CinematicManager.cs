@@ -13,8 +13,14 @@ public class CinematicManager : MonoBehaviour
     public GameObject particleLoop;
     public Button continueButton;
 
+    [Header("Upgrade Object")]
+    public GameObject upgradeObject; // GameObject con SpriteRenderer
+    private SpriteRenderer upgradeRenderer;
+
     private bool cinematicPlaying = false;
     private bool cinematicFinished = false;
+
+    private IObjetos currentUpgrade;
 
     private void Awake()
     {
@@ -25,20 +31,24 @@ public class CinematicManager : MonoBehaviour
             continueButton.onClick.RemoveAllListeners();
             continueButton.onClick.AddListener(OnPressButton);
         }
-    }
-    private void Update()
-    {
-        // Permitir que el botón sea pulsable aunque Time.timeScale = 0
-        if (cinematicPanel.activeSelf && Input.GetMouseButtonDown(0))
+
+        if (upgradeObject != null)
         {
-            // Raycast manual hacia el UI
-            if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-            {
-                // Llamamos al botón manualmente
-                OnPressButton();
-            }
+            upgradeRenderer = upgradeObject.GetComponent<SpriteRenderer>();
+            if (upgradeRenderer != null)
+                upgradeObject.SetActive(false); // ocultamos al inicio
         }
     }
+
+    private void Update()
+    {
+        if (cinematicPanel.activeSelf && Input.GetMouseButtonDown(0))
+        {
+            if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+                OnPressButton();
+        }
+    }
+
     public void StartCinematic()
     {
         cinematicPlaying = true;
@@ -47,6 +57,15 @@ public class CinematicManager : MonoBehaviour
         cinematicPanel.SetActive(true);
         particleLoop.SetActive(false);
 
+        // Elegimos un objeto aleatorio
+        currentUpgrade = ObjectManager.Instance.GetRandomObject();
+
+        // NO activamos el upgradeObject aquí
+        if (upgradeRenderer != null && currentUpgrade != null)
+        {
+            upgradeRenderer.sprite = currentUpgrade.icon;
+        }
+
         if (continueButton != null)
             continueButton.gameObject.SetActive(true);
 
@@ -54,8 +73,6 @@ public class CinematicManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
 
         cinematic.Play();
-
-        // Pausar un frame después para registrar input
         StartCoroutine(PauseNextFrame());
 
         cinematic.stopped += OnCinematicFinished;
@@ -74,30 +91,36 @@ public class CinematicManager : MonoBehaviour
 
         particleLoop.SetActive(true);
 
-        // El botón sigue activo para reanudar juego
+        // Activamos el upgradeObject justo después de la animación
+        if (upgradeObject != null && currentUpgrade != null)
+            upgradeObject.SetActive(true);
+
         if (continueButton != null)
             continueButton.gameObject.SetActive(true);
     }
 
     public void OnPressButton()
     {
-        // Caso 1: la cinemática sigue → saltarla
         if (cinematicPlaying)
         {
             cinematic.time = cinematic.duration;
             cinematic.Evaluate();
             cinematic.Stop();
-
             cinematicPlaying = false;
             cinematicFinished = true;
             return;
         }
 
-        // Caso 2: la cinemática terminó → ocultar panel y reanudar juego
         if (cinematicFinished)
         {
             cinematicPanel.SetActive(false);
             particleLoop.SetActive(true);
+
+            if (currentUpgrade != null)
+                currentUpgrade.ApplyEffect(); // aplicamos la mejora
+
+            if (upgradeObject != null)
+                upgradeObject.SetActive(false); // ocultamos objeto
 
             Time.timeScale = 1f;
 
@@ -105,6 +128,7 @@ public class CinematicManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
 
             cinematicFinished = false;
+            currentUpgrade = null;
         }
     }
 }

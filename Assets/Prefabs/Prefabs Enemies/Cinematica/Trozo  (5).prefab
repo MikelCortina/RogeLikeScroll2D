@@ -93,6 +93,7 @@ GameObject:
   - component: {fileID: 5850230320155624868}
   - component: {fileID: 1473488830287605129}
   - component: {fileID: 2001195520456326713}
+  - component: {fileID: 293283967084532843}
   m_Layer: 17
   m_Name: Trozo  (5)
   m_TagString: Organos
@@ -211,7 +212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d431515dd6736f74b8d7957e13c75782, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifetime: 8
+  lifetime: 20
 --- !u!114 &5850230320155624868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,10 +275,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad3cd61d7c8271b4bad0c9021891aa23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cinematic: {fileID: 0}
-  cinematicPanel: {fileID: 0}
-  particleLoop: {fileID: 0}
-  continueButton: {fileID: 0}
+--- !u!114 &293283967084532843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5231063360948196812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d46b95fe434cfaa4980ce7676e4df91b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6597020917650460078
 PrefabInstance:
   m_ObjectHideFlags: 0
