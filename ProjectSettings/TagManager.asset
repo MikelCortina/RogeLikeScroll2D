@@ -12,6 +12,7 @@ TagManager:
   - Cable
   - Organos
   - EnemyProjectile
+  - Cinematica
   layers:
   - Default
   - TransparentFX
@@ -32,7 +33,7 @@ TagManager:
   - ProjectileEffects(Knifes,bombs)
   - Organos
   - OrganoCollider
-  - 
+  - Cinematica
   - 
   - 
   - 

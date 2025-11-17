@@ -346,7 +346,37 @@ public class WaveManager : MonoBehaviour
     {
         if (enemyPrefabs == null || prefabIndex < 0 || prefabIndex >= enemyPrefabs.Length) return;
 
-        GameObject prefab = enemyPrefabs[prefabIndex];
+        GameObject normalPrefab = enemyPrefabs[prefabIndex];
+        float waveSpace = GetWaveSpaceFromPrefab(normalPrefab);
+
+        // -------------------------------
+        // PROBABILIDAD 1/10 PARA ALFA
+        // -------------------------------
+        if (UnityEngine.Random.Range(0, 1) == 0) // 1 entre 20
+        {
+            // Buscar alfas que tengan el mismo waveSpace
+            List<GameObject> sameValueAlphas = new List<GameObject>();
+
+            foreach (var alpha in alphaEnemyPrefabs)
+            {
+                if (alpha != null && Mathf.Approximately(GetWaveSpaceFromPrefab(alpha), waveSpace))
+                    sameValueAlphas.Add(alpha);
+            }
+
+            // Si existen alfas del mismo valor, spawneamos ese
+            if (sameValueAlphas.Count > 0)
+            {
+                GameObject chosenAlpha = sameValueAlphas[UnityEngine.Random.Range(0, sameValueAlphas.Count)];
+                SpawnEnemyPrefab(chosenAlpha);
+                return;
+            }
+        }
+
+        // Si no salió alfa o no había alfas del mismo valor → spawnear normal
+        SpawnEnemyPrefab(normalPrefab);
+    }
+    private void SpawnEnemyPrefab(GameObject prefab)
+    {
         float waveSpace = GetWaveSpaceFromPrefab(prefab);
         Vector3 spawnPos = GetSpawnPositionForEnemy(waveSpace);
 
@@ -360,6 +390,7 @@ public class WaveManager : MonoBehaviour
         enemiesAlive++;
         OnEnemySpawned?.Invoke(go);
     }
+
 
     private Vector3 GetSpawnPositionForEnemy(float waveSpace)
     {

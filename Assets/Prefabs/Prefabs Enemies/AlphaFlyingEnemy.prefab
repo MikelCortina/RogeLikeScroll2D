@@ -196,7 +196,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1949917328899305166}
-  - component: {fileID: 6285330985999667934}
   - component: {fileID: 2852983552394255373}
   - component: {fileID: 5621906145363573798}
   - component: {fileID: 8925775609472982882}
@@ -227,25 +226,6 @@ Transform:
   - {fileID: 2985824437438740999}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6285330985999667934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8037676267120482854}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 322af2b8fba0f1d49a4f2299a64ad802, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  effectList:
-  - {fileID: 11400000, guid: 0a0969c6e553def4ea738686ba6a5964, type: 2}
-  - {fileID: 11400000, guid: bb5be3e76f31edd4b98ff1e1378b8ab2, type: 2}
-  effectTextUI: {fileID: 3932377965761796723, guid: 306a9352426ba50458a9e193a977fe92, type: 3}
-  textObjectPanel: {fileID: 1206067504482671654, guid: c1313115e3c58e94589b36d0c7a8a1cb, type: 3}
-  displayDuration: 2
-  nameChangeInterval: 0.1
 --- !u!114 &2852983552394255373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -261,7 +241,7 @@ MonoBehaviour:
   waveSpace: 5
   maxHealth: 70
   contactDamage: 12
-  useLevelScaling: 0
+  useLevelScaling: 1
   detectRadius: 10000
   playerLayer:
     serializedVersion: 2
@@ -274,31 +254,41 @@ MonoBehaviour:
   groupSpeedMultiplier: 0.8
   Ground:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   rayLength: 1
   rotationSpeed: 10
   stepOffset: 0.3
   stepSmoothSpeed: 10
   attackCooldown: 1.2
   animator: {fileID: 0}
+  knockbackRecoveryTime: 0.25
   lastAttackTime: -999
   enemyLevel: 0
   enemyLevelManager: {fileID: 5311849784333808177, guid: cb7045c3fae47eb4694b9823c1e51f45, type: 3}
-  baseXP: 25
+  baseXP: 32.5
   renderersToFlash:
   - {fileID: 8925775609472982882}
   flashDuration: 0.1
   flashCount: 1
+  emergencySpawn: {fileID: 0}
+  gorePrefab: {fileID: 8529829014863662933, guid: 6363f2da58cc12f44ba21f5afe92e74a, type: 3}
+  deathParticlesPrefab: {fileID: 4508117539550737482, guid: da34d66431c8cd04aa98411a543a83bf, type: 3}
+  detachDeathParticles: 1
+  fallbackDeathParticlesLifetime: 3
+  impactSound: {fileID: 8300000, guid: f9ad9e41167c5e145bafb2ef8570c19b, type: 3}
+  killSound: {fileID: 8300000, guid: dd50e16ef9cbd5a4489ae826fa85c10d, type: 3}
   flyingSpeed: 1
   hoverAmplitude: 0.125
   hoverFrequency: 1.2
   projectilePrefab: {fileID: 847502903425083811, guid: be4fd9c0788596c448c1ef3a7d42d5d1, type: 3}
   firePoint: {fileID: 8151028941939378793}
-  minFireRange: 3
-  maxFireRange: 7
+  minFireRange: 2
+  maxFireRange: 3
   projectileSpeed: 1.5
   burstDelay: 0.12
   burstCount: 1
+  canShootWhileMoving: 1
+  attackHeightOffset: 2
 --- !u!114 &5621906145363573798
 MonoBehaviour:
   m_ObjectHideFlags: 0

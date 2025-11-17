@@ -26,7 +26,14 @@ public class SkillTreePanZoom : MonoBehaviour, IScrollHandler, IDragHandler, IBe
         if (viewport == null)
             viewport = content.parent as RectTransform;
 
-        initialScale = content.localScale;
+        // Guardamos la escala mínima como escala inicial
+        initialScale = Vector3.one * minZoom;
+
+        // Aplicar el mínimo zoom al inicio
+        content.localScale = initialScale;
+
+        // Centrar el contenido
+        content.anchoredPosition = Vector2.zero;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -83,7 +90,11 @@ public class SkillTreePanZoom : MonoBehaviour, IScrollHandler, IDragHandler, IBe
     public void ResetView()
     {
         if (content == null) return;
-        content.localScale = initialScale;
+
+        // Aplicar el mínimo zoom
+        content.localScale = Vector3.one * minZoom;
+
+        // Centrar
         content.anchoredPosition = Vector2.zero;
     }
 }
