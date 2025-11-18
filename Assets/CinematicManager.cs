@@ -13,8 +13,12 @@ public class CinematicManager : MonoBehaviour
     public GameObject particleLoop;
     public Button continueButton;
 
+    [Header("Accept / Reject Buttons")]
+    public Button acceptButton;
+    public Button rejectButton;
+
     [Header("Upgrade Object")]
-    public GameObject upgradeObject; // GameObject con SpriteRenderer
+    public GameObject upgradeObject;
     private SpriteRenderer upgradeRenderer;
 
     private bool cinematicPlaying = false;
@@ -22,30 +26,39 @@ public class CinematicManager : MonoBehaviour
 
     private IObjetos currentUpgrade;
 
+    public AudioSource audioSource;
+    public AudioClip audioClip3;
+
     private void Awake()
     {
         Instance = this;
 
+        // botón continuar
         if (continueButton != null)
         {
             continueButton.onClick.RemoveAllListeners();
             continueButton.onClick.AddListener(OnPressButton);
         }
 
+        // botones aceptar / rechazar
+        if (acceptButton != null)
+        {
+            acceptButton.onClick.RemoveAllListeners();
+            acceptButton.onClick.AddListener(OnAccept);
+            acceptButton.gameObject.SetActive(false);
+        }
+
+        if (rejectButton != null)
+        {
+            rejectButton.onClick.RemoveAllListeners();
+            rejectButton.onClick.AddListener(OnReject);
+            rejectButton.gameObject.SetActive(false);
+        }
+
         if (upgradeObject != null)
         {
             upgradeRenderer = upgradeObject.GetComponent<SpriteRenderer>();
-            if (upgradeRenderer != null)
-                upgradeObject.SetActive(false); // ocultamos al inicio
-        }
-    }
-
-    private void Update()
-    {
-        if (cinematicPanel.activeSelf && Input.GetMouseButtonDown(0))
-        {
-            if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-                OnPressButton();
+            upgradeObject.SetActive(false);
         }
     }
 
@@ -57,31 +70,23 @@ public class CinematicManager : MonoBehaviour
         cinematicPanel.SetActive(true);
         particleLoop.SetActive(false);
 
-        // Elegimos un objeto aleatorio
+        // Obtenemos objeto aleatorio
         currentUpgrade = ObjectManager.Instance.GetRandomObject();
 
-        // NO activamos el upgradeObject aquí
-        if (upgradeRenderer != null && currentUpgrade != null)
-        {
-            upgradeRenderer.sprite = currentUpgrade.icon;
-        }
+        continueButton.gameObject.SetActive(true);
 
-        if (continueButton != null)
-            continueButton.gameObject.SetActive(true);
+        // ocultar botones al inicio
+        acceptButton.gameObject.SetActive(false);
+        rejectButton.gameObject.SetActive(false);
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
+        cinematic.timeUpdateMode = DirectorUpdateMode.UnscaledGameTime;
         cinematic.Play();
         StartCoroutine(PauseNextFrame());
 
         cinematic.stopped += OnCinematicFinished;
-    }
-
-    private IEnumerator PauseNextFrame()
-    {
-        yield return null;
-        Time.timeScale = 0f;
     }
 
     private void OnCinematicFinished(PlayableDirector dir)
@@ -91,18 +96,36 @@ public class CinematicManager : MonoBehaviour
 
         particleLoop.SetActive(true);
 
-        // Activamos el upgradeObject justo después de la animación
-        if (upgradeObject != null && currentUpgrade != null)
+        // Mostrar icono del objeto
+        if (upgradeRenderer != null && currentUpgrade != null)
+        {
+            upgradeRenderer.sprite = currentUpgrade.icon;
             upgradeObject.SetActive(true);
+        }
 
-        if (continueButton != null)
-            continueButton.gameObject.SetActive(true);
+        // Activar botones aceptar/rechazar
+        acceptButton.gameObject.SetActive(true);
+        rejectButton.gameObject.SetActive(true);
+        continueButton.gameObject.SetActive(false);
     }
 
+    private IEnumerator PauseNextFrame()
+    {
+        yield return null;
+        Time.timeScale = 0f;
+    }
+
+    public void PlaySoundExplosion()
+    {
+        audioSource.PlayOneShot(audioClip3);
+    }
+
+    // Botón continuar (SE USA SOLO PARA SALTAR LA CINEMÁTICA)
     public void OnPressButton()
     {
         if (cinematicPlaying)
         {
+            PlaySoundExplosion();
             cinematic.time = cinematic.duration;
             cinematic.Evaluate();
             cinematic.Stop();
@@ -110,25 +133,50 @@ public class CinematicManager : MonoBehaviour
             cinematicFinished = true;
             return;
         }
+    }
 
-        if (cinematicFinished)
+    // -----------------------------
+    //     BOTÓN ACEPTAR OBJETO
+    // -----------------------------
+    private void OnAccept()
+    {
+        if (currentUpgrade != null)
         {
-            cinematicPanel.SetActive(false);
-            particleLoop.SetActive(true);
+            currentUpgrade.ApplyEffect();
 
-            if (currentUpgrade != null)
-                currentUpgrade.ApplyEffect(); // aplicamos la mejora
-
-            if (upgradeObject != null)
-                upgradeObject.SetActive(false); // ocultamos objeto
-
-            Time.timeScale = 1f;
-
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-
-            cinematicFinished = false;
-            currentUpgrade = null;
+            // ✔ Solo eliminar si NO es repetible
+            if (!currentUpgrade.repetible)
+                ObjectManager.Instance.allObjects.Remove(currentUpgrade);
         }
+
+        CloseCinematic();
+    }
+
+    // -----------------------------
+    //     BOTÓN RECHAZAR OBJETO
+    // -----------------------------
+    private void OnReject()
+    {
+        // No aplicamos la mejora
+        CloseCinematic();
+    }
+
+    // -----------------------------
+    //     SALIDA FINAL
+    // -----------------------------
+    private void CloseCinematic()
+    {
+        cinematicPanel.SetActive(false);
+        particleLoop.SetActive(true);
+
+        upgradeObject.SetActive(false);
+
+        Time.timeScale = 1f;
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        cinematicFinished = false;
+        currentUpgrade = null;
     }
 }

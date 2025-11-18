@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   repetible: 0
   quality: 0
-  icon: {fileID: -3490700997660706946, guid: 589a1575688a60943968cbc26fdaecdd, type: 3}
-  multiplier: 1
+  icon: {fileID: 6095515530316466418, guid: 7f51d57e81fc9a747a0e0cdf5374d08a, type: 3}

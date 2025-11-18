@@ -1,34 +1,59 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "DamageEqualizer", menuName = "Items/Damage Equalizer")]
-public class DamageEqualizer : IObjetos
+[CreateAssetMenu(fileName = "UnifiedDamageObject", menuName = "Items/UnifiedDamage")]
+public class UnifiedDamageObject : IObjetos
 {
-    [Header("Multiplier")]
-    public float multiplier = 1f;
+    // Mantiene referencia al último valor unificado
+    private float unifiedDamage = 0f;
 
-    private bool isApplied = false;
-
-    public void ApplyEffect()
+    public override void ApplyEffect()
     {
-        if (isApplied) return; // Evitar aplicar varias veces
-        isApplied = true;
+        base.ApplyEffect();
 
-        // Suscribirse al evento OnStatChanged si existiera
-        // Como StatsManager no tiene eventos de daño, se puede usar un Coroutine o Update
-        StatsManager.Instance.StartCoroutine(MaintainDamage());
+        if (StatsManager.Instance == null)
+        {
+            Debug.LogWarning("StatsManager no encontrado. No se puede aplicar UnifiedDamageObject.");
+            return;
+        }
+
+        // Inicializamos con el valor mayor de ambos daños
+        var stats = StatsManager.Instance.RuntimeStats;
+        unifiedDamage = Mathf.Max(stats.gunDamage, stats.explosionDamage);
+
+        // Aplicamos a ambos daños
+        StatsManager.Instance.AddGunDamage(unifiedDamage - stats.gunDamage);
+        StatsManager.Instance.AddExplosionDamage(unifiedDamage - stats.explosionDamage);
+
+        // Nos suscribimos a los cambios para sincronizar ambos daños en tiempo real
+        StatsManager.Instance.OnGunDamageChanged += OnGunDamageChanged;
+        StatsManager.Instance.OnExplosionDamageChanged += OnExplosionDamageChanged;
+
+        Debug.Log($"UnifiedDamageObject aplicado: daño unificado = {unifiedDamage}");
     }
 
-    private System.Collections.IEnumerator MaintainDamage()
+    private void OnGunDamageChanged(float newGunDamage)
     {
-        var stats = StatsManager.Instance.RuntimeStats;
+        if (Mathf.Approximately(newGunDamage, unifiedDamage)) return;
 
-        while (true) // Mientras dure la run
+        unifiedDamage = newGunDamage;
+        StatsManager.Instance.AddExplosionDamage(unifiedDamage - StatsManager.Instance.RuntimeStats.explosionDamage);
+    }
+
+    private void OnExplosionDamageChanged(float newExplosionDamage)
+    {
+        if (Mathf.Approximately(newExplosionDamage, unifiedDamage)) return;
+
+        unifiedDamage = newExplosionDamage;
+        StatsManager.Instance.AddGunDamage(unifiedDamage - StatsManager.Instance.RuntimeStats.gunDamage);
+    }
+
+    // Opcional: limpieza si quieres que deje de sincronizarse en algún momento
+    public void RemoveEffect()
+    {
+        if (StatsManager.Instance != null)
         {
-            float highest = Mathf.Max(stats.gunDamage, stats.explosionDamage) * multiplier;
-            stats.gunDamage = highest;
-            stats.explosionDamage = highest;
-
-            yield return null; // revisa cada frame
+            StatsManager.Instance.OnGunDamageChanged -= OnGunDamageChanged;
+            StatsManager.Instance.OnExplosionDamageChanged -= OnExplosionDamageChanged;
         }
     }
 }

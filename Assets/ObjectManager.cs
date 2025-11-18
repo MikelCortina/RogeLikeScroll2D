@@ -1,8 +1,8 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 
-public class ObjectManager : MonoBehaviour
-{
+public  class ObjectManager : MonoBehaviour
+{ 
     public static ObjectManager Instance;
 
     [Header("Objetos disponibles")]
@@ -19,13 +19,15 @@ public class ObjectManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Devuelve un objeto aleatorio según su rareza.
+    /// Devuelve un objeto aleatorio segÃºn su rareza.
     /// </summary>
     public IObjetos GetRandomObject()
     {
-        List<IObjetos> filtered = new List<IObjetos>();
+        if (allObjects.Count == 0)
+            return null;
 
-        // Construimos lista ponderada según rareza
+        List<IObjetos> weightedList = new List<IObjetos>();
+
         foreach (var obj in allObjects)
         {
             float chance = 0f;
@@ -36,16 +38,15 @@ public class ObjectManager : MonoBehaviour
                 case ObjectQuality.Legendary: chance = legendaryChance; break;
             }
 
-            // Cada objeto entra varias veces según su peso
-            int weight = Mathf.RoundToInt(chance * 100);
+            int weight = Mathf.RoundToInt(chance * 100f);
             for (int i = 0; i < weight; i++)
-                filtered.Add(obj);
+                weightedList.Add(obj);
         }
 
-        if (filtered.Count == 0)
+        if (weightedList.Count == 0)
             return null;
 
-        int index = Random.Range(0, filtered.Count);
-        return filtered[index];
+        int index = Random.Range(0, weightedList.Count);
+        return weightedList[index]; // â— Ya NO elimina nada
     }
 }

@@ -160,7 +160,7 @@ GameObject:
   - component: {fileID: 3752721657123772995}
   - component: {fileID: 7664967216110536582}
   m_Layer: 0
-  m_Name: Circle
+  m_Name: AtackPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

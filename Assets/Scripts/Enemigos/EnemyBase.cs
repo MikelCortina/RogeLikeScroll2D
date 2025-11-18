@@ -48,7 +48,7 @@ public class EnemyBase : MonoBehaviour
 
     [Header("Knockback")]
     [SerializeField] private float knockbackRecoveryTime = 0.25f;
-    private bool isKnockedBack = false;
+    public bool isKnockedBack = false;
     private Coroutine knockbackRoutine = null;
 
     private Coroutine flashRoutine;

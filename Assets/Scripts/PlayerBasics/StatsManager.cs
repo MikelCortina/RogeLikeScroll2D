@@ -92,6 +92,9 @@ public class StatsManager : MonoBehaviour
     public event Action OnPlayerDied; // Notifica la muerte del jugador
     public event CurrencyChanged OnCurrencyChanged;
 
+    public event Action<float> OnGunDamageChanged;
+    public event Action<float> OnExplosionDamageChanged;
+
 
     private bool isInvulnerable = false;
 
@@ -208,14 +211,17 @@ public class StatsManager : MonoBehaviour
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.currentMaxHP);
     }
 
-
+   
     public void AddGunDamage(float delta)
     {
         RuntimeStats.gunDamage = Mathf.Max(0, RuntimeStats.gunDamage + delta);
+        OnGunDamageChanged?.Invoke(RuntimeStats.gunDamage);
     }
+
     public void AddExplosionDamage(float delta)
     {
         RuntimeStats.explosionDamage = Mathf.Max(0, RuntimeStats.explosionDamage + delta);
+        OnExplosionDamageChanged?.Invoke(RuntimeStats.explosionDamage);
     }
     public void AddCriticalPercentage(float delta)
     {
@@ -268,7 +274,7 @@ public class StatsManager : MonoBehaviour
 
     public void AddCurrency(int amount)
     {
-        RuntimeStats.currency += amount;
+        RuntimeStats.currency += amount*RuntimeStats.organValue;
         OnCurrencyChanged?.Invoke(RuntimeStats.currency);
         Debug.Log("Moneda agregada" + RuntimeStats.currency);
         Debug.Log("StatsManager emitiendo evento: " + this);
