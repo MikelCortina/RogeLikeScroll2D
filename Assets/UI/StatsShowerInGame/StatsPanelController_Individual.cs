@@ -8,7 +8,8 @@ public enum StatType
     MaxHP,
     CurrentHP,
     CurrentMaxHP,
-    ArmorPercentage,
+    MeleArmorPercentage,
+    RangedArmorPercentage,
     GunDamage,
     ExplosionDamage,
     ProjectileSpeed,
@@ -17,8 +18,7 @@ public enum StatType
     CurrentXP,
     XpGainMultiplier,
     CriticalChance,
-    MeleDodgeChance,
-    RangeDodgeChance,
+    DodgeChance,
     Knockback,
 }
 
@@ -204,7 +204,8 @@ public class StatsPanelController_Individual : MonoBehaviour
         {
             case StatType.MaxHP: raw = s.maxHP; break;
             case StatType.CurrentMaxHP: raw = s.currentMaxHP; break;
-            case StatType.ArmorPercentage: raw = s.armorPercentage; break;
+            case StatType.MeleArmorPercentage: raw = s.meleArmorPercentage; break;
+            case StatType.RangedArmorPercentage: raw = s.rangedArmorPercentage; break;
             case StatType.GunDamage: raw = s.gunDamage; break;
             case StatType.ExplosionDamage: raw = s.explosionDamage; break;
             case StatType.FireRate: raw = s.fireRate; break;
@@ -212,8 +213,7 @@ public class StatsPanelController_Individual : MonoBehaviour
             case StatType.CurrentXP: isFloat = false; return StatsManager.Instance.currentXP.ToString();
             case StatType.XpGainMultiplier: raw = s.xpGainMultiplier; break;
             case StatType.CriticalChance: raw = s.criticalChance; break;
-            case StatType.MeleDodgeChance: raw = s.meleDodgeChance; break;
-            case StatType.RangeDodgeChance: raw = s.rangeDodgeChance; break;
+            case StatType.DodgeChance: raw = s.dodgeChance; break;
             case StatType.Knockback: raw = s.knockback; break;
             default: raw = 0f; break;
         }

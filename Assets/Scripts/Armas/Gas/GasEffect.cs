@@ -98,8 +98,12 @@ public class BombGasSpawnerPersistentEffect : ScriptableObject, IPersistentEffec
         {
             LaunchBomb(forward, runtimeOwner);
 
+            // Obtener spawnRate dinámico del StatsManager
+            float spawnRate = StatsManager.Instance.RuntimeStats.spawnRate;
+            float dynamicRespawnDelay = spawnInterval / spawnRate;
+
             float t = 0f;
-            while (t < spawnInterval)
+            while (t < dynamicRespawnDelay)
             {
                 t += Time.deltaTime;
                 if (runtimeOwner == null) break;

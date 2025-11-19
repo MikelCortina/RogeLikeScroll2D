@@ -184,16 +184,18 @@ public class SpawnTwoProjectilesReturningEffect : ScriptableObject, IPersistentE
             while (!(collected[0] && collected[1]))
             {
                 yield return null;
-                // si el owner deja de existir salimos
                 if (runtimeOwner == null) break;
             }
 
             if (runtimeOwner == null) break;
 
-            Debug.Log("[SpawnTwoProjectilesReturningEffect] Ambos recogidos -> esperando spawnInterval para relanzar.");
-            // ambos recogidos -> esperar spawnInterval y relanzar
+            // Obtener spawnRate dinámico del StatsManager
+            float spawnRate = StatsManager.Instance.RuntimeStats.spawnRate;
+            float dynamicRespawnDelay = spawnInterval / spawnRate;
+
+            // Esperar ese tiempo antes de relanzar
             float t = 0f;
-            while (t < spawnInterval)
+            while (t < dynamicRespawnDelay)
             {
                 t += Time.deltaTime;
                 if (runtimeOwner == null) break;
@@ -202,11 +204,10 @@ public class SpawnTwoProjectilesReturningEffect : ScriptableObject, IPersistentE
 
             if (runtimeOwner == null) break;
 
-            // relanzar
+            // Relanzar proyectiles
             LaunchPair();
         }
 
-        // limpieza si salimos
         activeCoroutine = null;
     }
 

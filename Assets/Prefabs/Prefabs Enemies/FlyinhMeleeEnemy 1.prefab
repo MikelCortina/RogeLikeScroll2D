@@ -183,7 +183,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e71fce435be6744e928ca5dc058cbc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveSpace: 1
+  waveSpace: 20
   maxHealth: 34
   contactDamage: 10
   useLevelScaling: 1

@@ -12,7 +12,8 @@ public class Bomba : ScriptableObject, IPersistentEffect
     [Header("Burst / spawn settings")]
     [SerializeField] private int projectilesPerShot = 5;
     [SerializeField] private float spawnDelay = 0.15f;
-    [SerializeField] private float burstInterval = 2f;
+    [SerializeField] private float respawnDelay = 4f;
+
 
     [Header("Parábola & posición")]
     [SerializeField] private float arcHeight = 2f;
@@ -81,6 +82,19 @@ public class Bomba : ScriptableObject, IPersistentEffect
     {
         while (runtimeOwner != null)
         {
+            // Delay entre bursts basado en stats
+            float spawnRate = StatsManager.Instance.RuntimeStats.spawnRate;
+
+            // Si spawnRate es 0 o negativo, no disparamos nada hasta que suba
+            if (spawnRate <= 0f)
+            {
+                yield return null;
+                continue;
+            }
+
+            float burstIntervalDynamic = respawnDelay / spawnRate;
+
+            // Disparar todos los proyectiles del burst
             for (int i = 0; i < projectilesPerShot; i++)
             {
                 if (runtimeOwner == null) break;
@@ -101,10 +115,8 @@ public class Bomba : ScriptableObject, IPersistentEffect
                     yield return null;
             }
 
-            if (burstInterval > 0f)
-                yield return new WaitForSeconds(burstInterval);
-            else
-                yield return null;
+            // Esperar según el spawnRate del jugador
+            yield return new WaitForSeconds(burstIntervalDynamic);
         }
 
         activeCoroutine = null;

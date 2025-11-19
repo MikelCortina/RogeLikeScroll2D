@@ -1,25 +1,25 @@
-using System.Collections;
+Ôªøusing System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Effects/FlyingBombDropper")]
 public class FlyingBombDropper : ScriptableObject, IPersistentEffect
 {
-    [Header("Prefab y control de aviÛn/objeto volador")]
+    [Header("Prefab y control de avi√≥n/objeto volador")]
     public GameObject flyingPrefab;
     public float speed = 5f;
-    public float respawnDelay = 1f;
+    public float respawnDelay = 4f;
     public float yPosition = 5f;
     public float leftOffset = -10f;
     public float rightOffset = 10f;
 
-    [Header("OscilaciÛn vertical")]
+    [Header("Oscilaci√≥n vertical")]
     public float oscillationAmplitude = 0.5f;
     public float oscillationFrequency = 1f;
 
     [Header("Prefab y control de bombas")]
     public GameObject bombPrefab;
-    public int bombPoolSize = 10;      // tamaÒo del pool
+    public int bombPoolSize = 10;      // tama√±o del pool
     public float bombDropInterval = 1f;
     public Transform bombSpawnPoint;
 
@@ -47,14 +47,14 @@ public class FlyingBombDropper : ScriptableObject, IPersistentEffect
         mainCam = Camera.main;
         if (mainCam == null)
         {
-            Debug.LogWarning("[FlyingBombDropper] C·mara principal no encontrada.");
+            Debug.LogWarning("[FlyingBombDropper] C√°mara principal no encontrada.");
             return;
         }
 
-        // asignar fase aleatoria para la oscilaciÛn (evita sincronÌa entre instancias)
+        // asignar fase aleatoria para la oscilaci√≥n (evita sincron√≠a entre instancias)
         instancePhase = Random.Range(0f, Mathf.PI * 2f);
 
-        // Instancia inicial del aviÛn
+        // Instancia inicial del avi√≥n
         if (instance == null)
         {
             instance = Object.Instantiate(flyingPrefab, GetLeftSpawnPos(), Quaternion.identity);
@@ -124,7 +124,7 @@ public class FlyingBombDropper : ScriptableObject, IPersistentEffect
     {
         if (bombPool.Count == 0)
         {
-            // si el pool se acaba, podemos instanciar m·s (opcional)
+            // si el pool se acaba, podemos instanciar m√°s (opcional)
             GameObject bomb = Object.Instantiate(bombPrefab, Vector3.zero, Quaternion.identity);
             bomb.SetActive(false);
             return bomb;
@@ -156,7 +156,7 @@ public class FlyingBombDropper : ScriptableObject, IPersistentEffect
                 // avanzar en X
                 float newX = instance.transform.position.x + speed * Time.deltaTime;
 
-                // calcular oscilaciÛn en Y
+                // calcular oscilaci√≥n en Y
                 float osc = 0f;
                 if (oscillationAmplitude != 0f && oscillationFrequency != 0f)
                 {
@@ -168,7 +168,12 @@ public class FlyingBombDropper : ScriptableObject, IPersistentEffect
             }
 
             instance.transform.position = GetLeftSpawnPos();
-            yield return new WaitForSeconds(respawnDelay);
+           
+            float spawnRate = StatsManager.Instance.RuntimeStats.spawnRate;
+
+            // Convertir spawnRate ‚Üí tiempo entre respawns
+            float dynamicRespawnDelay = respawnDelay / spawnRate;
+
         }
 
         moveCoroutine = null;
@@ -193,9 +198,14 @@ public class FlyingBombDropper : ScriptableObject, IPersistentEffect
                 bombScript.OnExplode += () => ReturnBombToPool(bomb); // cuando explote, volver al pool
             }
 
-            yield return new WaitForSeconds(bombDropInterval);
+            // Obtener spawnRate din√°mico del StatsManager
+            float spawnRate = StatsManager.Instance.RuntimeStats.spawnRate;
+            float dynamicDropInterval = bombDropInterval*1.3f / spawnRate;
+
+            yield return new WaitForSeconds(dynamicDropInterval);
         }
     }
+
 
     #endregion
 }

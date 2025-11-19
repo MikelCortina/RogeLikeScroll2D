@@ -1,4 +1,4 @@
-using System.Collections;
+Ôªøusing System.Collections;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Effects/ScreenLooperPersistentOscilator")]
@@ -7,14 +7,14 @@ public class ScreenLooperPersistentOscilator : ScriptableObject, IPersistentEffe
     [Header("Prefab y control")]
     public GameObject prefab;
     public float speed = 5f;
-    public float respawnDelay = 1f;
+    public float respawnDelay = 4f;
 
-    [Header("Offsets relativos a c·mara")]
+    [Header("Offsets relativos a c√°mara")]
     public float leftOffset = -10f;
     public float rightOffset = 10f;
     public float yPosition = 0f;
 
-    [Header("OscilaciÛn vertical")]
+    [Header("Oscilaci√≥n vertical")]
     public float oscillationAmplitude = 0.5f;   // amplitud en unidades
     public float oscillationFrequency = 1f;     // frecuencia en Hz
 
@@ -39,11 +39,11 @@ public class ScreenLooperPersistentOscilator : ScriptableObject, IPersistentEffe
         mainCam = Camera.main;
         if (mainCam == null)
         {
-            Debug.LogWarning("[ScreenLooperPersistentOptimized] C·mara principal no encontrada.");
+            Debug.LogWarning("[ScreenLooperPersistentOptimized] C√°mara principal no encontrada.");
             return;
         }
 
-        // asignar fase aleatoria para la oscilaciÛn (evita sincronÌa entre instancias)
+        // asignar fase aleatoria para la oscilaci√≥n (evita sincron√≠a entre instancias)
         instancePhase = Random.Range(0f, Mathf.PI * 2f);
 
         // Instancia inicial
@@ -109,20 +109,30 @@ public class ScreenLooperPersistentOscilator : ScriptableObject, IPersistentEffe
                 // avanzar en X
                 float newX = instance.transform.position.x + speed * Time.deltaTime;
 
-                // calcular oscilaciÛn en Y
+                // calcular oscilaci√≥n en Y
                 float osc = 0f;
                 if (oscillationAmplitude != 0f && oscillationFrequency != 0f)
                 {
-                    osc = oscillationAmplitude * Mathf.Sin(Time.time * (Mathf.PI * 2f) * oscillationFrequency + instancePhase);
+                    osc = oscillationAmplitude * Mathf.Sin(
+                        Time.time * (Mathf.PI * 2f) * oscillationFrequency + instancePhase
+                    );
                 }
 
                 instance.transform.position = new Vector3(newX, yPosition + osc, 0f);
                 yield return null;
             }
 
-            // Teletransportar a la izquierda y esperar respawnDelay
+            // Teletransportar a la izquierda
             instance.transform.position = GetLeftSpawnPos();
-            yield return new WaitForSeconds(respawnDelay);
+
+            // Obtener spawnRate de StatsManager
+            float spawnRate = StatsManager.Instance.RuntimeStats.spawnRate;
+
+            // Convertir spawnRate ‚Üí tiempo entre respawns
+            float dynamicRespawnDelay = respawnDelay / spawnRate;
+
+            // Esperar respawn din√°mico
+            yield return new WaitForSeconds(dynamicRespawnDelay);
         }
 
         activeCoroutine = null;

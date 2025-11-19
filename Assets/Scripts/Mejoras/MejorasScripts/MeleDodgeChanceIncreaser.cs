@@ -1,8 +1,8 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MeleDodgeChanceIncreaser", menuName = "Roguelike/Upgrade/Increase  Mele Dodge Chance")]
+[CreateAssetMenu(fileName = "DodgeChanceIncreaser", menuName = "Roguelike/Upgrade/Increase  Dodge Chance")]
 
-public class MeleDodgeChanceIncreaser :Upgrade
+public class DodgeChanceIncreaser :Upgrade
 {
     
   
@@ -10,7 +10,7 @@ public class MeleDodgeChanceIncreaser :Upgrade
 
     public override void Apply(StatsManager statsManager)
     {
-        statsManager.meleDodgeChanceIncreaser(dodgeIncrease);
+        statsManager.DodgeChanceIncreaser(dodgeIncrease);
         
     }
 }

@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flyingPrefab: {fileID: 3890009663444259604, guid: 9acad536db6d1b94ba1ef71403ef8740, type: 3}
   speed: 3
-  respawnDelay: 1
+  respawnDelay: 6
   yPosition: 0.7
-  leftOffset: -10
-  rightOffset: 10
+  leftOffset: -5
+  rightOffset: 5
   oscillationAmplitude: 0.5
   oscillationFrequency: 1
   bombPrefab: {fileID: 1979434595378990830, guid: 6cc1ff13f79d875478d72e73411cf18d, type: 3}

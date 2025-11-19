@@ -95,19 +95,19 @@ public class SpawnTwoProjectilesEffect : ScriptableObject, IPersistentEffect
 
 
     private IEnumerator SpawnLoop(GameObject owner)
-
     {
-
         while (true)
-
         {
-
             SpawnPair(owner);
 
-            yield return new WaitForSeconds(spawnInterval);
+            // Obtener el spawnRate del StatsManager
+            float spawnRate = StatsManager.Instance.RuntimeStats.spawnRate;
 
+            // Convertir spawnRate → tiempo entre respawns
+            float dynamicRespawnDelay = spawnInterval / spawnRate;
+
+            yield return new WaitForSeconds(dynamicRespawnDelay);
         }
-
     }
 
 

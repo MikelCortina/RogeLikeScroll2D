@@ -10,9 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ed22154e0eacc84ca52dc2fc3d3eedd, type: 3}
-  m_Name: RangeDodgeChanceIncreaser 1
+  m_Name: RangeArmorChanceIncreaser 2
   m_EditorClassIdentifier: 
-  upgradeName: Reflejos
-  description: +4 de dodge a distancia
-  quality: 1
-  dodgeIncrease: 4
+  upgradeName: Casco
+  description: '+10 de armadura a projectiles
+
+
+'
+  quality: 2
+  armorIncrease: 10

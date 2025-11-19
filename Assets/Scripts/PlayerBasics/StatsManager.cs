@@ -17,15 +17,17 @@ public class StatsData
     [Header("Damage")]
     public float criticalChance; public float gunDamage; public float explosionDamage;// Currently unused
     [Header("Armor")]
-    public float armorPercentage;
+    public float meleArmorPercentage; public float rangedArmorPercentage;
     [Header("XP")]
     public float xpGainMultiplier;
     [Header("Dodge")]
-    public float rangeDodgeChance; public float meleDodgeChance; // Currently unused
+    public float dodgeChance;
     [Header("Knockback")]
     public float knockback;
     [Header("Currency")]
     public int currency; public int organValue;
+    [Header("SpawnRate")]
+    public float spawnRate; // Currently unused
 
     [Header("Suerte")]
     public float luck, towerLuck; // Currently unused  
@@ -46,17 +48,19 @@ public class StatsData
             friction = this.friction,
             fireRate = this.fireRate,
             radius = this.radius,
-            armorPercentage = this.armorPercentage,
+            meleArmorPercentage = this.meleArmorPercentage,
+            rangedArmorPercentage = this.rangedArmorPercentage,
             xpGainMultiplier = this.xpGainMultiplier,
             harvester = this.harvester,
             criticalChance = this.criticalChance,
-            rangeDodgeChance = this.rangeDodgeChance,
-            meleDodgeChance = this.meleDodgeChance,
+            dodgeChance = this.dodgeChance,
             luck = this.luck,
             towerLuck = this.towerLuck,
             knockback = this.knockback,
             currency = this.currency,
             organValue = this.organValue,
+            spawnRate = this.spawnRate
+
 
         };
     }
@@ -237,9 +241,13 @@ public class StatsManager : MonoBehaviour
     {
         RuntimeStats.radius = Mathf.Max(0, RuntimeStats.radius + delta);
     }
-    public void AddArmor(float delta)
+    public void AddMeleArmor(float delta)
     {
-        RuntimeStats.armorPercentage = Mathf.Max(0, RuntimeStats.armorPercentage + delta);
+        RuntimeStats.meleArmorPercentage = Mathf.Max(0, RuntimeStats.meleArmorPercentage + delta);
+    }
+    public void AddRangeArmor(float delta)
+    {
+        RuntimeStats.rangedArmorPercentage = Mathf.Max(0, RuntimeStats.rangedArmorPercentage + delta);
     }
     public void AddKnockback(float delta)
     {
@@ -249,13 +257,9 @@ public class StatsManager : MonoBehaviour
     {
         RuntimeStats.xpGainMultiplier = Mathf.Max(0, (RuntimeStats.xpGainMultiplier + delta));
     }
-    public void rangeDodgeChanceIncreaser(float delta)
+    public void DodgeChanceIncreaser(float delta)
     {
-        RuntimeStats.rangeDodgeChance += (RuntimeStats.rangeDodgeChance * (delta / 100));
-    }
-    public void meleDodgeChanceIncreaser(float delta)
-    {
-        RuntimeStats.rangeDodgeChance += (RuntimeStats.meleDodgeChance * (delta / 100));
+        RuntimeStats.dodgeChance += (RuntimeStats.dodgeChance * (delta / 100));
     }
     public void AddTowerLuck(float delta)
     {

@@ -2482,7 +2482,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minExplosionForce: 200
-  maxExplosionForce: 500
+  maxExplosionForce: 300
   minTorque: -300
   maxTorque: 300
 --- !u!1 &8614050098458018246

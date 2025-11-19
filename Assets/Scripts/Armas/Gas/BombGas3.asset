@@ -22,7 +22,7 @@ MonoBehaviour:
   travelTime: 0.8
   arcHeight: 1.5
   explosionDelay: 0
-  defaultGasRadius: 3
+  defaultGasRadius: 4
   gasDuration: 2.5
   gasDamagePerSecond: 10
   allowManualLaunch: 0

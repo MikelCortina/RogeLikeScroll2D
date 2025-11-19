@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: ArmorIncreaser_Legend
   m_EditorClassIdentifier: 
   upgradeName: Chaleco
-  description: Aumenta en 10 tu armadura
+  description: 'Aumenta en 10 tu armadura a mele
+
+'
   quality: 2
   extraArmor: 10

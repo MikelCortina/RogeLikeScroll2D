@@ -10483,7 +10483,7 @@ MonoBehaviour:
   showCursorOnOpen: 1
   crosshairMouseFollow: {fileID: 0}
   statConfigs:
-  - stat: 8
+  - stat: 9
     displayName: Level
     icon: {fileID: 0}
     showIcon: 0
@@ -10495,7 +10495,7 @@ MonoBehaviour:
     suffix: 
     enabled: 1
   - stat: 10
-    displayName: Xp Multiplier
+    displayName: Current XP
     icon: {fileID: 0}
     showIcon: 0
     labelColor: {r: 0, g: 0, b: 0, a: 1}
@@ -10516,19 +10516,8 @@ MonoBehaviour:
     showPercent: 0
     suffix: 
     enabled: 1
-  - stat: 1
-    displayName: Current HP
-    icon: {fileID: 0}
-    showIcon: 0
-    labelColor: {r: 0, g: 0, b: 0, a: 1}
-    valueColor: {r: 0, g: 0, b: 0, a: 1}
-    labelFontSize: 15
-    valueFontSize: 15
-    showPercent: 0
-    suffix: 
-    enabled: 1
   - stat: 3
-    displayName: Armor
+    displayName: Mele Armor
     icon: {fileID: 0}
     showIcon: 0
     labelColor: {r: 0, g: 0, b: 0, a: 1}
@@ -10539,7 +10528,7 @@ MonoBehaviour:
     suffix: 
     enabled: 1
   - stat: 4
-    displayName: Gun Damage
+    displayName: Ranged Armor
     icon: {fileID: 0}
     showIcon: 0
     labelColor: {r: 0, g: 0, b: 0, a: 1}
@@ -10550,6 +10539,17 @@ MonoBehaviour:
     suffix: 
     enabled: 1
   - stat: 5
+    displayName: Gun Damage
+    icon: {fileID: 0}
+    showIcon: 0
+    labelColor: {r: 0, g: 0, b: 0, a: 1}
+    valueColor: {r: 0, g: 0, b: 0, a: 1}
+    labelFontSize: 15
+    valueFontSize: 15
+    showPercent: 0
+    suffix: 
+    enabled: 1
+  - stat: 6
     displayName: Expl Damage
     icon: {fileID: 0}
     showIcon: 0
@@ -10560,7 +10560,7 @@ MonoBehaviour:
     showPercent: 0
     suffix: 
     enabled: 1
-  - stat: 7
+  - stat: 8
     displayName: Fire Rate
     icon: {fileID: 0}
     showIcon: 0
@@ -10572,7 +10572,7 @@ MonoBehaviour:
     suffix: 
     enabled: 1
   - stat: 11
-    displayName: Critical Chance
+    displayName: XP Gain Multiplier
     icon: {fileID: 0}
     showIcon: 0
     labelColor: {r: 0, g: 0, b: 0, a: 1}
@@ -10583,7 +10583,7 @@ MonoBehaviour:
     suffix: 
     enabled: 1
   - stat: 12
-    displayName: 'Mele Dodge '
+    displayName: Critical Chance
     icon: {fileID: 0}
     showIcon: 0
     labelColor: {r: 0, g: 0, b: 0, a: 1}
@@ -10594,7 +10594,7 @@ MonoBehaviour:
     suffix: 
     enabled: 1
   - stat: 13
-    displayName: 'Range Dodge '
+    displayName: Dodge Chance
     icon: {fileID: 0}
     showIcon: 0
     labelColor: {r: 0, g: 0, b: 0, a: 1}
@@ -25703,6 +25703,10 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: templateStats.spawnRate
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.towerLuck
       value: 1
       objectReference: {fileID: 0}
@@ -29077,12 +29081,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
-      propertyPath: leftSpawnChance
+      propertyPath: zonesPerSide
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: upSpawnChance
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: leftSpawnChance
+      value: 0.207
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: alphaSpawnChance
-      value: 1
+      value: 0.516
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: currentWaveSpace
@@ -29130,7 +29142,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: verticalViewportOffset
-      value: 1.14
+      value: 1.56
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: wormPrefabs.Array.size
@@ -29138,7 +29150,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: enemyPrefabs.Array.size
-      value: 1
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: upZoneConfigs.Array.size
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'spawnPoints.Array.data[0]'
@@ -29171,7 +29187,7 @@ PrefabInstance:
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'enemyPrefabs.Array.data[0]'
       value: 
-      objectReference: {fileID: 5269551145280685858, guid: 131667284c67c9444b356400ff77775e, type: 3}
+      objectReference: {fileID: 5269551145280685858, guid: 424d2413498219c4eaa7565db09110d6, type: 3}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'enemyPrefabs.Array.data[1]'
       value: 
@@ -29179,7 +29195,7 @@ PrefabInstance:
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'enemyPrefabs.Array.data[2]'
       value: 
-      objectReference: {fileID: 5269551145280685858, guid: b33e06020da332b42b1814be4a987b55, type: 3}
+      objectReference: {fileID: 5269551145280685858, guid: 131667284c67c9444b356400ff77775e, type: 3}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.size
       value: 4
@@ -29193,8 +29209,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: rightZoneConfigs.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: alphaEnemyPrefabs.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: spawnPointsValue1.Array.size
@@ -29269,6 +29289,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: upZoneConfigs.Array.data[4].name
+      value: Zone 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[0].name
       value: Zone 0
       objectReference: {fileID: 0}
@@ -29283,6 +29307,10 @@ PrefabInstance:
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[3].name
       value: Zone 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: leftZoneConfigs.Array.data[4].name
+      value: Zone 4
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: rightZoneConfigs.Array.data[0].name
@@ -29301,6 +29329,26 @@ PrefabInstance:
       value: Top
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: rightZoneConfigs.Array.data[4].name
+      value: Zone 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: upZoneConfigs.Array.data[0].allowedWaveSpaceValues.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: upZoneConfigs.Array.data[1].allowedWaveSpaceValues.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: upZoneConfigs.Array.data[2].allowedWaveSpaceValues.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: upZoneConfigs.Array.data[3].allowedWaveSpaceValues.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[0].allowedWaveSpaceValues.Array.size
       value: 0
       objectReference: {fileID: 0}
@@ -29310,6 +29358,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: leftZoneConfigs.Array.data[2].allowedWaveSpaceValues.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: leftZoneConfigs.Array.data[3].allowedWaveSpaceValues.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
@@ -29322,11 +29374,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: rightZoneConfigs.Array.data[2].allowedWaveSpaceValues.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: rightZoneConfigs.Array.data[3].allowedWaveSpaceValues.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: 'upZoneConfigs.Array.data[0].allowedWaveSpaceValues.Array.data[0]'
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: 'upZoneConfigs.Array.data[1].allowedWaveSpaceValues.Array.data[0]'
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: 'upZoneConfigs.Array.data[2].allowedWaveSpaceValues.Array.data[0]'
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: 'upZoneConfigs.Array.data[3].allowedWaveSpaceValues.Array.data[0]'
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'leftZoneConfigs.Array.data[0].allowedWaveSpaceValues.Array.data[0]'
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'leftZoneConfigs.Array.data[1].allowedWaveSpaceValues.Array.data[0]'
@@ -29342,11 +29414,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'leftZoneConfigs.Array.data[2].allowedWaveSpaceValues.Array.data[0]'
-      value: 5
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'leftZoneConfigs.Array.data[2].allowedWaveSpaceValues.Array.data[1]'
-      value: 10
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: 'leftZoneConfigs.Array.data[3].allowedWaveSpaceValues.Array.data[0]'
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'rightZoneConfigs.Array.data[0].allowedWaveSpaceValues.Array.data[0]'
@@ -29362,7 +29438,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'rightZoneConfigs.Array.data[1].allowedWaveSpaceValues.Array.data[2]'
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'rightZoneConfigs.Array.data[2].allowedWaveSpaceValues.Array.data[0]'
@@ -29370,7 +29446,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'rightZoneConfigs.Array.data[2].allowedWaveSpaceValues.Array.data[1]'
-      value: 10
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: 'rightZoneConfigs.Array.data[3].allowedWaveSpaceValues.Array.data[0]'
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3369360909178443373, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}

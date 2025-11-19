@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 3890009663444259604, guid: a76d85dd920b2be41b666059d3842330, type: 3}
   speed: 5
-  respawnDelay: 1
-  leftOffset: -10
-  rightOffset: 10
+  respawnDelay: 6
+  leftOffset: -5
+  rightOffset: 5
   yPosition: 0.7

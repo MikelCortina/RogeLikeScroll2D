@@ -7,11 +7,11 @@ public class ScreenLooperPersistentOptimized : ScriptableObject, IPersistentEffe
     [Header("Prefab y control")]
     public GameObject prefab;
     public float speed = 5f;
-    public float respawnDelay = 1f;
+    public float respawnDelay = 4f;
 
     [Header("Offsets relativos a cámara")]
-    public float leftOffset = -10f;
-    public float rightOffset = 10f;
+    public float leftOffset = -0.3f;
+    public float rightOffset = 2f;
     public float yPosition = 0f;
 
     // Runtime
@@ -102,13 +102,23 @@ public class ScreenLooperPersistentOptimized : ScriptableObject, IPersistentEffe
                 yield return null;
             }
 
-            // Teletransportar a la izquierda y esperar respawnDelay
+            // Teletransportar a la izquierda
             instance.transform.position = GetLeftSpawnPos();
-            yield return new WaitForSeconds(respawnDelay);
+
+            // Obtener spawnRate del StatsManager
+            float spawnRate = StatsManager.Instance.RuntimeStats.spawnRate;
+
+           
+            float dynamicRespawnDelay = respawnDelay / spawnRate;
+                
+           
+            // Esperar dinámicamente
+            yield return new WaitForSeconds(dynamicRespawnDelay);
         }
 
         activeCoroutine = null;
     }
+
 
     #endregion
 }

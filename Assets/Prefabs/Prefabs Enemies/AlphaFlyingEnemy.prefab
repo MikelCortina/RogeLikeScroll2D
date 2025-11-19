@@ -262,10 +262,11 @@ MonoBehaviour:
   attackCooldown: 1.2
   animator: {fileID: 0}
   knockbackRecoveryTime: 0.25
+  isKnockedBack: 0
   lastAttackTime: -999
   enemyLevel: 0
   enemyLevelManager: {fileID: 5311849784333808177, guid: cb7045c3fae47eb4694b9823c1e51f45, type: 3}
-  baseXP: 1000
+  baseXP: 65
   renderersToFlash:
   - {fileID: 8925775609472982882}
   flashDuration: 0.1

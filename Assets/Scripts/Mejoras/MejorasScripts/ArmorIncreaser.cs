@@ -1,12 +1,12 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ArmorIncreaser", menuName = "Roguelike/Upgrade/ArmorIncreaser")]
-public class ArmorIncreaser : Upgrade
+[CreateAssetMenu(fileName = "MeleArmorIncreaser", menuName = "Roguelike/Upgrade/MeleArmorIncreaser")]
+public class MeleArmorIncreaser : Upgrade
 {
     public float extraArmor;
 
     public override void Apply(StatsManager statsManager)
     {
-        statsManager.AddArmor(extraArmor);
+        statsManager.AddMeleArmor(extraArmor);
     }
 }

@@ -38,7 +38,7 @@ public class StatsCommunicator : MonoBehaviour
 
         // Asegúrate si stats.meleDodgeChance está en 0..1 o en 0..100.
         // Si lo guardas como porcentaje (ej. 20 -> 20%), conviértelo a probabilidad:
-        float dodgeChance = stats.meleDodgeChance;
+        float dodgeChance = stats.dodgeChance;
         if (dodgeChance > 1f) dodgeChance = Mathf.Clamp01(dodgeChance / 100f);
         else dodgeChance = Mathf.Clamp01(dodgeChance);
 
@@ -52,14 +52,14 @@ public class StatsCommunicator : MonoBehaviour
 
         // 2️⃣ Aplicar reducción de daño por armadura
         float damageAfterArmor = incomingDamage;
-        if (stats.armorPercentage > 0f)
+        if (stats.meleArmorPercentage > 0f)
         {
-            float armorPct = Mathf.Clamp(stats.armorPercentage, 0f, 100f);
+            float armorPct = Mathf.Clamp(stats.meleArmorPercentage, 0f, 100f);
             damageAfterArmor = incomingDamage * (1f - armorPct / 100f);
             damageAfterArmor = Mathf.Max(0f, damageAfterArmor);
         }
 
-        Debug.Log($"Incoming {incomingDamage} -> final {damageAfterArmor} (armor {stats.armorPercentage}%)");
+        Debug.Log($"Incoming {incomingDamage} -> final {damageAfterArmor} (armor {stats.meleArmorPercentage}%)");
         return damageAfterArmor;
     }
     public float CalculateRangeTakenDamage(float incomingDamage)
@@ -74,7 +74,7 @@ public class StatsCommunicator : MonoBehaviour
         }
 
         // 1️⃣ Calcular chance de dodge (admite tanto 0–1 como 0–100)
-        float dodgeChance = stats.rangeDodgeChance;
+        float dodgeChance = stats.dodgeChance;
         if (dodgeChance > 1f)
             dodgeChance = Mathf.Clamp01(dodgeChance / 100f);
         else
@@ -89,14 +89,14 @@ public class StatsCommunicator : MonoBehaviour
 
         // 2️⃣ Aplicar reducción por armadura
         float damageAfterArmor = incomingDamage;
-        if (stats.armorPercentage > 0f)
+        if (stats.rangedArmorPercentage > 0f)
         {
-            float armorPct = Mathf.Clamp(stats.armorPercentage, 0f, 100f);
+            float armorPct = Mathf.Clamp(stats.rangedArmorPercentage, 0f, 100f);
             damageAfterArmor = incomingDamage * (1f - armorPct / 100f);
             damageAfterArmor = Mathf.Max(0f, damageAfterArmor);
         }
 
-        Debug.Log($"Ranged hit: {incomingDamage} -> {damageAfterArmor} (armor {stats.armorPercentage}%)");
+        Debug.Log($"Ranged hit: {incomingDamage} -> {damageAfterArmor} (armor {stats.rangedArmorPercentage}%)");
         return damageAfterArmor;
     }
 
