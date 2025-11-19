@@ -1,34 +1,17 @@
 using System;
-using System.Collections.Generic;
-using UnityEngine;
- using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-    #region Singleton
     public static WaveManager Instance { get; private set; }
-
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-    }
-    #endregion
-
-    #region Inspector Fields
 
     [Header("Spawning")]
     public GameObject[] enemyPrefabs;
     public GameObject[] alphaEnemyPrefabs;
     [Tooltip("Spawn genérico (si no se encaja en ningún valor específico).")]
-    public Transform[] spawnPoints;
+    private Transform[] spawnPoints;
 
     [Header("Spawn points por tipo de enemigo (según su waveSpace)")]
     private Transform[] spawnPointsValue1;
@@ -36,36 +19,9 @@ public class WaveManager : MonoBehaviour
     private Transform[] spawnPointsValue10;
     private Transform[] spawnPointsValue20;
 
-    [Header("Side zones (camera-based)")]
-    [Tooltip("Si está activo, se usan zonas laterales calculadas desde la cámara cuando no hay spawnPoints específicos asignados.")]
-    public bool useSideZones = true;
-
-    [Range(0.01f, 0.45f)]
-    [Tooltip("Anchura lateral en coordenada viewport (0..1). Ej: 0.15 -> 15% del ancho de pantalla a cada lado.")]
-    public float sideWidthViewport = 0.18f;
-
-    [Range(0f, 1f)]
-    [Tooltip("Cuánto (porcentaje, 0..0.5) fuera del viewport se colocan las zonas.")]
-    public float outsideViewportOffset = 0.08f;
-
-    [Range(0f, 2f)]
-    public float verticalViewportOffset = 0.08f;
-
-    [Tooltip("Cuántas zonas verticales por lado (división).")]
-    public int zonesPerSide = 4;
-
-    [Range(0f, 1f)]
-    [Tooltip("Probabilidad de que el spawn ocurra en el lado izquierdo (0 = siempre derecho, 1 = siempre izquierdo)")]
-    public float leftSpawnChance = 0.5f;
-
-    [Range(0f, 1f)]
-    [Tooltip("Probabilidad de que el spawn ocurra en el lado de arriba")]
-    public float upSpawnChance = 0.5f;
-
-    [Header("Zonas configurables por inspector")]
-    public List<ZoneConfig> leftZoneConfigs = new List<ZoneConfig>();
-    public List<ZoneConfig> rightZoneConfigs = new List<ZoneConfig>();
-    public List<ZoneConfig> upZoneConfigs = new List<ZoneConfig>();
+    [Header("Side zone provider")]
+    [Tooltip("Referencia al SideZoneManager que contiene la lógica y configuración de las zonas laterales")]
+    public SideZoneManager sideZoneManager;
 
     [Header("Spawning extras")]
     public float spawnInterval = 0.25f;
@@ -86,7 +42,7 @@ public class WaveManager : MonoBehaviour
 
     [Header("Opciones de desbloqueo")]
     [Tooltip("Valor inicial de Wave Space para la primera ola.")]
-    public float initialWaveSpace = 1.5f;
+    public float initialWaveSpace = 1.5f; // valor inicial
     [Tooltip("Si está activo, suma el coste del último enemigo desbloqueado a currentWaveSpace al empezar la siguiente ola.")]
     public bool addLastUnlockedCostToNextWave = true;
 
@@ -94,66 +50,59 @@ public class WaveManager : MonoBehaviour
     [Tooltip("Si > 0, sobrescribe lo calculado para enemiesToSpawnThisWave al inicio de la ola (solo para debug).")]
     public int inspectorEnemiesToSpawnOverride = 0;
 
-    #endregion
-
-    #region State
-
+    // --- Estado ---
     public int currentWave { get; private set; } = 0;
     public int enemiesAlive { get; private set; } = 0;
+    // Para que puedas verlo en inspector (solo debug), lo dejamos público pero con private set.
     public int enemiesToSpawnThisWave { get; private set; } = 0;
-
-    public float currentWaveSpace { get; private set; } = 0f;
-    private List<bool> enemyUnlocked = new List<bool>();
-    private int lastUnlockedIndex = -1;
-
-    private Camera mainCam;
-    private Coroutine runningWaveCoroutine;
 
     public event Action<int, int> OnWaveStarted;
     public event Action<int> OnWaveFinished;
     public event Action<GameObject> OnEnemySpawned;
     public event Action<GameObject> OnEnemyKilled;
 
-    #endregion
+    private Coroutine runningWaveCoroutine;
 
-    #region Types
+    // --- Nuevo estado para lógica de espacio y desbloqueo ---
+    public float currentWaveSpace { get; private set; } = 0f; // Ahora privado set
+    private List<bool> enemyUnlocked = new List<bool>();
+    private int lastUnlockedIndex = -1;
+
+    private Camera mainCam;
 
     [Serializable]
     public class ZoneConfig
     {
-        [Tooltip("Nombre opcional para identificar la subzona en el inspector.")]
+        [Tooltip("Nombre opcional para identificar la subzona en el inspector (ej: 'Top 1').")]
         public string name;
-        [Tooltip("Valores de waveSpace permitidos en esta subzona.")]
+
+        [Tooltip("Valores de waveSpace permitidos en esta subzona. Ej: 1, 5, 10. Dejar vacío -> no permite ninguno.")]
         public List<int> allowedWaveSpaceValues = new List<int>();
+
         [Tooltip("Si true, permite ANY waveSpace (ignora la lista).")]
         public bool allowAny = false;
     }
 
-    #endregion
-
-    #region Initialization
-
-    private void OnValidate()
+    private void Awake()
     {
-        SyncZoneConfigs(leftZoneConfigs);
-        SyncZoneConfigs(rightZoneConfigs);
-        SyncZoneConfigs(upZoneConfigs);
-    }
-
-    private void SyncZoneConfigs(List<ZoneConfig> list)
-    {
-        if (list == null) return;
-
-        while (list.Count < zonesPerSide)
-            list.Add(new ZoneConfig() { name = $"Zone {list.Count}" });
-
-        while (list.Count > zonesPerSide && zonesPerSide > 0)
-            list.RemoveAt(list.Count - 1);
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
     }
 
     private void Start()
     {
         mainCam = Camera.main;
+
+        if (sideZoneManager == null)
+        {
+            // intentar encontrar uno en la misma escena
+            sideZoneManager = FindObjectOfType<SideZoneManager>();
+        }
+
         InitializeUnlocks();
         StartCoroutine(StartFirstWaveAfterDelay());
     }
@@ -172,7 +121,11 @@ public class WaveManager : MonoBehaviour
         for (int i = 0; i < enemyPrefabs.Length; i++)
             enemyUnlocked.Add(i == 0);
 
+        // Asegurarnos de que el primer coste disponible se respete
         float firstCost = Mathf.Max(1f, GetWaveSpaceFromPrefab(enemyPrefabs[0]));
+
+        // El currentWaveSpace se inicializa con el valor del Inspector (initialWaveSpace),
+        // pero se asegura de que sea al menos el coste del primer enemigo.
         currentWaveSpace = Mathf.Max(initialWaveSpace, firstCost);
 
         lastUnlockedIndex = enemyUnlocked[0] ? 0 : -1;
@@ -184,17 +137,17 @@ public class WaveManager : MonoBehaviour
         StartNextWave();
     }
 
-    #endregion
-
-    #region Wave Control
-
     public void StartNextWave()
     {
         if (runningWaveCoroutine != null) return;
 
         currentWave++;
+
         AddLastUnlockedCostToWave();
+
+        // No es necesario llamar EstimateEnemiesThisWave aquí, se hace al principio de SpawnWaveRoutine.
         enemiesAlive = 0;
+
         runningWaveCoroutine = StartCoroutine(SpawnWaveRoutine(currentWave));
     }
 
@@ -204,7 +157,9 @@ public class WaveManager : MonoBehaviour
             return;
 
         float lastCost = Mathf.Max(1f, GetWaveSpaceFromPrefab(enemyPrefabs[lastUnlockedIndex]));
+        // Lógica de adición: añade el coste o una porción del coste a la siguiente ola.
         float addAmount = lastCost > 1f ? lastCost * 0.5f : lastCost;
+
         currentWaveSpace += addAmount;
     }
 
@@ -230,30 +185,39 @@ public class WaveManager : MonoBehaviour
         return any ? min : 0f;
     }
 
-    #endregion
-
-    #region Spawning
-
     private IEnumerator SpawnWaveRoutine(int waveNumber)
     {
+        // Obtener alphaSpawnChance desde StatsManager si existe (mantener compatibilidad)
         alphaSpawnChance = StatsManager.Instance != null ? StatsManager.Instance.RuntimeStats.luck / 100f : alphaSpawnChance;
         EnemyLevelManager.Instance?.IncreaseEnemyLevel(1);
 
-        enemiesToSpawnThisWave = inspectorEnemiesToSpawnOverride > 0 ? inspectorEnemiesToSpawnOverride : EstimateEnemiesThisWave();
+        enemiesToSpawnThisWave = EstimateEnemiesThisWave();
+
+        // Override desde inspector (debug)
+        if (inspectorEnemiesToSpawnOverride > 0)
+        {
+            enemiesToSpawnThisWave = inspectorEnemiesToSpawnOverride;
+        }
+
         enemiesAlive = 0;
 
         OnWaveStarted?.Invoke(waveNumber, enemiesToSpawnThisWave);
 
+        // Alpha Enemy (chance global)
         if (alphaEnemyPrefabs != null && alphaEnemyPrefabs.Length > 0 && UnityEngine.Random.value <= alphaSpawnChance)
             SpawnAlphaEnemy();
 
+        // Spawn basado en remainingSpace
         float remainingSpace = currentWaveSpace;
         int spawned = 0;
         int safetyCounter = 0;
 
-        spawned += TryUnlockAndSpawnWithRemaining(ref remainingSpace).Count;
+        // 1. Intentar desbloquear y spawnear si hay espacio
+        List<int> newlyUnlockedSpawned = TryUnlockAndSpawnWithRemaining(ref remainingSpace);
+        spawned += newlyUnlockedSpawned.Count;
         if (spawned > 0) yield return new WaitForSeconds(spawnInterval);
 
+        // 2. Bucle principal de spawn
         while (true)
         {
             safetyCounter++;
@@ -264,9 +228,11 @@ public class WaveManager : MonoBehaviour
             }
 
             float minUnlockedCost = GetMinUnlockedWaveSpace();
+            // Salir si el espacio restante no cubre el enemigo desbloqueado más barato
             if (minUnlockedCost <= 0f || remainingSpace + 1e-6f < minUnlockedCost)
                 break;
 
+            // Encontrar candidatos para spawn
             List<int> candidates = new List<int>();
             for (int i = 0; i < enemyPrefabs.Length; i++)
             {
@@ -275,8 +241,12 @@ public class WaveManager : MonoBehaviour
                 if (cost <= remainingSpace + 1e-6f) candidates.Add(i);
             }
 
-            if (candidates.Count == 0) break;
+            if (candidates.Count == 0)
+            {
+                break;
+            }
 
+            // Seleccionar y spawnear
             int pickIndex = candidates[UnityEngine.Random.Range(0, candidates.Count)];
             float pickCost = GetWaveSpaceFromPrefab(enemyPrefabs[pickIndex]);
 
@@ -285,20 +255,25 @@ public class WaveManager : MonoBehaviour
             spawned++;
             yield return new WaitForSeconds(spawnInterval);
 
-            spawned += TryUnlockAndSpawnWithRemaining(ref remainingSpace).Count;
-            if (spawned > 0) yield return new WaitForSeconds(spawnInterval);
+            // Intentar desbloquear y spawnear de nuevo tras un spawn regular
+            List<int> unlockedDuringSpawn = TryUnlockAndSpawnWithRemaining(ref remainingSpace);
+            spawned += unlockedDuringSpawn.Count;
+            if (unlockedDuringSpawn.Count > 0) yield return new WaitForSeconds(spawnInterval);
         }
 
-        foreach (int idx in TryUnlockWithoutSpawning())
+        // 3. Desbloqueo final (sin usar remainingSpace para la condición de desbloqueo, solo para el spawn)
+        List<int> postWaveUnlocked = TryUnlockWithoutSpawning();
+        foreach (int idx in postWaveUnlocked)
         {
             float cost = Mathf.Max(1f, GetWaveSpaceFromPrefab(enemyPrefabs[idx]));
-            if (remainingSpace + 1e-6f >= cost)
+            if (remainingSpace + 1e-6f >= cost) // Solo spawnea si aún hay espacio restante
             {
                 SpawnEnemyByIndex(idx);
                 remainingSpace -= cost;
             }
         }
 
+        // Fin de la ola
         if (autoStartNextWaveWhenCleared)
         {
             float timer = 0f;
@@ -332,25 +307,39 @@ public class WaveManager : MonoBehaviour
     {
         if (enemyPrefabs == null || prefabIndex < 0 || prefabIndex >= enemyPrefabs.Length) return;
 
-        GameObject prefab = enemyPrefabs[prefabIndex];
-        float waveSpace = GetWaveSpaceFromPrefab(prefab);
+        GameObject normalPrefab = enemyPrefabs[prefabIndex];
+        float waveSpace = GetWaveSpaceFromPrefab(normalPrefab);
 
-        if (UnityEngine.Random.Range(0, 1) == 0 && alphaEnemyPrefabs != null)
+        // -------------------------------
+        // PROBABILIDAD ALTERNATIVA PARA ALFA
+        // -------------------------------
+        // Nota: en tu código original había un intento de 1/10 ó 1/20; aquí mantengo una probabilidad simple:
+        if (alphaEnemyPrefabs != null && alphaEnemyPrefabs.Length > 0)
         {
-            List<GameObject> alphas = new List<GameObject>();
-            foreach (var alpha in alphaEnemyPrefabs)
-                if (alpha != null && Mathf.Approximately(GetWaveSpaceFromPrefab(alpha), waveSpace))
-                    alphas.Add(alpha);
-
-            if (alphas.Count > 0)
+            // ejemplo: 1 en 20 (5%) -> Random.Range(0,20) == 0
+            if (UnityEngine.Random.Range(0, 20) == 0)
             {
-                GameObject chosen = alphas[UnityEngine.Random.Range(0, alphas.Count)];
-                SpawnEnemyPrefab(chosen);
-                return;
+                // Buscar alfas que tengan el mismo waveSpace
+                List<GameObject> sameValueAlphas = new List<GameObject>();
+
+                foreach (var alpha in alphaEnemyPrefabs)
+                {
+                    if (alpha != null && Mathf.Approximately(GetWaveSpaceFromPrefab(alpha), waveSpace))
+                        sameValueAlphas.Add(alpha);
+                }
+
+                // Si existen alfas del mismo valor, spawneamos ese
+                if (sameValueAlphas.Count > 0)
+                {
+                    GameObject chosenAlpha = sameValueAlphas[UnityEngine.Random.Range(0, sameValueAlphas.Count)];
+                    SpawnEnemyPrefab(chosenAlpha);
+                    return;
+                }
             }
         }
 
-        SpawnEnemyPrefab(prefab);
+        // Si no salió alfa o no había alfas del mismo valor → spawnear normal
+        SpawnEnemyPrefab(normalPrefab);
     }
 
     private void SpawnEnemyPrefab(GameObject prefab)
@@ -359,7 +348,6 @@ public class WaveManager : MonoBehaviour
         Vector3 spawnPos = GetSpawnPositionForEnemy(waveSpace);
 
         GameObject go = Instantiate(prefab, spawnPos, Quaternion.identity);
-
         if (go.TryGetComponent(out EnemyBase enemy) && EnemyLevelManager.Instance != null)
             enemy.enemyLevel = Mathf.RoundToInt(EnemyLevelManager.Instance.enemyLevel);
 
@@ -370,12 +358,21 @@ public class WaveManager : MonoBehaviour
         OnEnemySpawned?.Invoke(go);
     }
 
-    #endregion
-
-    #region Positioning / Zones
-
     private Vector3 GetSpawnPositionForEnemy(float waveSpace)
     {
+        Vector2 offset = UnityEngine.Random.insideUnitCircle * spawnRandomRadius;
+
+        // 1. Intentar usar Top Zone si está disponible y habilitada
+        if (sideZoneManager != null && sideZoneManager.useTopZones && sideZoneManager.topZonesColumns > 0)
+        {
+            Vector3 topPos;
+            if (sideZoneManager.TryGetTopSpawnPosition(waveSpace, spawnRandomRadius, out topPos))
+            {
+                return topPos;
+            }
+        }
+
+        // 2. Intentar spawnPoints específicos por waveSpace
         Transform[] points = spawnPoints;
 
         if (Mathf.Approximately(waveSpace, 1f) && spawnPointsValue1?.Length > 0) points = spawnPointsValue1;
@@ -383,187 +380,36 @@ public class WaveManager : MonoBehaviour
         else if (Mathf.Approximately(waveSpace, 5f) && spawnPointsValue10?.Length > 0) points = spawnPointsValue10;
         else if (Mathf.Approximately(waveSpace, 10f) && spawnPointsValue20?.Length > 0) points = spawnPointsValue20;
 
-        Vector2 offset = UnityEngine.Random.insideUnitCircle * spawnRandomRadius;
         if (points?.Length > 0)
             return points[UnityEngine.Random.Range(0, points.Length)].position + (Vector3)offset;
 
-        if (useSideZones && zonesPerSide > 0)
-            return GetPositionInSideZones(waveSpace);
+        // 3. Intentar usar Side Zones si están habilitadas
+        if (sideZoneManager != null && sideZoneManager.useSideZones && sideZoneManager.zonesPerSide > 0)
+        {
+            bool usedOtherSide;
+            Vector3 sidePos;
+            if (sideZoneManager.TryGetSideSpawnPosition(waveSpace, spawnRandomRadius, out sidePos, out usedOtherSide))
+            {
+                return sidePos;
+            }
+        }
 
+        // 4. Fallback al transform del WaveManager
         return transform.position + (Vector3)offset;
     }
 
-    private Vector3 GetPositionInSideZones(float waveSpace)
-    {
-        float rand = UnityEngine.Random.value;
-
-        bool chooseLeft = false;
-        bool chooseRight = false;
-        bool chooseUp = false;
-
-        List<ZoneConfig> configs = null;
-
-        if (rand <= upSpawnChance)
-        {
-            chooseUp = true;
-            configs = upZoneConfigs;
-        }
-        else if (rand <= upSpawnChance + leftSpawnChance)
-        {
-            chooseLeft = true;
-            configs = leftZoneConfigs;
-        }
-        else
-        {
-            chooseRight = true;
-            configs = rightZoneConfigs;
-        }
-
-        List<int> eligible = new List<int>();
-        for (int i = 0; i < zonesPerSide; i++)
-            if (i < configs.Count && ZoneConfigAllowsWaveSpace(configs[i], waveSpace))
-                eligible.Add(i);
-
-        int zoneIndex = -1;
-        if (eligible.Count > 0)
-        {
-            zoneIndex = eligible[UnityEngine.Random.Range(0, eligible.Count)];
-        }
-        else
-        {
-            // Intenta con las otras zonas si la elegida no tiene eligible
-            List<ZoneConfig> otherConfigs = null;
-            if (chooseUp)
-                otherConfigs = leftZoneConfigs.Count > 0 ? leftZoneConfigs : rightZoneConfigs;
-            else if (chooseLeft)
-                otherConfigs = rightZoneConfigs.Count > 0 ? rightZoneConfigs : upZoneConfigs;
-            else
-                otherConfigs = leftZoneConfigs.Count > 0 ? leftZoneConfigs : upZoneConfigs;
-
-            List<int> otherEligible = new List<int>();
-            for (int i = 0; i < zonesPerSide; i++)
-                if (i < otherConfigs.Count && ZoneConfigAllowsWaveSpace(otherConfigs[i], waveSpace))
-                    otherEligible.Add(i);
-
-            if (otherEligible.Count > 0)
-            {
-                configs = otherConfigs;
-                zoneIndex = otherEligible[UnityEngine.Random.Range(0, otherEligible.Count)];
-            }
-            else
-            {
-                Vector2 jitter = UnityEngine.Random.insideUnitCircle * spawnRandomRadius;
-                return transform.position + (Vector3)jitter;
-            }
-        }
-
-        Vector3 worldPos;
-        if (chooseUp)
-            worldPos = GetRandomPositionInUpZone(zoneIndex);
-        else
-            worldPos = GetRandomPositionInSideZone(chooseLeft, zoneIndex);
-
-        Vector2 jitter2 = UnityEngine.Random.insideUnitCircle * spawnRandomRadius;
-        return worldPos + (Vector3)jitter2;
-    }
-
-    private bool ZoneConfigAllowsWaveSpace(ZoneConfig cfg, float waveSpace)
-    {
-        if (cfg == null) return false;
-        if (cfg.allowAny) return true;
-        if (cfg.allowedWaveSpaceValues == null || cfg.allowedWaveSpaceValues.Count == 0) return false;
-        return cfg.allowedWaveSpaceValues.Contains(Mathf.RoundToInt(waveSpace));
-    }
-
-    private Vector3 GetRandomPositionInSideZone(bool left, int zoneIndex)
-    {
-        Camera cam = mainCam != null ? mainCam : Camera.main;
-        if (cam == null) return transform.position;
-
-        float xMin = left ? -outsideViewportOffset - sideWidthViewport : 1f + outsideViewportOffset;
-        float xMax = left ? -outsideViewportOffset : 1f + outsideViewportOffset + sideWidthViewport;
-
-        float zoneHeight = 1f / Mathf.Max(1, zonesPerSide);
-        float yMin = zoneIndex * zoneHeight;
-        float yMax = (zoneIndex + 1) * zoneHeight;
-
-        float vx = UnityEngine.Random.Range(xMin, xMax);
-        float vy = UnityEngine.Random.Range(yMin + 0.01f, yMax - 0.01f);
-
-        Vector3 viewPoint = new Vector3(vx, vy, Mathf.Abs(cam.transform.position.z));
-        viewPoint.z = cam.orthographic ? cam.nearClipPlane + 1f : Mathf.Abs(cam.transform.position.z);
-
-        Vector3 world = cam.ViewportToWorldPoint(viewPoint);
-        world.z = 0f;
-        world.y += verticalViewportOffset;
-
-        return world;
-    }
-
-    private Vector3 GetRandomPositionInUpZone(int zoneIndex)
-    {
-        Camera cam = mainCam != null ? mainCam : Camera.main;
-        if (cam == null) return transform.position;
-
-        // Zona vertical superior
-        float yMin = 1f - 0.1f; // por ejemplo, 10% superior del viewport
-        float yMax = 1f;
-
-        // Dividimos en columnas según zonesPerSide
-        float zoneWidth = 1f / Mathf.Max(1, zonesPerSide);
-        float xMin = zoneIndex * zoneWidth;
-        float xMax = (zoneIndex + 1) * zoneWidth;
-
-        float vx = UnityEngine.Random.Range(xMin + 0.01f, xMax - 0.01f);
-        float vy = UnityEngine.Random.Range(yMin + 0.01f, yMax - 0.01f);
-
-        Vector3 viewPoint = new Vector3(vx, vy, Mathf.Abs(cam.transform.position.z));
-        viewPoint.z = cam.orthographic ? cam.nearClipPlane + 1f : Mathf.Abs(cam.transform.position.z);
-
-        Vector3 world = cam.ViewportToWorldPoint(viewPoint);
-        world.z = 0f;
-        world.y += verticalViewportOffset;
-
-        return world;
-    }
-    #endregion
-
-    #region Alpha Enemy
-
-    private void SpawnAlphaEnemy()
-    {
-        if (alphaEnemyPrefabs == null || alphaEnemyPrefabs.Length == 0) return;
-
-        GameObject prefab = alphaEnemyPrefabs[UnityEngine.Random.Range(0, alphaEnemyPrefabs.Length)];
-        float waveSpace = GetWaveSpaceFromPrefab(prefab);
-        Vector3 spawnPos = GetSpawnPositionForEnemy(waveSpace);
-
-        GameObject go = Instantiate(prefab, spawnPos, Quaternion.identity);
-
-        if (go.TryGetComponent(out EnemyBase enemy) && EnemyLevelManager.Instance != null)
-            enemy.enemyLevel = Mathf.RoundToInt(EnemyLevelManager.Instance.enemyLevel);
-
-        if (go.TryGetComponent(out Rigidbody2D rb2d))
-            rb2d.linearVelocity = Vector2.zero;
-
-        enemiesAlive++;
-        OnEnemySpawned?.Invoke(go);
-    }
-
-    #endregion
-
-    #region WaveSpace / Unlocks
 
     private float GetWaveSpaceFromPrefab(GameObject prefab)
     {
         if (prefab == null) return 1f;
+        // Se asegura de que waveSpace sea al menos 1
         return prefab.TryGetComponent(out EnemyBase eb) ? Mathf.Max(1f, eb.waveSpace) : 1f;
     }
 
     private List<int> TryUnlockAndSpawnWithRemaining(ref float remainingSpace)
     {
-        List<int> newlyUnlocked = new List<int>();
-        if (enemyPrefabs == null) return newlyUnlocked;
+        List<int> newlyUnlockedAndSpawned = new List<int>();
+        if (enemyPrefabs == null) return newlyUnlockedAndSpawned;
 
         bool unlockedAny;
         do
@@ -572,12 +418,14 @@ public class WaveManager : MonoBehaviour
             for (int i = 0; i < enemyPrefabs.Length; i++)
             {
                 if (enemyUnlocked[i]) continue;
+
                 float cost = GetWaveSpaceFromPrefab(enemyPrefabs[i]);
+                // Desbloquea si el coste es cubierto por el espacio restante
                 if (remainingSpace + 1e-6f >= cost)
                 {
                     enemyUnlocked[i] = true;
                     lastUnlockedIndex = i;
-                    newlyUnlocked.Add(i);
+                    newlyUnlockedAndSpawned.Add(i);
 
                     SpawnEnemyByIndex(i);
                     remainingSpace -= cost;
@@ -587,7 +435,7 @@ public class WaveManager : MonoBehaviour
             }
         } while (unlockedAny);
 
-        return newlyUnlocked;
+        return newlyUnlockedAndSpawned;
     }
 
     private List<int> TryUnlockWithoutSpawning()
@@ -599,6 +447,8 @@ public class WaveManager : MonoBehaviour
         {
             if (enemyUnlocked[i]) continue;
             float cost = GetWaveSpaceFromPrefab(enemyPrefabs[i]);
+
+            // Desbloquea si el coste es cubierto por el espacio TOTAL de la ola
             if (currentWaveSpace + 1e-6f >= cost)
             {
                 enemyUnlocked[i] = true;
@@ -610,9 +460,48 @@ public class WaveManager : MonoBehaviour
         return newlyUnlocked;
     }
 
-    #endregion
+    private void SpawnAlphaEnemy()
+    {
+        if (alphaEnemyPrefabs == null || alphaEnemyPrefabs.Length == 0) return;
 
-    #region External API
+        // Filtrar solo los alpha cuyo waveSpace esté desbloqueado
+        List<GameObject> unlockedAlphas = new List<GameObject>();
+        for (int i = 0; i < alphaEnemyPrefabs.Length; i++)
+        {
+            GameObject alpha = alphaEnemyPrefabs[i];
+            float waveSpace = GetWaveSpaceFromPrefab(alpha);
+
+            // Solo agregar si hay algún enemigo normal desbloqueado con el mismo waveSpace
+            bool unlocked = false;
+            for (int j = 0; j < enemyPrefabs.Length; j++)
+            {
+                if (enemyUnlocked[j] && Mathf.Approximately(GetWaveSpaceFromPrefab(enemyPrefabs[j]), waveSpace))
+                {
+                    unlocked = true;
+                    break;
+                }
+            }
+
+            if (unlocked)
+                unlockedAlphas.Add(alpha);
+        }
+
+        if (unlockedAlphas.Count == 0) return; // No hay alpha disponible para esta ola
+
+        GameObject prefabToSpawn = unlockedAlphas[UnityEngine.Random.Range(0, unlockedAlphas.Count)];
+        float prefabWaveSpace = GetWaveSpaceFromPrefab(prefabToSpawn);
+        Vector3 spawnPos = GetSpawnPositionForEnemy(prefabWaveSpace);
+
+        GameObject go = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
+        if (go.TryGetComponent(out EnemyBase enemy) && EnemyLevelManager.Instance != null)
+            enemy.enemyLevel = Mathf.RoundToInt(EnemyLevelManager.Instance.enemyLevel);
+
+        if (go.TryGetComponent(out Rigidbody2D rb2d))
+            rb2d.linearVelocity = Vector2.zero;
+
+        enemiesAlive++;
+        OnEnemySpawned?.Invoke(go);
+    }
 
     public void NotifyEnemyKilled(GameObject enemy)
     {
@@ -636,100 +525,4 @@ public class WaveManager : MonoBehaviour
 
         if (startImmediately) StartCoroutine(StartFirstWaveAfterDelay());
     }
-
-    #endregion
-
-    #region Gizmos
-
-    private void OnDrawGizmosSelected()
-    {
-        if (!useSideZones) return;
-
-        Camera cam = mainCam != null ? mainCam : Camera.main;
-        if (cam == null) return;
-
-        // -----------------------------
-        // ZONAS LEFT Y RIGHT
-        // -----------------------------
-        for (int side = 0; side <= 1; side++)
-        {
-            bool left = side == 0;
-            float xMin = left ? -outsideViewportOffset - sideWidthViewport : 1f + outsideViewportOffset;
-            float xMax = left ? -outsideViewportOffset : 1f + outsideViewportOffset + sideWidthViewport;
-
-            float zoneHeight = 1f / Mathf.Max(1, zonesPerSide);
-
-            for (int z = 0; z < zonesPerSide; z++)
-            {
-                float yMin = z * zoneHeight;
-                float yMax = (z + 1) * zoneHeight;
-
-                Vector3 bl = cam.ViewportToWorldPoint(new Vector3(xMin, yMin, Mathf.Abs(cam.transform.position.z)));
-                Vector3 tr = cam.ViewportToWorldPoint(new Vector3(xMax, yMax, Mathf.Abs(cam.transform.position.z)));
-                bl.z = 0f; tr.z = 0f;
-
-                bl.y += verticalViewportOffset;
-                tr.y += verticalViewportOffset;
-
-                Vector3 center = (bl + tr) / 2f;
-                Vector3 size = new Vector3(Mathf.Abs(tr.x - bl.x), Mathf.Abs(tr.y - bl.y), 0.01f);
-
-                List<ZoneConfig> configs = left ? leftZoneConfigs : rightZoneConfigs;
-                bool allows = z < configs.Count && configs[z] != null &&
-                              (configs[z].allowAny || (configs[z].allowedWaveSpaceValues != null && configs[z].allowedWaveSpaceValues.Count > 0));
-
-                if (allows)
-                    Gizmos.color = new Color(0.2f, 0.8f, 0.2f, 0.12f); // verde semi-transparente
-                else
-                    Gizmos.color = new Color(0, 0, 0, 0);
-
-                Gizmos.DrawCube(center, size * 0.99f);
-
-                Gizmos.color = left ? Color.green : Color.cyan;
-                Gizmos.DrawWireCube(center, size);
-            }
-        }
-
-        // -----------------------------
-        // ZONAS UP (división vertical)
-        // -----------------------------
-        if (upZoneConfigs != null && upZoneConfigs.Count > 0)
-        {
-            float yMin = 1f - 0.1f; // altura de la zona superior (10% top)
-            float yMax = 1f;
-            float zoneWidth = 1f / Mathf.Max(1, zonesPerSide);
-
-            for (int z = 0; z < zonesPerSide; z++)
-            {
-                float xMin = z * zoneWidth;
-                float xMax = (z + 1) * zoneWidth;
-
-                Vector3 bl = cam.ViewportToWorldPoint(new Vector3(xMin, yMin, Mathf.Abs(cam.transform.position.z)));
-                Vector3 tr = cam.ViewportToWorldPoint(new Vector3(xMax, yMax, Mathf.Abs(cam.transform.position.z)));
-                bl.z = 0f; tr.z = 0f;
-
-                bl.y += verticalViewportOffset;
-                tr.y += verticalViewportOffset;
-
-                Vector3 center = (bl + tr) / 2f;
-                Vector3 size = new Vector3(Mathf.Abs(tr.x - bl.x), Mathf.Abs(tr.y - bl.y), 0.01f);
-
-                bool allows = z < upZoneConfigs.Count && upZoneConfigs[z] != null &&
-                              (upZoneConfigs[z].allowAny || (upZoneConfigs[z].allowedWaveSpaceValues != null && upZoneConfigs[z].allowedWaveSpaceValues.Count > 0));
-
-                if (allows)
-                    Gizmos.color = new Color(0.8f, 0.8f, 0.2f, 0.12f); // amarillo semi-transparente
-                else
-                    Gizmos.color = new Color(0, 0, 0, 0);
-
-                Gizmos.DrawCube(center, size * 0.99f);
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawWireCube(center, size);
-            }
-        }
-    }
-
-
-
-    #endregion
 }
