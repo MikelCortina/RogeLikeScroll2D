@@ -10530,7 +10530,7 @@ MonoBehaviour:
     valueColor: {r: 0, g: 0, b: 0, a: 1}
     labelFontSize: 15
     valueFontSize: 15
-    showPercent: 0
+    showPercent: 1
     suffix: 
     enabled: 1
   - stat: 5
@@ -10557,6 +10557,17 @@ MonoBehaviour:
     enabled: 1
   - stat: 8
     displayName: Fire Rate
+    icon: {fileID: 0}
+    showIcon: 0
+    labelColor: {r: 0, g: 0, b: 0, a: 1}
+    valueColor: {r: 0, g: 0, b: 0, a: 1}
+    labelFontSize: 15
+    valueFontSize: 15
+    showPercent: 0
+    suffix: 
+    enabled: 1
+  - stat: 15
+    displayName: SpawnRate
     icon: {fileID: 0}
     showIcon: 0
     labelColor: {r: 0, g: 0, b: 0, a: 1}
@@ -19179,8 +19190,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allObjects:
+  - {fileID: 11400000, guid: 50058bb732256de45b44a56a558bb681, type: 2}
+  - {fileID: 11400000, guid: 696c4f3ac3d4e4e4b8719877cbb3b262, type: 2}
+  - {fileID: 11400000, guid: 185519d5f7a2fab4282f4c55fdf020bd, type: 2}
+  - {fileID: 11400000, guid: c084aebf6a7c909448173ca294df4115, type: 2}
+  - {fileID: 11400000, guid: 7fb092d97b5ff2c43b4f23621034266f, type: 2}
+  - {fileID: 11400000, guid: 7e0bf236ef845174dbf8b6041d3981d2, type: 2}
   - {fileID: 11400000, guid: d1fcae7c36a958a489c3add483fa2c2e, type: 2}
+  - {fileID: 11400000, guid: 1dfb555640a7ba84aab576b8b9157823, type: 2}
+  - {fileID: 11400000, guid: b7e1a0e33427d3b438430e8385cbc498, type: 2}
+  - {fileID: 11400000, guid: da562ce374b1d1d499a063674e4dc717, type: 2}
+  - {fileID: 11400000, guid: c84cc1e51b8b73c4c99bf4daa967121a, type: 2}
   - {fileID: 11400000, guid: 08eb1edf2962f924b81d76e24f85e0b2, type: 2}
+  - {fileID: 11400000, guid: 6c82a1b8584ec4048a8c5154950864ef, type: 2}
+  - {fileID: 11400000, guid: 1f48d71facf5c504cb44ea1e22d52cc7, type: 2}
   rareChance: 0.6
   epicChance: 0.3
   legendaryChance: 0.1
@@ -28249,6 +28272,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CinematicaDeObjetos
       objectReference: {fileID: 0}
+    - target: {fileID: 8720077287906085243, guid: 189256810ca568e4ea5d497a01ba4a5e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -29074,7 +29101,7 @@ PrefabInstance:
       objectReference: {fileID: 1553025503}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: alphaSpawnChance
-      value: 0.05
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: currentWaveSpace
@@ -29082,7 +29109,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: initialWaveSpace
-      value: 1
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: tower.Array.size
@@ -29130,7 +29157,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: enemyPrefabs.Array.size
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: upZoneConfigs.Array.size
@@ -29167,7 +29194,7 @@ PrefabInstance:
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'enemyPrefabs.Array.data[0]'
       value: 
-      objectReference: {fileID: 5269551145280685858, guid: 424d2413498219c4eaa7565db09110d6, type: 3}
+      objectReference: {fileID: 8037676267120482854, guid: 2db1cd71929f5414b9d3dc1269cac59f, type: 3}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'enemyPrefabs.Array.data[1]'
       value: 
@@ -29194,7 +29221,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: alphaEnemyPrefabs.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8143631855692913212, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: spawnPointsValue1.Array.size

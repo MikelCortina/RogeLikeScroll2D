@@ -50,13 +50,12 @@ public class StatsCommunicator : MonoBehaviour
             return 0f;
         }
 
-        // 2️⃣ Aplicar reducción de daño por armadura
         float damageAfterArmor = incomingDamage;
-        if (stats.meleArmorPercentage > 0f)
+
+        if (stats.rangedArmorPercentage > 0f)
         {
-            float armorPct = Mathf.Clamp(stats.meleArmorPercentage, 0f, 100f);
-            damageAfterArmor = incomingDamage * (1f - armorPct / 100f);
-            damageAfterArmor = Mathf.Max(0f, damageAfterArmor);
+            float armorPct = stats.meleArmorPercentage;
+            damageAfterArmor = incomingDamage / (1f + armorPct / 100f);
         }
 
         Debug.Log($"Incoming {incomingDamage} -> final {damageAfterArmor} (armor {stats.meleArmorPercentage}%)");
@@ -89,11 +88,11 @@ public class StatsCommunicator : MonoBehaviour
 
         // 2️⃣ Aplicar reducción por armadura
         float damageAfterArmor = incomingDamage;
+
         if (stats.rangedArmorPercentage > 0f)
         {
-            float armorPct = Mathf.Clamp(stats.rangedArmorPercentage, 0f, 100f);
-            damageAfterArmor = incomingDamage * (1f - armorPct / 100f);
-            damageAfterArmor = Mathf.Max(0f, damageAfterArmor);
+            float armorPct = stats.rangedArmorPercentage;
+            damageAfterArmor = incomingDamage / (1f + armorPct / 100f);
         }
 
         Debug.Log($"Ranged hit: {incomingDamage} -> {damageAfterArmor} (armor {stats.rangedArmorPercentage}%)");

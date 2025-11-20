@@ -1,0 +1,741 @@
+fileFormatVersion: 2
+guid: 3d83bc17ff8c82040a599204ae67e3f0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5120783167542743296
+    second: Corazon exp 5_0
+  - first:
+      213: 2885407614556526719
+    second: Corazon exp 5_1
+  - first:
+      213: 6260786378529375998
+    second: Corazon exp 5_2
+  - first:
+      213: -1775628692350716050
+    second: Corazon exp 5_3
+  - first:
+      213: 8413953447461657245
+    second: Corazon exp 5_4
+  - first:
+      213: -1359579904607130007
+    second: Corazon exp 5_5
+  - first:
+      213: -8439923079624011913
+    second: Corazon exp 5_6
+  - first:
+      213: -4133108683178434941
+    second: Corazon exp 5_7
+  - first:
+      213: 7066869845313264914
+    second: Corazon exp 5_8
+  - first:
+      213: -5498502095251547687
+    second: Corazon exp 5_9
+  - first:
+      213: 581332548747785691
+    second: Corazon exp 5_10
+  - first:
+      213: 4986120030989361101
+    second: Corazon exp 5_11
+  - first:
+      213: 8906036674702054106
+    second: Corazon exp 5_12
+  - first:
+      213: 609555269836785368
+    second: Corazon exp 5_13
+  - first:
+      213: -7422166129726303479
+    second: Corazon exp 5_14
+  - first:
+      213: -6323973211036759057
+    second: Corazon exp 5_15
+  - first:
+      213: 7799735083428403637
+    second: Corazon exp 5_16
+  - first:
+      213: 5829426944698858507
+    second: Corazon exp 5_17
+  - first:
+      213: -7761526250534176323
+    second: Corazon exp 5_18
+  - first:
+      213: 4356327088363541432
+    second: Corazon exp 5_19
+  - first:
+      213: 3763475253485420674
+    second: Corazon exp 5_20
+  - first:
+      213: -5522003768799519461
+    second: Corazon exp 5_21
+  - first:
+      213: 9139573010463975005
+    second: Corazon exp 5_22
+  - first:
+      213: -6996655948819425381
+    second: Corazon exp 5_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Corazon exp 5_0
+      rect:
+        serializedVersion: 2
+        x: 793
+        y: 710
+        width: 34
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00fa0d617d25fe8b0800000000000000
+      internalID: -5120783167542743296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_1
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 723
+        width: 35
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7859d910f60b0820800000000000000
+      internalID: 2885407614556526719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_2
+      rect:
+        serializedVersion: 2
+        x: 1018
+        y: 702
+        width: 38
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef609da4a08c2e650800000000000000
+      internalID: 6260786378529375998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_3
+      rect:
+        serializedVersion: 2
+        x: 1137
+        y: 700
+        width: 59
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e67b17bac13bb57e0800000000000000
+      internalID: -1775628692350716050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_4
+      rect:
+        serializedVersion: 2
+        x: 953
+        y: 690
+        width: 26
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9a10a8d41e54c470800000000000000
+      internalID: 8413953447461657245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_5
+      rect:
+        serializedVersion: 2
+        x: 771
+        y: 623
+        width: 32
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96ee126b74dc12de0800000000000000
+      internalID: -1359579904607130007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_6
+      rect:
+        serializedVersion: 2
+        x: 804
+        y: 650
+        width: 29
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77fc36bfcae5fda80800000000000000
+      internalID: -8439923079624011913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_7
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 409
+        width: 275
+        height: 264
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38e11110d8f34a6c0800000000000000
+      internalID: -4133108683178434941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_8
+      rect:
+        serializedVersion: 2
+        x: 1104
+        y: 636
+        width: 34
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21d11d3bea0921260800000000000000
+      internalID: 7066869845313264914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_9
+      rect:
+        serializedVersion: 2
+        x: 1232
+        y: 617
+        width: 54
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d95ac70a7561b3b0800000000000000
+      internalID: -5498502095251547687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_10
+      rect:
+        serializedVersion: 2
+        x: 1153
+        y: 624
+        width: 22
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd5fb708fde411800800000000000000
+      internalID: 581332548747785691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_11
+      rect:
+        serializedVersion: 2
+        x: 717
+        y: 555
+        width: 40
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcf949620c1423540800000000000000
+      internalID: 4986120030989361101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_12
+      rect:
+        serializedVersion: 2
+        x: 761
+        y: 486
+        width: 36
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad297306b29989b70800000000000000
+      internalID: 8906036674702054106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_13
+      rect:
+        serializedVersion: 2
+        x: 1122
+        y: 498
+        width: 32
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d6c691d943957800800000000000000
+      internalID: 609555269836785368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_14
+      rect:
+        serializedVersion: 2
+        x: 1203
+        y: 525
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9035ab5ba3b2ff890800000000000000
+      internalID: -7422166129726303479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_15
+      rect:
+        serializedVersion: 2
+        x: 1167
+        y: 457
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: feb4113dedbbc38a0800000000000000
+      internalID: -6323973211036759057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_16
+      rect:
+        serializedVersion: 2
+        x: 1230
+        y: 427
+        width: 37
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b9d6edcbb93e3c60800000000000000
+      internalID: 7799735083428403637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_17
+      rect:
+        serializedVersion: 2
+        x: 748
+        y: 377
+        width: 36
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0cbddaabe846e050800000000000000
+      internalID: 5829426944698858507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_18
+      rect:
+        serializedVersion: 2
+        x: 1190
+        y: 395
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db97a0a5ff4894490800000000000000
+      internalID: -7761526250534176323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_19
+      rect:
+        serializedVersion: 2
+        x: 806
+        y: 338
+        width: 37
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b31253f768c47c30800000000000000
+      internalID: 4356327088363541432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_20
+      rect:
+        serializedVersion: 2
+        x: 941
+        y: 350
+        width: 30
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 280c8f4adcc8a3430800000000000000
+      internalID: 3763475253485420674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_21
+      rect:
+        serializedVersion: 2
+        x: 1065
+        y: 370
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1d165044d6ed53b0800000000000000
+      internalID: -5522003768799519461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_22
+      rect:
+        serializedVersion: 2
+        x: 877
+        y: 339
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d56e37fba3946de70800000000000000
+      internalID: 9139573010463975005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Corazon exp 5_23
+      rect:
+        serializedVersion: 2
+        x: 1017
+        y: 317
+        width: 46
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b979ef20c72e6ee90800000000000000
+      internalID: -6996655948819425381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Corazon exp 5_0: -5120783167542743296
+      Corazon exp 5_1: 2885407614556526719
+      Corazon exp 5_10: 581332548747785691
+      Corazon exp 5_11: 4986120030989361101
+      Corazon exp 5_12: 8906036674702054106
+      Corazon exp 5_13: 609555269836785368
+      Corazon exp 5_14: -7422166129726303479
+      Corazon exp 5_15: -6323973211036759057
+      Corazon exp 5_16: 7799735083428403637
+      Corazon exp 5_17: 5829426944698858507
+      Corazon exp 5_18: -7761526250534176323
+      Corazon exp 5_19: 4356327088363541432
+      Corazon exp 5_2: 6260786378529375998
+      Corazon exp 5_20: 3763475253485420674
+      Corazon exp 5_21: -5522003768799519461
+      Corazon exp 5_22: 9139573010463975005
+      Corazon exp 5_23: -6996655948819425381
+      Corazon exp 5_3: -1775628692350716050
+      Corazon exp 5_4: 8413953447461657245
+      Corazon exp 5_5: -1359579904607130007
+      Corazon exp 5_6: -8439923079624011913
+      Corazon exp 5_7: -4133108683178434941
+      Corazon exp 5_8: 7066869845313264914
+      Corazon exp 5_9: -5498502095251547687
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

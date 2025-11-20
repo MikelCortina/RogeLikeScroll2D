@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8780b4a39fffb924a8dde33ac9780757, type: 3}
+  m_Name: Polainas
+  m_EditorClassIdentifier: 
+  repetible: 1
+  quality: 0
+  icon: {fileID: 1827401348667573218, guid: 01ebc131f2c0d8b47a5e84ac1c8e4af0, type: 3}

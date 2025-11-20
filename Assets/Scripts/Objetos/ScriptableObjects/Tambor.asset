@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3380cb33b3e06e045a99fd7da702e610, type: 3}
-  m_Name: OrganValueBoost
+  m_Script: {fileID: 11500000, guid: 358c882355aef1a4e80f95d96153ad46, type: 3}
+  m_Name: Tambor
   m_EditorClassIdentifier: 
   repetible: 1
   quality: 0
-  icon: {fileID: 4642552851686273340, guid: f608afdd7ca356a4ba7a14674dab2008, type: 3}
-  additionalValue: 1
+  icon: {fileID: 8929369444933569912, guid: f7c19f692403279419890b5bd6149d6a, type: 3}

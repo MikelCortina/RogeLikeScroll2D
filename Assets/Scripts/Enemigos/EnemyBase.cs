@@ -227,7 +227,7 @@ public class EnemyBase : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-    protected virtual void Die()
+    public virtual void Die()
     {
         // Animación
         if (animator != null) animator.SetTrigger("Dead");

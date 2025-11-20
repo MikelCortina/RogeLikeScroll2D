@@ -187,8 +187,7 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator SpawnWaveRoutine(int waveNumber)
     {
-        // Obtener alphaSpawnChance desde StatsManager si existe (mantener compatibilidad)
-        alphaSpawnChance = StatsManager.Instance != null ? StatsManager.Instance.RuntimeStats.luck / 100f : alphaSpawnChance;
+
         EnemyLevelManager.Instance?.IncreaseEnemyLevel(1);
 
         enemiesToSpawnThisWave = EstimateEnemiesThisWave();

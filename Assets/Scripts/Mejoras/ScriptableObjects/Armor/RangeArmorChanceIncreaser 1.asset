@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RangeArmorChanceIncreaser 1
   m_EditorClassIdentifier: 
   upgradeName: Casco
-  description: '+4 de armadura a projectiles
+  description: '+4 de armadura a distancia
 
 '
   quality: 1

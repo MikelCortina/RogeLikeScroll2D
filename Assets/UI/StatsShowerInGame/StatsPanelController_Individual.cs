@@ -20,6 +20,7 @@ public enum StatType
     CriticalChance,
     DodgeChance,
     Knockback,
+    SpawnRate,
 }
 
 [System.Serializable]
@@ -215,6 +216,7 @@ public class StatsPanelController_Individual : MonoBehaviour
             case StatType.CriticalChance: raw = s.criticalChance; break;
             case StatType.DodgeChance: raw = s.dodgeChance; break;
             case StatType.Knockback: raw = s.knockback; break;
+            case StatType.SpawnRate: raw = s.spawnRate; break;
             default: raw = 0f; break;
         }
 

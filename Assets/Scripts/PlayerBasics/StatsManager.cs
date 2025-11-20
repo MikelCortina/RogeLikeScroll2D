@@ -99,6 +99,9 @@ public class StatsManager : MonoBehaviour
     public event Action<float> OnGunDamageChanged;
     public event Action<float> OnExplosionDamageChanged;
 
+    public event Action<float> OnMeleArmorChanged;
+    public event Action<float> OnRangedArmorChanged;
+
 
     private bool isInvulnerable = false;
 
@@ -244,10 +247,12 @@ public class StatsManager : MonoBehaviour
     public void AddMeleArmor(float delta)
     {
         RuntimeStats.meleArmorPercentage = Mathf.Max(0, RuntimeStats.meleArmorPercentage + delta);
+        OnMeleArmorChanged?.Invoke(RuntimeStats.meleArmorPercentage);
     }
     public void AddRangeArmor(float delta)
     {
         RuntimeStats.rangedArmorPercentage = Mathf.Max(0, RuntimeStats.rangedArmorPercentage + delta);
+        OnRangedArmorChanged?.Invoke(RuntimeStats.rangedArmorPercentage);
     }
     public void AddKnockback(float delta)
     {
@@ -261,10 +266,7 @@ public class StatsManager : MonoBehaviour
     {
         RuntimeStats.dodgeChance += (RuntimeStats.dodgeChance * (delta / 100));
     }
-    public void AddTowerLuck(float delta)
-    {
-        RuntimeStats.towerLuck = Mathf.Max(0, RuntimeStats.towerLuck + delta);
-    }
+
     public void AddLuck(float delta)
     {
         RuntimeStats.luck = Mathf.Max(0, RuntimeStats.luck + delta);
@@ -283,7 +285,11 @@ public class StatsManager : MonoBehaviour
         Debug.Log("Moneda agregada" + RuntimeStats.currency);
         Debug.Log("StatsManager emitiendo evento: " + this);
     }
-
+    public void SetCurrency(int newAmount)
+    {
+        RuntimeStats.currency = newAmount;
+        OnCurrencyChanged?.Invoke(RuntimeStats.currency);
+    }
 
     // --- Invulnerability Coroutine ---
     private System.Collections.IEnumerator InvulnerabilityCoroutine()
