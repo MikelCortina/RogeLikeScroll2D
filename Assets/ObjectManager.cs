@@ -42,6 +42,7 @@ public  class ObjectManager : MonoBehaviour
             for (int i = 0; i < weight; i++)
                 weightedList.Add(obj);
         }
+       
 
         if (weightedList.Count == 0)
             return null;
