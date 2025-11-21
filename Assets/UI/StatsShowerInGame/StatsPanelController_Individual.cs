@@ -43,6 +43,7 @@ public class StatsPanelController_Individual : MonoBehaviour
 {
     [Header("UI References")]
     public GameObject panel;
+    public GameObject mixPanel;
     public GameObject statLinePrefab; // Prefab con StatLineUI
     public Transform contentParent;   // Contenedor con VerticalLayoutGroup
     public SkillTreeUI skillTreeUI;
@@ -109,15 +110,24 @@ public class StatsPanelController_Individual : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             bool newState = !panel.activeSelf;
+
+            // Panel principal
             panel.SetActive(newState);
+
             ApplyGameState(newState);
 
-            // --- NUEVA LÍNEA: sincroniza el SkillTreeUI con el mismo estado (abrir/cerrar) ---
+            // --- Sincroniza SkillTreeUI ---
             if (skillTreeUI != null)
             {
                 skillTreeUI.Show(newState);
             }
-            // ------------------------------------------------------------------------------
+
+            // --- NUEVO PANEL ADICIONAL ---
+            if (mixPanel != null)
+            {
+                mixPanel.SetActive(newState);
+            }
+            // ------------------------------
 
             if (crosshairMouseFollow != null)
             {

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Rastrillo
   m_EditorClassIdentifier: 
   repetible: 1
-  quality: 0
+  quality: 1
   icon: {fileID: 4642552851686273340, guid: f608afdd7ca356a4ba7a14674dab2008, type: 3}
+  description: Tus organos ganan 1 de valor
   additionalValue: 1

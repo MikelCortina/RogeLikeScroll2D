@@ -18,7 +18,7 @@ public class DodgeDown_MeleArmorUp : IObjetos
         var stats = StatsManager.Instance.RuntimeStats;
 
         // Restar 0.2 de dodgeChance (valor absoluto)
-        stats.dodgeChance = Mathf.Max(0, stats.dodgeChance - 0.2f);
+        stats.dodgeChance = Mathf.Max(0, stats.dodgeChance - 5f);
 
         // Sumar 10 de meleArmorPercentage usando el método oficial
         StatsManager.Instance.AddMeleArmor(10f);

@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: CurrencyToGunDamage
   m_EditorClassIdentifier: 
   repetible: 1
-  quality: 0
+  quality: 2
   icon: {fileID: -230320821942541813, guid: 15c496e01318f0a4b9e14f1d7c23f6ef, type: 3}
+  description: "Convierte todos tus organos en da\xF1o de projectiles (1 de da\xF1o
+    por cada 2 organos)"

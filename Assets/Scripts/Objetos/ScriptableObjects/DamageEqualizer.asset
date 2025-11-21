@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: DamageEqualizer
   m_EditorClassIdentifier: 
   repetible: 0
-  quality: 0
+  quality: 2
   icon: {fileID: 6095515530316466418, guid: 7f51d57e81fc9a747a0e0cdf5374d08a, type: 3}
+  description: "Haz que tu da\xF1o deprojectiles y explosivo se combinen. (Se establecera
+    el valor mas alto)"

@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using TMPro;
+using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.UI;
-using System.Collections;
 
 public class CinematicManager : MonoBehaviour
 {
@@ -12,6 +14,12 @@ public class CinematicManager : MonoBehaviour
     public GameObject cinematicPanel;
     public GameObject particleLoop;
     public Button continueButton;
+
+    [Header("Descripción del objeto")]
+    public TextMeshProUGUI nameText;
+    public GameObject descriptionPanel;      // Panel que contiene la descripción
+    public TextMeshProUGUI descriptionText;
+    public UnityEngine.UI.Image panelImage; // ← referencia al Image del panel
 
     [Header("Accept / Reject Buttons")]
     public Button acceptButton;
@@ -103,6 +111,25 @@ public class CinematicManager : MonoBehaviour
             upgradeObject.SetActive(true);
         }
 
+        // Mostrar descripción del objeto
+        if (descriptionPanel != null)
+        {
+            descriptionPanel.SetActive(true);
+
+            // Cambiar color según rareza
+            if (panelImage != null)
+                panelImage.color = GetColorByRarity(currentUpgrade.quality);
+
+
+            if (nameText != null)
+                nameText.text = currentUpgrade.name;  // Nombre del ScriptableObject
+
+
+            if (descriptionText != null && currentUpgrade != null)
+                descriptionText.text = currentUpgrade.description;   // 👈 campo del objeto
+        }
+
+
         // Activar botones aceptar/rechazar
         acceptButton.gameObject.SetActive(true);
         rejectButton.gameObject.SetActive(true);
@@ -178,5 +205,23 @@ public class CinematicManager : MonoBehaviour
 
         cinematicFinished = false;
         currentUpgrade = null;
+        if (descriptionPanel != null)
+            descriptionPanel.SetActive(false);
     }
+
+    private Color GetColorByRarity(ObjectQuality quality)
+    {
+        switch (quality)
+        {
+            case ObjectQuality.Rare:
+                return new Color(173f / 255f, 216f / 255f, 230f / 255f); // #ADD8E6
+            case ObjectQuality.Epic:
+                return new Color(216f / 255f, 191f / 255f, 216f / 255f); // #D8BFD8
+            case ObjectQuality.Legendary:
+                return new Color(255f / 255f, 160f / 255f, 122f / 255f); // #FFA07A
+            default:
+                return Color.white;
+        }
+    }
+
 }

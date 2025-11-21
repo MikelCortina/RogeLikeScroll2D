@@ -15,3 +15,6 @@ MonoBehaviour:
   repetible: 1
   quality: 0
   icon: {fileID: 1827401348667573218, guid: 01ebc131f2c0d8b47a5e84ac1c8e4af0, type: 3}
+  description: 'Gana 10 de armadura a mele
+
+    Pierde un 5% de probabilidad de dodge'

@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: CoronaDeEspinas
   m_EditorClassIdentifier: 
   repetible: 1
-  quality: 0
+  quality: 2
   icon: {fileID: -603989586284366352, guid: 68db76354d8a9464e86a02911256bb4c, type: 3}
+  description: "Gana un 50% de probabilidad de critico \nGana un 50% de knockback"

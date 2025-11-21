@@ -18,8 +18,12 @@ public class SkillTreeUI : MonoBehaviour
     [Header("Families")]
     public List<SkillFamily> skillFamilies = new List<SkillFamily>();
 
+    [Header("Mixed Node Containers (donde aparecerán los mixed nodes)")]
+    public List<Transform> mixedNodeContainers = new List<Transform>();
+
     [Header("UI")]
     public TextMeshProUGUI titleText;
+    public TextMeshProUGUI precioRefresh;
 
     // -------------------------
     // --- Spawn cost settings (familias)
@@ -71,8 +75,6 @@ public class SkillTreeUI : MonoBehaviour
     public List<MixedNodeEntry> mixedNodes = new List<MixedNodeEntry>();
 
     private Dictionary<string, SkillNodeButton> instantiatedMixedNodes = new Dictionary<string, SkillNodeButton>();
-    [Tooltip("Offset vertical (en unidades locales de skill tree) que se aplica al nodo mixto sobre la posición media entre nodos requeridos.")]
-    public float mixedVerticalOffset = 20f;
 
     [System.Serializable]
     public class MixedNodeEntry
@@ -87,8 +89,6 @@ public class SkillTreeUI : MonoBehaviour
 
     // *** NUEVO: coste global del siguiente objeto a comprar (siempre se duplica tras cada compra)
     private int nextPurchaseCostRuntime = -1;
-
-    public TextMeshProUGUI precioRefresh;
 
     private void Awake()
     {
@@ -130,9 +130,11 @@ public class SkillTreeUI : MonoBehaviour
     {
         UnsubscribeCurrency();
     }
+
     private void Update()
     {
-        precioRefresh.text = nextSpawnCost.ToString();
+        if (precioRefresh != null)
+            precioRefresh.text = GetNextSpawnCost().ToString();
     }
 
     private IEnumerator SubscribeToCurrencyWhenReady()
@@ -171,6 +173,7 @@ public class SkillTreeUI : MonoBehaviour
     {
         foreach (var family in skillFamilies)
         {
+            if (family == null || family.nodes == null) continue;
             foreach (var n in family.nodes)
             {
                 if (n == null) continue;
@@ -804,7 +807,7 @@ public class SkillTreeUI : MonoBehaviour
     }
 
     // -------------------------
-    // Mixed nodes helpers
+    // Mixed nodes helpers (ahora usan contenedores asignados)
     // -------------------------
     private bool IsLastNodeInItsFamily(ItemNode node)
     {
@@ -866,98 +869,51 @@ public class SkillTreeUI : MonoBehaviour
 
     private void UpdateMixedNodesVisibility()
     {
-        if (mixedNodes == null || mixedNodes.Count == 0)
+        // limpiar los mixed nodes eliminados en la lista
+        var toRemoveInvalid = new List<string>();
+        foreach (var kv in instantiatedMixedNodes)
         {
-            if (instantiatedMixedNodes.Count > 0)
-                foreach (var kv in instantiatedMixedNodes)
-                {
-                    if (kv.Value != null) Destroy(kv.Value.gameObject);
-                }
-            instantiatedMixedNodes.Clear();
+            if (!mixedNodes.Any(m => m.mixedNode != null && m.mixedNode.nodeId == kv.Key))
+            {
+                if (kv.Value != null) Destroy(kv.Value.gameObject);
+                toRemoveInvalid.Add(kv.Key);
+            }
+        }
+        foreach (var k in toRemoveInvalid)
+            instantiatedMixedNodes.Remove(k);
+
+        // verificar contenedores
+        if (mixedNodeContainers == null || mixedNodeContainers.Count == 0)
+        {
+            Debug.LogWarning("No hay mixedNodeContainers asignados.");
             return;
         }
 
-        foreach (var entry in mixedNodes)
+        // liberar contenedores: si un mixed node deja de estar activo, su contenedor queda libre
+        HashSet<Transform> usedContainers = new HashSet<Transform>();
+        foreach (var kv in instantiatedMixedNodes)
         {
-            if (entry == null || entry.mixedNode == null || entry.requiredNodeIds == null || entry.requiredNodeIds.Count < 2)
-            {
+            if (kv.Value != null)
+                usedContainers.Add(kv.Value.transform.parent);
+        }
+
+        // índice del siguiente contenedor disponible
+        int containerIndex = 0;
+
+        for (int i = 0; i < mixedNodes.Count; i++)
+        {
+            MixedNodeEntry entry = mixedNodes[i];
+            if (entry == null || entry.mixedNode == null)
                 continue;
-            }
 
             string mixedId = entry.mixedNode.nodeId;
 
-            List<SkillNodeButton> requiredButtons = new List<SkillNodeButton>();
-            HashSet<string> familyNames = new HashSet<string>();
-            bool allPresentAndLast = true;
+            // requisitos
+            bool allRequirementsUnlocked = entry.requiredNodeIds.All(id => unlocked.Contains(id));
 
-            foreach (var reqId in entry.requiredNodeIds)
+            if (!allRequirementsUnlocked)
             {
-                var btn = FindInstantiatedButtonByNodeId(reqId);
-                if (btn == null)
-                {
-                    allPresentAndLast = false;
-                    break;
-                }
-
-                if (!IsLastNodeInItsFamily(btn.node))
-                {
-                    allPresentAndLast = false;
-                    break;
-                }
-
-                var root = GetFamilyRootForButton(btn.transform);
-                string famName = root != null ? root.name : ("_no_root_" + btn.name);
-                familyNames.Add(famName);
-
-                requiredButtons.Add(btn);
-            }
-            if (allPresentAndLast)
-            {
-                if (!AllRequiredFamiliesPresent(requiredButtons))
-                {
-                    allPresentAndLast = false;
-                }
-            }
-            if (allPresentAndLast)
-            {
-                Vector3 avgWorld = Vector3.zero;
-                foreach (var rb in requiredButtons) avgWorld += rb.transform.position;
-                avgWorld /= requiredButtons.Count;
-
-                Vector3 avgLocal = this.transform.InverseTransformPoint(avgWorld);
-                avgLocal += Vector3.up * mixedVerticalOffset;
-
-                if (instantiatedMixedNodes.ContainsKey(mixedId) && instantiatedMixedNodes[mixedId] != null)
-                {
-                    var existing = instantiatedMixedNodes[mixedId];
-                    existing.transform.SetParent(this.transform, worldPositionStays: false);
-                    existing.transform.localPosition = avgLocal;
-                    existing.transform.localRotation = Quaternion.identity;
-                    existing.transform.localScale = Vector3.one;
-                    existing.UpdateState();
-                }
-                else
-                {
-                    var prefabToUse = entry.mixedNode.buttonPrefab != null ? entry.mixedNode.buttonPrefab : defaultNodeButtonPrefab;
-                    if (prefabToUse == null) continue;
-
-                    var inst = Instantiate(prefabToUse, this.transform, worldPositionStays: false);
-                    inst.name = $"{prefabToUse.name}_mixed_inst_{mixedId}";
-                    inst.SetNode(entry.mixedNode);
-                    inst.Initialize(this);
-
-                    inst.transform.localPosition = avgLocal;
-                    inst.transform.localRotation = Quaternion.identity;
-                    inst.transform.localScale = Vector3.one;
-
-                    instantiatedMixedNodes[mixedId] = inst;
-
-                    if (unlocked.Contains(mixedId))
-                        ApplyEffect(entry.mixedNode);
-                }
-            }
-            else
-            {
+                // destruir si existía
                 if (instantiatedMixedNodes.ContainsKey(mixedId))
                 {
                     var inst = instantiatedMixedNodes[mixedId];
@@ -968,20 +924,60 @@ public class SkillTreeUI : MonoBehaviour
                     }
                     instantiatedMixedNodes.Remove(mixedId);
                 }
+                continue;
             }
-        }
 
-        var toRemove = new List<string>();
-        foreach (var kv in instantiatedMixedNodes)
-        {
-            bool stillDefined = mixedNodes.Any(e => e != null && e.mixedNode != null && e.mixedNode.nodeId == kv.Key);
-            if (!stillDefined)
+            // si ya está instanciado, actualizar y continuar
+            if (instantiatedMixedNodes.ContainsKey(mixedId) && instantiatedMixedNodes[mixedId] != null)
             {
-                if (kv.Value != null) Destroy(kv.Value.gameObject);
-                toRemove.Add(kv.Key);
+                instantiatedMixedNodes[mixedId].UpdateState();
+                continue;
             }
+
+            // buscar siguiente contenedor disponible
+            Transform container = null;
+
+            while (containerIndex < mixedNodeContainers.Count)
+            {
+                Transform candidate = mixedNodeContainers[containerIndex];
+
+                containerIndex++;
+
+                if (!usedContainers.Contains(candidate))
+                {
+                    container = candidate;
+                    usedContainers.Add(candidate);
+                    break;
+                }
+            }
+
+            if (container == null)
+            {
+                Debug.LogWarning("No quedan contenedores disponibles para mixed nodes.");
+                break;
+            }
+
+            // instanciar mixed node
+            var prefab = entry.mixedNode.buttonPrefab != null
+                ? entry.mixedNode.buttonPrefab
+                : defaultNodeButtonPrefab;
+
+            if (prefab == null) continue;
+
+            var mixedBtn = Instantiate(prefab, container, false);
+            mixedBtn.name = $"MixedNode_inst_{mixedId}";
+            mixedBtn.SetNode(entry.mixedNode);
+            mixedBtn.Initialize(this);
+
+            mixedBtn.transform.localPosition = Vector3.zero;
+            mixedBtn.transform.localRotation = Quaternion.identity;
+            mixedBtn.transform.localScale = Vector3.one;
+
+            instantiatedMixedNodes[mixedId] = mixedBtn;
+
+            if (unlocked.Contains(mixedId))
+                ApplyEffect(entry.mixedNode);
         }
-        foreach (var k in toRemove) instantiatedMixedNodes.Remove(k);
     }
 
     // -------------------------

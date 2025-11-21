@@ -15,3 +15,7 @@ MonoBehaviour:
   repetible: 1
   quality: 0
   icon: {fileID: -2376312811238322526, guid: e945fe0a97f38984ebaa05ac9caed8cc, type: 3}
+  description: 'Duplica el ratio de spawn de tus armas
+
+    Reduce a la mitad tu
+    cadencia'

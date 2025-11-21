@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Antimbombas
   m_EditorClassIdentifier: 
   repetible: 0
-  quality: 0
+  quality: 2
   icon: {fileID: 8414460553930934020, guid: c2eed952e7b642d4096b27014d21d378, type: 3}
+  description: Haz que tu armadura de rango y mele se combinen. (Se establecera el
+    valor mas alto)

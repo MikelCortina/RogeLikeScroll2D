@@ -13,5 +13,11 @@ MonoBehaviour:
   m_Name: Nuclear
   m_EditorClassIdentifier: 
   repetible: 1
-  quality: 0
+  quality: 1
   icon: {fileID: 8967370234478684454, guid: ce29c99d337de75469403ede31ddf8d8, type: 3}
+  description: 'Elimina todos los enemigos en panalla
+
+    Pierde la mitad de tu
+    vida
+
+'

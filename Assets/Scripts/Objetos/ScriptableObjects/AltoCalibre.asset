@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: AltoCalibre
   m_EditorClassIdentifier: 
   repetible: 1
-  quality: 0
+  quality: 1
   icon: {fileID: 7911176130769085897, guid: 6cb98ab5ef9eb8a40b6f2faa27929ca9, type: 3}
+  description: "Convierte todo tu da\xF1o explosivo en da\xF1o de projectiles"
