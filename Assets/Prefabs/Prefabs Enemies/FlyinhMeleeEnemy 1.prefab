@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4813197852411494764}
   - component: {fileID: 4832643400270651228}
   - component: {fileID: 1527548967561781893}
+  - component: {fileID: -7085201883236076588}
   m_Layer: 10
   m_Name: FlyinhMeleeEnemy 1
   m_TagString: enemigo
@@ -31,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -1.102, z: 0}
-  m_LocalScale: {x: 0.15, y: 0.15, z: 1}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3766110797246970965}
@@ -96,8 +97,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.9271933, g: 1, b: 0, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 9cd388e98caab164eadcc42360aaff79, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -168,8 +169,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.005309383, y: 0.07260332}
-  m_Size: {x: 0.6655236, y: 1.1452068}
+  m_Offset: {x: 0.063925356, y: 0.025582552}
+  m_Size: {x: 0.41066295, y: 0.42422438}
   m_Direction: 0
 --- !u!114 &1527548967561781893
 MonoBehaviour:
@@ -183,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e71fce435be6744e928ca5dc058cbc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveSpace: 20
+  waveSpace: 1
   maxHealth: 34
   contactDamage: 10
   useLevelScaling: 1
@@ -215,14 +216,15 @@ MonoBehaviour:
   renderersToFlash:
   - {fileID: 7474790222286392728}
   flashDuration: 0.1
-  flashCount: 5
+  flashCount: 1
   emergencySpawn: {fileID: 0}
-  gorePrefab: {fileID: 8529829014863662933, guid: a12236eabc5d67d4dbe543c9f0634e3f, type: 3}
-  deathParticlesPrefab: {fileID: 4508117539550737482, guid: da34d66431c8cd04aa98411a543a83bf, type: 3}
+  gorePrefab: {fileID: 8529829014863662933, guid: c8bdbdec46827774786c0a4e0ab7c006, type: 3}
+  deathParticlesPrefab: {fileID: 5396372950321188654, guid: fcb74f28d107e284e80af037bfec14ca, type: 3}
   detachDeathParticles: 1
   fallbackDeathParticlesLifetime: 3
-  impactSound: {fileID: 8300000, guid: f9ad9e41167c5e145bafb2ef8570c19b, type: 3}
-  killSound: {fileID: 8300000, guid: dd50e16ef9cbd5a4489ae826fa85c10d, type: 3}
+  impactSound: {fileID: 8300000, guid: 46acaa3157a9ce44e9e83fa8a6ff291c, type: 3}
+  killSound: {fileID: 8300000, guid: 5ace3f35cebac904da5b43b035178a76, type: 3}
+  flyer: 0
   attackPofloat: {fileID: 3399346530017220392}
   attackPofloatEnd: {fileID: 312739910915352993}
   attackRadius: 0.5
@@ -235,6 +237,30 @@ MonoBehaviour:
   overrideGravity: 1
   flyingMoveSpeed: 1
   acceleration: 2
+  maxTilt: 25
+  tiltSpeed: 17.5
+--- !u!95 &-7085201883236076588
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5269551145280685858}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: bb4212307a211db49a690de180098314, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &5760479258382090616
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,6 +389,6 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.5, y: 1}
+  m_Offset: {x: 0.029104717, y: 0.025941951}
+  m_Size: {x: 0.18566902, y: 0.38616037}
   m_Direction: 0

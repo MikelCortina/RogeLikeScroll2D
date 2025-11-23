@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class FlyingMeleeEnemy : MeleeEnemy
@@ -9,6 +10,12 @@ public class FlyingMeleeEnemy : MeleeEnemy
     [SerializeField] private float acceleration = 12f;
 
     private float prevGravity = 1f;
+
+    [Header("Leaning / Tilt Settings")]
+    [SerializeField] private float maxTilt = 25f;       // grados máximos de inclinación
+    [SerializeField] private float tiltSpeed = 10f;     // qué tan rápido rota
+
+
 
     protected override void Awake()
     {
@@ -49,6 +56,7 @@ public class FlyingMeleeEnemy : MeleeEnemy
 
         MoveTowardPlayerRestricted();
         if (animator != null) animator.SetBool("IsMoving", true);
+        ApplyTilt(rb.linearVelocity);
     }
 
 
@@ -84,6 +92,56 @@ public class FlyingMeleeEnemy : MeleeEnemy
 
         FlipIfNeeded(newVel.x);
     }
+    private void ApplyTilt(Vector2 velocity)
+    {
+        // Si no se está moviendo, vuelve al ángulo neutro
+        if (velocity.sqrMagnitude < 0.1f)
+        {
+            float neutral = 0f;
+            float newZ = Mathf.LerpAngle(transform.eulerAngles.z, neutral, tiltSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Euler(0f, 0f, newZ);
+            return;
+        }
+
+        // Dirección horizontal: derecha → positivo, izquierda → negativo
+        float tiltPercent = Mathf.Clamp(velocity.x / flyingMoveSpeed, -1f, 1f);
+
+        // Ángulo objetivo según su dirección
+        float targetAngle = -tiltPercent * maxTilt;
+
+        // Rotación suave
+        float newAngle = Mathf.LerpAngle(
+            transform.eulerAngles.z,
+            targetAngle,
+            tiltSpeed * Time.deltaTime
+        );
+
+        transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
+    }
+
+    protected override IEnumerator FlashCoroutine()
+    {
+        Color flashColor = new Color(100f, 50.98f, 35.29f, 1); // Fixed the incorrect usage of 'new Color.red'
+
+        for (int i = 0; i < flashCount; i++)
+        {
+            for (int j = 0; j < renderersToFlash.Length; j++)
+                renderersToFlash[j].material.SetColor("_Color", flashColor);
+
+            yield return new WaitForSeconds(flashDuration);
+
+            for (int j = 0; j < renderersToFlash.Length; j++)
+                renderersToFlash[j].material.SetColor("_Color", originalColors[j]);
+
+            yield return new WaitForSeconds(flashDuration);
+        }
+
+        for (int j = 0; j < renderersToFlash.Length; j++)
+            renderersToFlash[j].material.SetColor("_Color", originalColors[j]);
+
+        flashRoutine = null;
+    }
+
 
 
     // ENEMIGO YA NO ATACA

@@ -50,7 +50,7 @@ public class MeleeEnemy : EnemyBase
         // 4️⃣ Movimiento
         if (canMove && dist > stopDistance)
         {
-            MoveTowardsPlayer();
+            //MoveTowardsPlayer();
             if (animator != null) animator.SetBool("IsMoving", true);
         }
         else

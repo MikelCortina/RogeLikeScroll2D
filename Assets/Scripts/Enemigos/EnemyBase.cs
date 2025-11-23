@@ -51,8 +51,8 @@ public class EnemyBase : MonoBehaviour
     public bool isKnockedBack = false;
     private Coroutine knockbackRoutine = null;
 
-    private Coroutine flashRoutine;
-    private Color[] originalColors;
+    protected Coroutine flashRoutine;
+    protected Color[] originalColors;
 
     protected Rigidbody2D rb;
     protected Transform target;
@@ -68,9 +68,9 @@ public class EnemyBase : MonoBehaviour
     public float baseXP = 25f;
 
     [Header("Flash Settings")]
-    [SerializeField] private SpriteRenderer[] renderersToFlash;
-    [SerializeField] private float flashDuration = 0.1f;
-    [SerializeField] private int flashCount = 5;
+    [SerializeField] protected SpriteRenderer[] renderersToFlash;
+    [SerializeField] protected float flashDuration = 0.05f;
+    [SerializeField] protected int flashCount = 5;
 
     public Transform emergencySpawn;
     public GameObject gorePrefab;
@@ -91,8 +91,12 @@ public class EnemyBase : MonoBehaviour
     public AudioClip killSound; // 🔊 Sonido de muerte del enemigo
     private AudioSource audioSource;
 
+    private bool alreadyNotified = false;
+
     private void OnEnable() => EnemyUpdateManager.Register(this);
     private void OnDisable() => EnemyUpdateManager.Unregister(this);
+
+    public bool flyer;
 
     protected virtual void Awake()
     {
@@ -156,29 +160,49 @@ public class EnemyBase : MonoBehaviour
     public void Flash()
     {
         if (renderersToFlash == null || renderersToFlash.Length == 0) return;
+
         if (originalColors == null || originalColors.Length != renderersToFlash.Length)
         {
             originalColors = new Color[renderersToFlash.Length];
-            for (int i = 0; i < renderersToFlash.Length; i++) originalColors[i] = renderersToFlash[i].color;
+            for (int i = 0; i < renderersToFlash.Length; i++)
+            {
+                originalColors[i] = renderersToFlash[i].material.GetColor("_Color");
+            }
         }
+
         if (flashRoutine != null) StopCoroutine(flashRoutine);
         flashRoutine = StartCoroutine(FlashCoroutine());
     }
 
-    private IEnumerator FlashCoroutine()
+    protected virtual IEnumerator FlashCoroutine()
     {
-        Color flashColor = new Color(1f, 1f, 1f, 0.7f);
+        Color flashColor = new Color(0.5f,0,0,1); // Fixed the incorrect usage of 'new Color.red'
+
         for (int i = 0; i < flashCount; i++)
         {
-            for (int j = 0; j < renderersToFlash.Length; j++) renderersToFlash[j].color = flashColor;
+            for (int j = 0; j < renderersToFlash.Length; j++)
+                renderersToFlash[j].material.SetColor("_Color", flashColor);
+
             yield return new WaitForSeconds(flashDuration);
-            for (int j = 0; j < renderersToFlash.Length; j++) renderersToFlash[j].color = originalColors[j];
+
+            for (int j = 0; j < renderersToFlash.Length; j++)
+                renderersToFlash[j].material.SetColor("_Color", originalColors[j]);
+
             yield return new WaitForSeconds(flashDuration);
         }
-        for (int j = 0; j < renderersToFlash.Length; j++) renderersToFlash[j].color = originalColors[j];
+
+        for (int j = 0; j < renderersToFlash.Length; j++)
+            renderersToFlash[j].material.SetColor("_Color", originalColors[j]);
+
         flashRoutine = null;
     }
+
     #endregion
+
+    private void OnDestroy()
+    {
+        WaveManager.Instance?.NotifyEnemyKilled(gameObject);
+    }
 
     #region Detection
     protected GameObject FindPlayerByLayerOrTag()
@@ -253,7 +277,7 @@ public class EnemyBase : MonoBehaviour
 
         Collider2D[] cols = GetComponents<Collider2D>();
         foreach (var c in cols) c.enabled = false;
-
+       
         // Efecto de partículas de muerte
         if (deathParticlesPrefab != null)
         {
@@ -285,8 +309,7 @@ public class EnemyBase : MonoBehaviour
 
         if (animator != null) animator.enabled = false;
 
-        // Notificar sistemas
-        if (WaveManager.Instance != null) WaveManager.Instance.NotifyEnemyKilled(gameObject);
+     
         float xpGained = StatsManager.Instance.GetXPForEnemy(enemyLevel, baseXP);
         StatsManager.Instance.GainXP(xpGained);
         ScoreManager.Instance.EnemyDied();
@@ -308,7 +331,7 @@ public class EnemyBase : MonoBehaviour
         Destroy(gameObject, 0.05f);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected virtual void OnTriggerEnter2D(Collider2D other)
     {
         PlayerHealth playerHealth = other.gameObject.GetComponent<PlayerHealth>();
         if (playerHealth != null)
@@ -322,7 +345,7 @@ public class EnemyBase : MonoBehaviour
     #endregion
 
     #region Movement / Attack Utilities
-    protected void MoveTowardsPlayer()
+   /* protected void MoveTowardsPlayer()
     {
         if (target == null || !canMove || isKnockedBack) return;
         Vector2 direction = (target.position - transform.position).normalized;
@@ -338,10 +361,12 @@ public class EnemyBase : MonoBehaviour
 
         rb.linearVelocity = velocity;
         ApplyInclinationAndStepSmoothing();
-    }
+    }*/
 
     protected void ApplyInclinationAndStepSmoothing()
     {
+        if(flyer) return;
+
         Vector2 origin = transform.position;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayLength, Ground);
         if (hit.collider != null)

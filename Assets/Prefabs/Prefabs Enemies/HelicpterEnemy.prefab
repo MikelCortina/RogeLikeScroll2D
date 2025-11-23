@@ -104,6 +104,7 @@ MonoBehaviour:
   attackCooldown: 5
   animator: {fileID: 0}
   knockbackRecoveryTime: 0.25
+  isKnockedBack: 0
   lastAttackTime: -999
   enemyLevel: 0
   enemyLevelManager: {fileID: 5311849784333808177, guid: cb7045c3fae47eb4694b9823c1e51f45, type: 3}
@@ -114,6 +115,12 @@ MonoBehaviour:
   flashCount: 1
   emergencySpawn: {fileID: 0}
   gorePrefab: {fileID: 0}
+  deathParticlesPrefab: {fileID: 0}
+  detachDeathParticles: 1
+  fallbackDeathParticlesLifetime: 3
+  impactSound: {fileID: 0}
+  killSound: {fileID: 0}
+  flyer: 0
   flyingSpeed: 1.5
   hoverAmplitude: 0.12
   hoverFrequency: 1.2
@@ -183,8 +190,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.032458067, a: 1}
+  m_Sprite: {fileID: 2112798448801587478, guid: 6dc40e860e57a2a42ad0e46c5dcdb942, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
