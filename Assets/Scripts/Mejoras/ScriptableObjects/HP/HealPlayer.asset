@@ -17,6 +17,6 @@ MonoBehaviour:
 
 '
   quality: 0
-  displayedStats: 00000000
+  displayedStats: 
   statsToShow: 3
   healAmount: 25

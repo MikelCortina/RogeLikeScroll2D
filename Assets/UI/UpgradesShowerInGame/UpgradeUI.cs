@@ -1,5 +1,4 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +19,7 @@ public class UpgradeUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] statSlot1Texts;
     [SerializeField] private TextMeshProUGUI[] statSlot2Texts;
     [SerializeField] private TextMeshProUGUI[] statSlot3Texts;
+    [SerializeField] private Image[] extraImages;   // ← Añade esto en tu script    
 
 
     [Header("Colores según rareza")]
@@ -154,14 +154,36 @@ public class UpgradeUI : MonoBehaviour
                 }
             }
 
-            // Colores según rareza
-            Image buttonImage = upgradeButtons[i].GetComponent<Image>();
+            // --- CAMBIO: en vez de colorear la imagen del botón, coloreamos
+            // el texto del nombre y la descripción según la rareza ---
+            Color chosenColor = Color.white;
             switch (upgrade.quality)
             {
-                case UpgradeQuality.Rare: buttonImage.color = rareColor; break;
-                case UpgradeQuality.Epic: buttonImage.color = epicColor; break;
-                case UpgradeQuality.Legendary: buttonImage.color = legendaryColor; break;
+                case UpgradeQuality.Rare: chosenColor = rareColor; break;
+                case UpgradeQuality.Epic: chosenColor = epicColor; break;
+                case UpgradeQuality.Legendary: chosenColor = legendaryColor; break;
             }
+
+            if (upgradeNameTexts.Length > i && upgradeNameTexts[i] != null)
+            {
+                upgradeNameTexts[i].color = chosenColor;
+                upgradeNameTexts[i].outlineColor = Color.black;
+                upgradeNameTexts[i].outlineWidth = 0.25f;   // Ajusta entre 0.1 y 0.35
+            }
+
+            if (upgradeDescriptionTexts.Length > i && upgradeDescriptionTexts[i] != null)
+            {
+                upgradeDescriptionTexts[i].color = chosenColor;
+                upgradeDescriptionTexts[i].outlineColor = Color.black;
+                upgradeDescriptionTexts[i].outlineWidth = 0.25f;
+            }
+
+            if (extraImages != null && extraImages.Length >= 3)
+            {
+                extraImages[i].color = chosenColor;
+
+            }
+
 
             int index = i;
             upgradeButtons[i].onClick.RemoveAllListeners();
