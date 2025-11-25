@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: XpGainMultiplier_Epic
   m_EditorClassIdentifier: 
   upgradeName: Cerebro
-  description: Aumento de XP ganada +4
+  description: +4 XP_Gain
   quality: 1
+  displayedStats: 0d000000
+  statsToShow: 3
   xpIncrease: 4

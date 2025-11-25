@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: KnockbackIncreaser_rare
   m_EditorClassIdentifier: 
   upgradeName: Violencia
-  description: 'Add 0.1 knockback
+  description: '+0.1 Knockback
+
 
 '
   quality: 0
+  displayedStats: 0b00000004000000
+  statsToShow: 3
   extraKnockback: 0.1

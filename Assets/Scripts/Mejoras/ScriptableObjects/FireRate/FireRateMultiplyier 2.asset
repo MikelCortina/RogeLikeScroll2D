@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: FireRateMultiplyier 2
   m_EditorClassIdentifier: 
   upgradeName: Canion
-  description: X1.5 cadencia
+  description: X1.5 Fire_Rate
   quality: 1
+  displayedStats: 040000001300000005000000
+  statsToShow: 3
   fireRateMultiplier: 1.5

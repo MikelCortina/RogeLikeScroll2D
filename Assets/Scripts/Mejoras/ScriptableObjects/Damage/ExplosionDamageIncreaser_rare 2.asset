@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: ExplosionDamageIncreaser_rare 2
   m_EditorClassIdentifier: 
   upgradeName: Piromania
-  description: "+2 de da\xF1o explosivo"
+  description: +2 Explisve_Damage
   quality: 0
+  displayedStats: 060000001300000009000000
+  statsToShow: 3
   extraDamage: 2

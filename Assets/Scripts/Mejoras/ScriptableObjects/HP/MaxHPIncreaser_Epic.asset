@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: MaxHPIncreaser_Epic
   m_EditorClassIdentifier: 
   upgradeName: Sangre
-  description: Aumenta tu vida maxima en 10
+  description: +10 Max_HP
   quality: 1
+  displayedStats: 00000000
+  statsToShow: 3
   hpIncrease: 10

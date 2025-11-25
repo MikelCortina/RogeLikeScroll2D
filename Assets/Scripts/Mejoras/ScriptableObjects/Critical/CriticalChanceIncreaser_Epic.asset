@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: CriticalChanceIncreaser_Epic
   m_EditorClassIdentifier: 
   upgradeName: Gafas de Tirador
-  description: 4% + de posibilidad de critico
+  description: +4% Critic_Chance
   quality: 1
+  displayedStats: 090000000500000006000000
+  statsToShow: 3
   CriticalChance: 4

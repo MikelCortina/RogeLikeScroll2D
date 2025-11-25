@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: ArmorIncreaser_Epic
   m_EditorClassIdentifier: 
   upgradeName: Chaleco
-  description: 'Aumenta en 4 tu armadura a mele
+  description: '+4 Mele_Armor
 
 '
   quality: 1
+  displayedStats: 07000000000000000a000000
+  statsToShow: 3
   extraArmor: 4

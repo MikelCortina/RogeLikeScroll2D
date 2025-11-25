@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: KnockbackIncreaser_epic
   m_EditorClassIdentifier: 
   upgradeName: Violencia
-  description: 'Add 0.2 knockback
+  description: '+0.2 Knockback
 
 '
   quality: 1
+  displayedStats: 0b00000004000000
+  statsToShow: 3
   extraKnockback: 0.2

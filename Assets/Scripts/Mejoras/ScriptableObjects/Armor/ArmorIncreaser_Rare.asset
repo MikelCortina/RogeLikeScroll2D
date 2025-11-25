@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: ArmorIncreaser_Rare
   m_EditorClassIdentifier: 
   upgradeName: Chaleco
-  description: 'Aumenta en 2 tu armadura a mele
+  description: '+2 Mele_Armor
 
 '
   quality: 0
+  displayedStats: 07000000000000000a000000
+  statsToShow: 3
   extraArmor: 2

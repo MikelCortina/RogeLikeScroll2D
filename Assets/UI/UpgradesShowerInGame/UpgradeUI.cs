@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +16,11 @@ public class UpgradeUI : MonoBehaviour
     [SerializeField] private Button[] upgradeButtons;
     [SerializeField] private TextMeshProUGUI[] upgradeNameTexts;
     [SerializeField] private TextMeshProUGUI[] upgradeDescriptionTexts;
-   
+    [Header("Textos para las 3 estadísticas por botón")]
+    [SerializeField] private TextMeshProUGUI[] statSlot1Texts;
+    [SerializeField] private TextMeshProUGUI[] statSlot2Texts;
+    [SerializeField] private TextMeshProUGUI[] statSlot3Texts;
+
 
     [Header("Colores según rareza")]
     [SerializeField] private Color rareColor = Color.blue;
@@ -64,9 +69,9 @@ public class UpgradeUI : MonoBehaviour
 
     private void Update()
     {
-        if(PendingCount == 0)
+        if (PendingCount == 0)
         {
-           otherTextToHide.SetActive(false);
+            otherTextToHide.SetActive(false);
         }
         else
         {
@@ -96,15 +101,60 @@ public class UpgradeUI : MonoBehaviour
         pendingUpgradeChoices.Add(upgrades);
         UpdatePendingLevelsVisuals();
     }
+    private string GetStatValueText(StatTypeToShow stat)
+    {
+        var stats = StatsManager.Instance.RuntimeStats;
+
+        switch (stat)
+        {
+            case StatTypeToShow.MaxHP: return $"Current_HP Max_{stats.maxHP}";
+            case StatTypeToShow.FireRate: return $"Current_FireRate_{stats.fireRate}";
+            case StatTypeToShow.GunDamage: return $"Current_GunDamage_{stats.gunDamage}";
+            case StatTypeToShow.ExplosionDamage: return $"Current_ExplosionDamage_{stats.explosionDamage}";
+            case StatTypeToShow.MeleeArmor: return $"Current_MeleeArmor_{stats.meleArmorPercentage}";
+            case StatTypeToShow.RangedArmor: return $"Current_RangedArmor_{stats.rangedArmorPercentage}";
+            case StatTypeToShow.CriticalChance: return $"Current_CriticalChance_{stats.criticalChance}";
+            case StatTypeToShow.DodgeChance: return $"Current_DodgeChance_{stats.dodgeChance}";
+            case StatTypeToShow.Knockback: return $"Current_Knockback_{stats.knockback}";
+            case StatTypeToShow.ProjectileSpeed: return $"Current_ProjectileSpeed_{stats.projectileSpeed}";
+            case StatTypeToShow.XP_Gain: return $"Current_XP Mult_{stats.xpGainMultiplier}";
+            case StatTypeToShow.Luck: return $"Current_Luck_{stats.luck}";
+            case StatTypeToShow.Radius: return $"Current_Radius_{stats.radius}";
+            case StatTypeToShow.CurrencyGain: return $"Current_Currency_{stats.currency}";
+            case StatTypeToShow.OrganValue: return $"Current_Organ_{stats.organValue}";
+            case StatTypeToShow.Harvester: return $"Current_Harvester_{stats.harvester}";
+            case StatTypeToShow.SpawnRate: return $"Current_SpawnRate_{stats.spawnRate}";
+            default: return stat.ToString();
+        }
+    }
+
 
     private void DisplayUpgradePanel(List<Upgrade> upgrades)
     {
         for (int i = 0; i < upgradeButtons.Length; i++)
         {
             Upgrade upgrade = upgrades[i];
+
             upgradeNameTexts[i].text = upgrade.upgradeName;
             upgradeDescriptionTexts[i].text = upgrade.description;
 
+            // Mostrar solo las stats configuradas en el ScriptableObject
+            statSlot1Texts[i].text = "";
+            statSlot2Texts[i].text = "";
+            statSlot3Texts[i].text = "";
+
+            for (int s = 0; s < Mathf.Min(upgrade.statsToShow, upgrade.displayedStats.Length); s++)
+            {
+                string statText = GetStatValueText(upgrade.displayedStats[s]);
+                switch (s)
+                {
+                    case 0: statSlot1Texts[i].text = statText; break;
+                    case 1: statSlot2Texts[i].text = statText; break;
+                    case 2: statSlot3Texts[i].text = statText; break;
+                }
+            }
+
+            // Colores según rareza
             Image buttonImage = upgradeButtons[i].GetComponent<Image>();
             switch (upgrade.quality)
             {
@@ -121,6 +171,7 @@ public class UpgradeUI : MonoBehaviour
         upgradePanel.SetActive(true);
         Time.timeScale = 0f;
     }
+
 
     private void SelectUpgrade(int index)
     {

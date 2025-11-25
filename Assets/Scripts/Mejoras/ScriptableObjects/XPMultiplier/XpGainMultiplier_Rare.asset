@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: XpGainMultiplier_Rare
   m_EditorClassIdentifier: 
   upgradeName: Cerebro
-  description: Aumento de XP ganada +2
+  description: +2 XP_Gain
   quality: 0
+  displayedStats: 0d000000
+  statsToShow: 3
   xpIncrease: 2

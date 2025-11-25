@@ -253,8 +253,7 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void Die()
     {
-        // Animación
-        if (animator != null) animator.SetTrigger("Dead");
+      
 
         // 🔊 Sonido de muerte (no se corta al destruir el enemigo)
         if (killSound != null)

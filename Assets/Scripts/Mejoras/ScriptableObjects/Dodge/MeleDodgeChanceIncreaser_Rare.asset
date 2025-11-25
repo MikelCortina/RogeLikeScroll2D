@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: MeleDodgeChanceIncreaser_Rare
   m_EditorClassIdentifier: 
   upgradeName: Espuelas
-  description: +2 de dodge a mele
+  description: +2% Dodge_Chance
   quality: 0
+  displayedStats: 000000000000000000000000
+  statsToShow: 3
   dodgeIncrease: 2

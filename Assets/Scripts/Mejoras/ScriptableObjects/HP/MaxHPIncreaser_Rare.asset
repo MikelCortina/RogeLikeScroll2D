@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: MaxHPIncreaser_Rare
   m_EditorClassIdentifier: 
   upgradeName: Sangre
-  description: Aumenta tu vida maxima en 5
+  description: +5 Max_HP
   quality: 0
+  displayedStats: 00000000
+  statsToShow: 3
   hpIncrease: 5

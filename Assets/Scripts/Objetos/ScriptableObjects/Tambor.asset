@@ -17,4 +17,6 @@ MonoBehaviour:
   icon: {fileID: 8929369444933569912, guid: f7c19f692403279419890b5bd6149d6a, type: 3}
   description: 'Gana 0.5 de fire rate
 
-    Pierde un 2,5% de dodge'
+    Pierde un 2,5% de spawn rate de armas
+
+'

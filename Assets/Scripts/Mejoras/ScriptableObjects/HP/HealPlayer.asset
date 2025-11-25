@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: HealPlayer
   m_EditorClassIdentifier: 
   upgradeName: Manzana
-  description: 'Recuperas 25 de vida
+  description: 'Heal_25_HP
 
 '
   quality: 0
+  displayedStats: 00000000
+  statsToShow: 3
   healAmount: 25

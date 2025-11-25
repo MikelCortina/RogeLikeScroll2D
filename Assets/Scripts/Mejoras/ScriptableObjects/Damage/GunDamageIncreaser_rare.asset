@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: GunDamageIncreaser_rare
   m_EditorClassIdentifier: 
   upgradeName: Mejora Balistica
-  description: "+2 de da\xF1o de proyectiles"
+  description: +2 Projectile_Damage
   quality: 0
+  displayedStats: 050000000400000009000000
+  statsToShow: 3
   extraDamage: 2

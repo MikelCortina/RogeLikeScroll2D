@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: KnockbackIncreaser_legen
   m_EditorClassIdentifier: 
   upgradeName: Violencia
-  description: 'Add 0.3 knockback
+  description: '+0.3 Knockback
+
 
 '
   quality: 2
+  displayedStats: 0b00000004000000
+  statsToShow: 3
   extraKnockback: 0.3

@@ -1,3 +1,4 @@
+ï»¿
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -21,7 +22,7 @@ public enum StatCategory
 public class UpgradeGroup
 {
     public StatCategory category;
-    [Tooltip("Arrastra aquí los ScriptableObjects de tipo Upgrade que pertenezcan a esta categoría.")]
+    [Tooltip("Arrastra aquÃ­ los ScriptableObjects de tipo Upgrade que pertenezcan a esta categorÃ­a.")]
     public List<Upgrade> upgrades = new List<Upgrade>();
 }
 
@@ -29,7 +30,7 @@ public class UpgradeManager : MonoBehaviour
 {
     public static UpgradeManager Instance { get; private set; }
 
-    // Grupos visibles en el inspector para organizar los upgrades por tipo de estadística.
+    // Grupos visibles en el inspector para organizar los upgrades por tipo de estadÃ­stica.
     public List<UpgradeGroup> upgradeGroups = new List<UpgradeGroup>();
 
     // Lista global usada en runtime. Oculta en inspector porque se rellena desde los grupos.
@@ -46,7 +47,7 @@ public class UpgradeManager : MonoBehaviour
 
     /// <summary>
     /// Rellena la lista allUpgrades a partir de los grupos visibles en el inspector.
-    /// Llamar si editas manualmente los grupos desde el inspector (o pulsas el botón "Sync" en el custom editor).
+    /// Llamar si editas manualmente los grupos desde el inspector (o pulsas el botÃ³n "Sync" en el custom editor).
     /// </summary>
     public void SyncAllUpgradesFromGroups()
     {
@@ -81,7 +82,7 @@ public class UpgradeManager : MonoBehaviour
             }
         }
 
-        // Aquí abres la UI para que el jugador seleccione uno
+        // AquÃ­ abres la UI para que el jugador seleccione uno
     }
 
     public void ApplyUpgrade(Upgrade upgrade)
