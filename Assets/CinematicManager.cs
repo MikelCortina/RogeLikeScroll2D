@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -19,7 +20,7 @@ public class CinematicManager : MonoBehaviour
     public TextMeshProUGUI nameText;
     public GameObject descriptionPanel;      // Panel que contiene la descripción
     public TextMeshProUGUI descriptionText;
-    public UnityEngine.UI.Image panelImage; // ← referencia al Image del panel
+    public UnityEngine.UI.Image[] panelImage; // ← referencia al Image del panel
 
     [Header("Accept / Reject Buttons")]
     public Button acceptButton;
@@ -36,6 +37,12 @@ public class CinematicManager : MonoBehaviour
 
     public AudioSource audioSource;
     public AudioClip audioClip3;
+
+    public event Action onCinematicEnd;
+
+    [Header("Target for Cinematic")]
+    public GameObject cinematicTarget; // El objeto que se moverá a la posición del trigger
+
 
     private void Awake()
     {
@@ -97,8 +104,19 @@ public class CinematicManager : MonoBehaviour
         cinematic.stopped += OnCinematicFinished;
     }
 
+    public void MoveCinematicToTarget(Vector3 position)
+    {
+        if (cinematicTarget != null)
+        {
+            cinematicTarget.SetActive(true);
+            cinematicTarget.transform.position = position;
+        }
+    }   
+
     private void OnCinematicFinished(PlayableDirector dir)
     {
+        // Llamamos al evento al terminar
+     
         cinematicPlaying = false;
         cinematicFinished = true;
 
@@ -116,10 +134,11 @@ public class CinematicManager : MonoBehaviour
         {
             descriptionPanel.SetActive(true);
 
-            // Cambiar color según rareza
-            if (panelImage != null)
-                panelImage.color = GetColorByRarity(currentUpgrade.quality);
-
+          foreach(var img in panelImage)
+            {
+                if (img != null && currentUpgrade != null)
+                    img.color = GetColorByRarity(currentUpgrade.quality);
+            }
 
             if (nameText != null)
                 nameText.text = currentUpgrade.name;  // Nombre del ScriptableObject
@@ -167,6 +186,8 @@ public class CinematicManager : MonoBehaviour
     // -----------------------------
     private void OnAccept()
     {
+        cinematicTarget.SetActive(false);
+        onCinematicEnd?.Invoke();
         if (currentUpgrade != null)
         {
             currentUpgrade.ApplyEffect();
@@ -184,6 +205,8 @@ public class CinematicManager : MonoBehaviour
     // -----------------------------
     private void OnReject()
     {
+        cinematicTarget.SetActive(false);
+        onCinematicEnd?.Invoke();
         // No aplicamos la mejora
         CloseCinematic();
     }

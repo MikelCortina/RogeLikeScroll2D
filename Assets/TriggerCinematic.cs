@@ -5,6 +5,7 @@ public class TriggerCinematic : MonoBehaviour
 {
     private bool triggered = false;
     private bool internalDestroy = false;
+    public GameObject[] panelesActivar;
 
     private void OnEnable()
     {
@@ -14,24 +15,24 @@ public class TriggerCinematic : MonoBehaviour
     private void Start()
     {
         Debug.Log($"{name} Start - instance id: {GetInstanceID()}, tag: {gameObject.tag}");
+        foreach (var panel in panelesActivar)
+        {
+            panel.SetActive(false);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"{name} OnTriggerEnter2D by {other.name} (tag: {other.tag})");
-
-        if (triggered)
-        {
-            Debug.Log($"{name} already triggered, ignoring.");
-            return;
-        }
+        if (triggered) return;
 
         if (other.CompareTag("Horse"))
         {
-           
             triggered = true;
-            Debug.Log($"{name} triggered by Horse. Calling CinematicManager.Instance.StartCinematic()");
-             DestroySafely();
+
+            foreach (var panel in panelesActivar)
+            {
+                panel.SetActive(true);
+            }
 
             var cm = CinematicManager.Instance;
             if (cm == null)
@@ -40,24 +41,23 @@ public class TriggerCinematic : MonoBehaviour
                 return;
             }
 
+            if (cm.cinematicTarget != null)
+            {
+                cm.MoveCinematicToTarget(transform.position); // Mueve el objeto al punto del trigger
+            }
+
             cm.StartCinematic();
 
-            Button button = cm.continueButton;
+            // Registramos evento de fin de cinematica
+            cm.onCinematicEnd += DestroySafely;
+
+            var button = cm.continueButton;
             if (button != null)
             {
                 button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() =>
-                {
-                    Debug.Log("Continue button pressed -> CinematicManager.OnPressButton()");
-                    cm.OnPressButton();
-                });
-            }
-            else
-            {
-                Debug.LogError("El botón Continue en CinematicManager es null");
+                button.onClick.AddListener(() => cm.OnPressButton());
             }
 
-            // Opcional: desactivar el collider para evitar reentradas físicas
             var col = GetComponent<Collider2D>();
             if (col != null) col.enabled = false;
         }

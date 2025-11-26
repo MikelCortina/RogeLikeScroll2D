@@ -129,8 +129,20 @@ public class UpgradeUI : MonoBehaviour
     }
 
 
-    private void DisplayUpgradePanel(List<Upgrade> upgrades)
+    public void DisplayUpgradePanel(List<Upgrade> upgrades)
     {
+        // ACTIVAR UI PRIMERO → así TMP inicializa materiales
+        if (!upgradePanel.activeInHierarchy)
+            upgradePanel.SetActive(true);
+
+        StartCoroutine(SetupUI(upgrades));
+    }
+
+
+    private IEnumerator SetupUI(List<Upgrade> upgrades)
+    {
+        yield return null; // 🔥 evita el NullReference en outlineWidth
+
         for (int i = 0; i < upgradeButtons.Length; i++)
         {
             Upgrade upgrade = upgrades[i];
@@ -138,7 +150,6 @@ public class UpgradeUI : MonoBehaviour
             upgradeNameTexts[i].text = upgrade.upgradeName;
             upgradeDescriptionTexts[i].text = upgrade.description;
 
-            // Mostrar solo las stats configuradas en el ScriptableObject
             statSlot1Texts[i].text = "";
             statSlot2Texts[i].text = "";
             statSlot3Texts[i].text = "";
@@ -154,8 +165,6 @@ public class UpgradeUI : MonoBehaviour
                 }
             }
 
-            // --- CAMBIO: en vez de colorear la imagen del botón, coloreamos
-            // el texto del nombre y la descripción según la rareza ---
             Color chosenColor = Color.white;
             switch (upgrade.quality)
             {
@@ -164,36 +173,30 @@ public class UpgradeUI : MonoBehaviour
                 case UpgradeQuality.Legendary: chosenColor = legendaryColor; break;
             }
 
-            if (upgradeNameTexts.Length > i && upgradeNameTexts[i] != null)
+            if (upgradeNameTexts[i] != null)
             {
-                upgradeNameTexts[i].color = chosenColor;
+                upgradeNameTexts[i].color = Color.white;
                 upgradeNameTexts[i].outlineColor = Color.black;
-                upgradeNameTexts[i].outlineWidth = 0.25f;   // Ajusta entre 0.1 y 0.35
+                upgradeNameTexts[i].outlineWidth = 0.1f; // ✔ sin crashear
             }
 
-            if (upgradeDescriptionTexts.Length > i && upgradeDescriptionTexts[i] != null)
+            if (upgradeDescriptionTexts[i] != null)
             {
-                upgradeDescriptionTexts[i].color = chosenColor;
+                upgradeDescriptionTexts[i].color = Color.white;
                 upgradeDescriptionTexts[i].outlineColor = Color.black;
-                upgradeDescriptionTexts[i].outlineWidth = 0.25f;
+                upgradeDescriptionTexts[i].outlineWidth = 0.1f;
             }
 
-            if (extraImages != null && extraImages.Length >= 3)
-            {
+            if (extraImages != null && extraImages.Length > i)
                 extraImages[i].color = chosenColor;
-
-            }
-
 
             int index = i;
             upgradeButtons[i].onClick.RemoveAllListeners();
             upgradeButtons[i].onClick.AddListener(() => SelectUpgrade(index));
         }
 
-        upgradePanel.SetActive(true);
         Time.timeScale = 0f;
     }
-
 
     private void SelectUpgrade(int index)
     {
