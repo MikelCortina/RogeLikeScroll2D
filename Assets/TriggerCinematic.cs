@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class TriggerCinematic : MonoBehaviour
@@ -48,14 +49,18 @@ public class TriggerCinematic : MonoBehaviour
 
             cm.StartCinematic();
 
-            // Registramos evento de fin de cinematica
-            cm.onCinematicEnd += DestroySafely;
+          
 
             var button = cm.continueButton;
             if (button != null)
             {
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() => cm.OnPressButton());
+            }
+            var button1 = cm.acceptButton;
+            if (button1 != null)
+            {
+                button1.onClick.AddListener(OnButtonClicked);
             }
 
             var col = GetComponent<Collider2D>();
@@ -67,6 +72,10 @@ public class TriggerCinematic : MonoBehaviour
     {
         internalDestroy = true;
         Destroy(gameObject);
+    }
+    void OnButtonClicked()
+    {
+        DestroySafely();
     }
 
     private void OnDisable()
