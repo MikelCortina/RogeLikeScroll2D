@@ -62,6 +62,11 @@ public class TriggerCinematic : MonoBehaviour
             {
                 button1.onClick.AddListener(OnButtonClicked);
             }
+            var button2 = cm.rejectButton;
+            if (button2 != null)
+            {
+                button2.onClick.AddListener(OnButtonClicked);
+            }
 
             var col = GetComponent<Collider2D>();
             if (col != null) col.enabled = false;

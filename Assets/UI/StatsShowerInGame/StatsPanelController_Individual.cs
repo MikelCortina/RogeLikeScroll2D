@@ -45,6 +45,7 @@ public class StatsPanelController_Individual : MonoBehaviour
     public GameObject panel;
     public GameObject mixPanel;
     public GameObject statLinePrefab; // Prefab con StatLineUI
+    public GameObject bordes; // Prefab con StatLineUI
     public Transform contentParent;   // Contenedor con VerticalLayoutGroup
     public SkillTreeUI skillTreeUI;
 
@@ -69,7 +70,8 @@ public class StatsPanelController_Individual : MonoBehaviour
             enabled = false;
             return;
         }
-
+        bordes.SetActive(false);
+        mixPanel.SetActive(false);  
         panel.SetActive(startVisible);
         ApplyGameState(startVisible);
 
@@ -126,6 +128,11 @@ public class StatsPanelController_Individual : MonoBehaviour
             if (mixPanel != null)
             {
                 mixPanel.SetActive(newState);
+            }
+
+            if (bordes != null)
+            {
+                bordes.SetActive(newState);
             }
             // ------------------------------
 

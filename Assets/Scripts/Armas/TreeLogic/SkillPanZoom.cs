@@ -11,12 +11,13 @@ public class SkillTreePanZoom : MonoBehaviour, IScrollHandler, IDragHandler, IBe
     public float zoomSpeed = 0.1f;
     public float minZoom = 0.5f;
     public float maxZoom = 2.5f;
+    public float initialZoom = 1f; // Zoom inicial configurable
 
     [Header("Movimiento")]
     public float moveSpeed = 1f;
+    public Vector2 initialPosition = Vector2.zero; // Posición inicial configurable
 
     private Vector2 lastMousePos;
-    private Vector3 initialScale;
 
     private void Awake()
     {
@@ -26,14 +27,13 @@ public class SkillTreePanZoom : MonoBehaviour, IScrollHandler, IDragHandler, IBe
         if (viewport == null)
             viewport = content.parent as RectTransform;
 
-        // Guardamos la escala mínima como escala inicial
-        initialScale = Vector3.one * minZoom;
+        // Aplicar el zoom inicial
+        content.localScale = Vector3.one * Mathf.Clamp(initialZoom, minZoom, maxZoom);
 
-        // Aplicar el mínimo zoom al inicio
-        content.localScale = initialScale;
+        // Aplicar la posición inicial
+        content.anchoredPosition = initialPosition;
 
-        // Centrar el contenido
-        content.anchoredPosition = Vector2.zero;
+        ClampToViewport(); // Asegurarse de que la posición inicial esté dentro del viewport
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -71,13 +71,11 @@ public class SkillTreePanZoom : MonoBehaviour, IScrollHandler, IDragHandler, IBe
     {
         if (viewport == null || content == null) return;
 
-        // Medir tamaños reales con escala aplicada
         Vector2 viewSize = viewport.rect.size;
         Vector2 contentSize = Vector2.Scale(content.rect.size, content.localScale);
 
         Vector2 pos = content.anchoredPosition;
 
-        // Calcular límites: no dejar que los bordes del contenido pasen dentro del viewport
         float clampX = Mathf.Max(0, (contentSize.x - viewSize.x) / 2f);
         float clampY = Mathf.Max(0, (contentSize.y - viewSize.y) / 2f);
 
@@ -91,10 +89,10 @@ public class SkillTreePanZoom : MonoBehaviour, IScrollHandler, IDragHandler, IBe
     {
         if (content == null) return;
 
-        // Aplicar el mínimo zoom
-        content.localScale = Vector3.one * minZoom;
+        // Aplicar zoom y posición inicial
+        content.localScale = Vector3.one * Mathf.Clamp(initialZoom, minZoom, maxZoom);
+        content.anchoredPosition = initialPosition;
 
-        // Centrar
-        content.anchoredPosition = Vector2.zero;
+        ClampToViewport();
     }
 }
