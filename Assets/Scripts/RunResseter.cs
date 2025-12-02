@@ -8,6 +8,7 @@ public class RunResetter : MonoBehaviour
     /// </summary>
     public void ResetRun()
     {
+        RunInventory.Instance.ResetInventory();
         Debug.Log("=== Reinicio total de la run ===");
 
         // 1️⃣ Destruir todos los objetos de la escena

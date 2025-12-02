@@ -59,6 +59,7 @@ public class UIPanelToggleSelfButton : MonoBehaviour
         {
             Debug.Log("[UIPanelToggle] → BLOQUEADO, animando=true");
         }
+        panel.transform.SetAsLastSibling();
     }
 
     private System.Collections.IEnumerator MoverPanel(Vector2 destino)

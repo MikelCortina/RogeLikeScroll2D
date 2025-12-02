@@ -8,7 +8,13 @@ public abstract class IObjetos : ScriptableObject
 
     public virtual void ApplyEffect()
     {
+
         // Puede quedar vacío, o agregar un log
+    }
+
+    public void ActivarPickup(ScriptableObject efecto)
+    {
+        RunInventory.Instance.AddItem(efecto, 1);
     }
 }
 public enum ObjectQuality

@@ -39,5 +39,6 @@ public class PickupEffectHelper : MonoBehaviour
 
         textPanel.SetActive(false);
         RunEffectManager.Instance.ActivateEffect(effectToActivate);
+     
     }
 }
