@@ -71,7 +71,7 @@ public class StatsPanelController_Individual : MonoBehaviour
             return;
         }
         bordes.SetActive(false);
-        mixPanel.SetActive(false);  
+        mixPanel.SetActive(false);
         panel.SetActive(startVisible);
         ApplyGameState(startVisible);
 
@@ -129,6 +129,7 @@ public class StatsPanelController_Individual : MonoBehaviour
             {
                 mixPanel.SetActive(newState);
             }
+
 
             if (bordes != null)
             {

@@ -1,24 +1,22 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 
 public class TooltipController : MonoBehaviour
 {
     public static TooltipController Instance { get; private set; }
 
     [Header("Prefab & Canvas")]
-    [Tooltip("Prefab con TooltipView componente")]
     public GameObject tooltipPrefab;
-    [Tooltip("Canvas donde se instanciará el tooltip. Si está vacío, buscará el primer Canvas activo.")]
     public Canvas uiCanvas;
 
-    [Header("Positioning")]
-    public Vector2 screenOffset = new Vector2(16f, -16f);
+    [Header("Posición FIJA en el Canvas")]
+    public RectTransform fixedTooltipParent;     // Asigna aquí el panel/área donde quieres que aparezca (ej: un Empty con RectTransform)
+    public Vector2 fixedAnchor = new Vector2(1, 0); // (1,0) = esquina inferior derecha, (0,1) = superior izquierda, etc.
+    public Vector2 fixedOffset = new Vector2(-20, 20); // Offset desde la esquina (en píxeles)
 
-    private RectTransform canvasRect;
     private GameObject currentTooltip;
     private RectTransform tooltipRect;
     private TooltipView tooltipView;
+
 
     private void Awake()
     {
@@ -33,10 +31,22 @@ public class TooltipController : MonoBehaviour
             uiCanvas = FindObjectOfType<Canvas>();
 
         if (uiCanvas == null)
-            Debug.LogError("[TooltipController] No Canvas found in scene. Assign uiCanvas in inspector.");
+        {
+            Debug.LogError("[TooltipController] No Canvas found in scene.");
+            return;
+        }
 
-        if (uiCanvas != null)
-            canvasRect = uiCanvas.GetComponent<RectTransform>();
+        // Si no asignaste un padre fijo, usamos el canvas completo
+        if (fixedTooltipParent == null)
+        {
+            GameObject go = new GameObject("TooltipFixedAnchor");
+            go.transform.SetParent(uiCanvas.transform);
+            fixedTooltipParent = go.AddComponent<RectTransform>();
+            fixedTooltipParent.anchorMin = fixedAnchor;
+            fixedTooltipParent.anchorMax = fixedAnchor;
+            fixedTooltipParent.pivot = fixedAnchor;
+            fixedTooltipParent.anchoredPosition = fixedOffset;
+        }
     }
 
     public void Show(ItemNode node, Vector2 screenPosition, SkillTreeUI treeUI)
@@ -45,9 +55,15 @@ public class TooltipController : MonoBehaviour
 
         if (currentTooltip == null)
         {
-            currentTooltip = Instantiate(tooltipPrefab, uiCanvas.transform, false);
+            currentTooltip = Instantiate(tooltipPrefab, fixedTooltipParent, false);
             tooltipRect = currentTooltip.GetComponent<RectTransform>();
             tooltipView = currentTooltip.GetComponent<TooltipView>();
+
+            // Aseguramos que el pivot y anchors estén bien para posicionamiento fijo
+            tooltipRect.anchorMin = new Vector2(0, 1);  // Superior izquierda del padre
+            tooltipRect.anchorMax = new Vector2(0, 1);
+            tooltipRect.pivot = new Vector2(0, 1);
+            tooltipRect.anchoredPosition = Vector2.zero;
 
             var cg = currentTooltip.GetComponent<CanvasGroup>();
             if (cg == null) cg = currentTooltip.AddComponent<CanvasGroup>();
@@ -55,10 +71,10 @@ public class TooltipController : MonoBehaviour
             cg.interactable = false;
         }
 
-        if (tooltipView != null) tooltipView.SetData(node, treeUI);
-
+        tooltipView.SetData(node, treeUI);
         currentTooltip.SetActive(true);
-        Reposition(screenPosition);
+
+        // Ya no usamos Reposition con el ratón → posición fija
     }
 
     public void Hide()
@@ -67,34 +83,6 @@ public class TooltipController : MonoBehaviour
             currentTooltip.SetActive(false);
     }
 
-    public void Reposition(Vector2 screenPosition)
-    {
-        if (currentTooltip == null || tooltipRect == null || canvasRect == null) return;
-
-        Vector2 anchored;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPosition + screenOffset, uiCanvas.worldCamera, out anchored);
-        tooltipRect.anchoredPosition = anchored;
-
-        // Clamp to canvas so tooltip doesn't escape screen
-        Vector2 tooltipSize = tooltipRect.rect.size;
-        Vector2 canvasSize = canvasRect.rect.size;
-
-        Vector2 pivot = tooltipRect.pivot;
-        Vector2 leftTop = new Vector2(anchored.x - pivot.x * tooltipSize.x, anchored.y + (1f - pivot.y) * tooltipSize.y);
-        Vector2 rightBottom = leftTop + new Vector2(tooltipSize.x, -tooltipSize.y);
-
-        Vector2 clamped = anchored;
-
-        // Horizontal
-        if (leftTop.x < -canvasSize.x / 2f) clamped.x += (-canvasSize.x / 2f - leftTop.x);
-        if (rightBottom.x > canvasSize.x / 2f) clamped.x -= (rightBottom.x - canvasSize.x / 2f);
-
-        // Vertical
-        if (rightBottom.y < -canvasSize.y / 2f) clamped.y += (-canvasSize.y / 2f - rightBottom.y);
-        if (leftTop.y > canvasSize.y / 2f) clamped.y -= (leftTop.y - canvasSize.y / 2f);
-
-        tooltipRect.anchoredPosition = clamped;
-    }
 
     private void OnDestroy()
     {

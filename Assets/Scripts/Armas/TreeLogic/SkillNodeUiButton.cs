@@ -1,10 +1,11 @@
+﻿using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using UnityEngine.Audio;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(CanvasGroup))]
-public class SkillNodeButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler
+public class SkillNodeButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("UI Components")]
     public Image iconImage;
@@ -19,148 +20,154 @@ public class SkillNodeButton : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private SkillTreeUI treeUI;
     private bool pointerOver = false;
 
-    // Inicializa el bot�n con referencia al SkillTreeUI.
-    // Esto fija el listener de bot�n de forma segura.
+    [Header("Audio")]
+    public AudioSource sfxSource; // ← Este será el que usemos siempre       
+    public AudioClip releaseSound;
+
+    private void Awake()
+    {
+        EnsureAudioSource();
+    }
     public void Initialize(SkillTreeUI ui)
     {
         treeUI = ui;
+        EnsureAudioSource();  // ¡Importantísimo volver a buscar aquí también!
 
-        // proteger contra referencias nulas
         if (button != null)
         {
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnClick);
         }
 
-        // actualizar visuales si ya hay un node asignado
         if (node != null)
-        {
-            if (iconImage != null) iconImage.sprite = node.icon;
-            if (nameText != null) nameText.text = node.displayName;
-            if (costText != null)
-            {
-                int effective = node != null ? (treeUI != null ? treeUI.GetNodeEffectiveCost(node) : (node.cost > 0 ? node.cost : 0)) : 0;
-                costText.text = effective > 0 ? effective.ToString() : "";
-            }
-        }
+            RefreshVisuals();
 
         UpdateState();
     }
 
-    // Reasigna el node al bot�n (para instanciaci�n din�mica)
     public void SetNode(ItemNode newNode)
     {
         node = newNode;
+        RefreshVisuals();
+        UpdateState();
+    }
 
-        if (node != null)
-        {
-            // Para el Image que controla el script
-            if (iconImage != null)
-                iconImage.sprite = node.icon;
-
-            // Para el Image principal del bot�n (Source Image del prefab)
-            var mainImage = GetComponent<Image>();
-            if (mainImage != null)
-                mainImage.sprite = node.icon;
-
-            if (nameText != null) nameText.text = node.displayName;
-            if (costText != null) costText.text = node.cost > 0 ? node.cost.ToString() : "";
-        }
-        else
+    private void RefreshVisuals()
+    {
+        if (node == null)
         {
             if (iconImage != null) iconImage.sprite = null;
             if (nameText != null) nameText.text = "";
             if (costText != null) costText.text = "";
-        }
-
-        UpdateState();
-    }
-
-    // Actualiza estado visual: lockedOverlay e interactable
-    public void UpdateState()
-    {
-        if (node == null)
-        {
-            var cg = GetComponent<CanvasGroup>();
-            if (cg != null) cg.interactable = false;
             return;
         }
 
-        if (treeUI == null)
+        if (iconImage != null) iconImage.sprite = node.icon;
+
+        var mainImage = GetComponent<Image>();
+        if (mainImage != null) mainImage.sprite = node.icon;
+
+        if (nameText != null)
+            nameText.text = string.IsNullOrEmpty(node.displayName) ? node.nodeId : node.displayName;
+
+        if (costText != null && treeUI != null)
         {
-            Debug.LogWarning($"[SkillNodeButton] treeUI NULL para node {node.nodeId} ({gameObject.name})");
+            int cost = treeUI.GetNodeEffectiveCost(node);
+            costText.text = cost > 0 ? cost.ToString() : "";
+        }
+    }
+
+    public void UpdateState()
+    {
+        if (node == null || treeUI == null)
+        {
+            if (button != null) button.interactable = false;
+            if (lockedOverlay != null) lockedOverlay.SetActive(true);
             return;
         }
 
         bool unlocked = treeUI.IsUnlocked(node.nodeId);
         bool canUnlock = treeUI.CanUnlock(node);
 
-        int playerCurrency = -999;
-        try
-        {
-            playerCurrency = StatsManager.Instance != null ? StatsManager.Instance.RuntimeStats.currency : -1;
-        }
-        catch { playerCurrency = -999; }
-
-        Debug.Log($"[SkillNodeButton] UpdateState -> node:{node.nodeId} unlocked:{unlocked} canUnlock:{canUnlock} cost:{node.cost} playerCurrency:{playerCurrency} onObject:{gameObject.name}");
-
         if (lockedOverlay != null)
             lockedOverlay.SetActive(!unlocked && !canUnlock);
 
         if (button != null)
             button.interactable = !unlocked && canUnlock;
+    }
+    private void EnsureAudioSource()
+    {
+        if (sfxSource == null)
+        {
+            // 1. Busca en el propio GameObject
+            sfxSource = GetComponent<AudioSource>();
 
-        var cg2 = GetComponent<CanvasGroup>();
-        if (cg2 != null) cg2.interactable = true;
+            // 2. Si no lo encuentra, busca en TODOS los hijos (incluso desactivados)
+            if (sfxSource == null)
+                sfxSource = GetComponentInChildren<AudioSource>(true); // ← el "true" es la clave
+
+            // 3. Si sigue sin encontrarlo, lo crea automáticamente (así nunca falla)
+            if (sfxSource == null)
+            {
+                GameObject sfxObj = new GameObject("SFX_AutoCreated");
+                sfxObj.transform.SetParent(transform);
+                sfxObj.transform.localPosition = Vector3.zero;
+                sfxSource = sfxObj.AddComponent<AudioSource>();
+                Debug.Log("[SkillNodeButton] AudioSource creado automáticamente", this);
+            }
+        }
+
+        // Configuración recomendada para UI
+        sfxSource.playOnAwake = false;
+        sfxSource.loop = false;
+        sfxSource.volume = 0.5f;
     }
 
     private void OnClick()
     {
-        if (treeUI == null)
-        {
-            Debug.LogWarning("[SkillNodeButton] OnClick: treeUI NULL");
-            return;
-        }
-        if (node == null)
-        {
-            Debug.LogWarning("[SkillNodeButton] OnClick: node NULL");
-            return;
-        }
+        if (treeUI == null || node == null) return;
 
         if (!treeUI.CanUnlock(node))
         {
-            string missingInfo = treeUI.GetMissingRequirements(node);
-            Debug.Log($"[SkillTreeUI] No puede desbloquear {node.nodeId}. Faltan: {missingInfo}");
+            Debug.Log($"[SkillTree] No puedes desbloquear {node.nodeId}: faltan requisitos o puntos.");
             return;
         }
+
+        // ← Seguridad extra
+        if (sfxSource != null && releaseSound != null)
+            sfxSource.PlayOneShot(releaseSound);
+        else if (releaseSound != null)
+            Debug.LogWarning("[SkillNodeButton] AudioSource es null, no se reproduce sonido", this);
 
         treeUI.TryUnlock(node);
     }
 
-    // ---- Pointer handlers para tooltip ----
+    // ================== TOOLTIP FIJO ==================
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         pointerOver = true;
-        if (TooltipController.Instance != null)
-            TooltipController.Instance.Show(node, eventData.position, treeUI);
-    }
-
-    public void OnPointerMove(PointerEventData eventData)
-    {
-        if (pointerOver && TooltipController.Instance != null)
-            TooltipController.Instance.Reposition(eventData.position);
+        TooltipController.Instance?.Show(node, Vector2.zero, treeUI);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         pointerOver = false;
-        if (TooltipController.Instance != null)
-            TooltipController.Instance.Hide();
+        TooltipController.Instance?.Hide();
     }
 
-  
+    // Ya no necesitas OnPointerMove → eliminado
+
     private void OnDisable()
     {
-        if (TooltipController.Instance != null) TooltipController.Instance.Hide();
+        if (pointerOver)
+            TooltipController.Instance?.Hide();
     }
+
+    private void OnDestroy()
+    {
+        if (pointerOver)
+            TooltipController.Instance?.Hide();
+    }
+
 }

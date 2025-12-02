@@ -191,6 +191,7 @@ public class CinematicManager : MonoBehaviour
         if (currentUpgrade != null)
         {
             currentUpgrade.ApplyEffect();
+            currentUpgrade.ActivarPickup(currentUpgrade);
 
             // ✔ Solo eliminar si NO es repetible
             if (!currentUpgrade.repetible)
