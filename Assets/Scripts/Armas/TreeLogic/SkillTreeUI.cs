@@ -97,39 +97,24 @@ public class SkillTreeUI : MonoBehaviour
 
     private void Awake()
     {
-        // Si ya hay una instancia y no soy yo → me destruyo
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
 
-        // Soy la instancia válida
-        Instance = this;
 
-        // IMPORTANTE: Esto hace que el objeto sobreviva y que el Awake se ejecute aunque esté desactivado
-        if (dontDestroyOnLoad)
-        {
-            DontDestroyOnLoad(gameObject);
-        }
         playerResources = GameObject.FindWithTag("Player")?.GetComponent<PlayerResources>();
     }
     public static SkillTreeUI GetInstance()
     {
         if (Instance == null)
         {
-            // Busca incluso si está desactivado
-            var found = FindObjectOfType<SkillTreeUI>(true); // true = incluye objetos inactivos
+            var found = FindObjectOfType<SkillTreeUI>(true); // incluye inactivos
             if (found != null)
             {
                 Instance = found;
-                // Forzamos que se ejecute Awake si aún no lo hizo
+
+                // Forzamos que corra OnEnable() aunque esté desactivado
                 if (!found.gameObject.activeInHierarchy)
                 {
-                    // Truco: activamos temporalmente para que corra Awake, luego lo desactivamos otra vez
-                    bool wasActive = found.gameObject.activeSelf;
-                    found.gameObject.SetActive(true);
-                    found.gameObject.SetActive(wasActive);
+                    found.gameObject.SetActive(true);  // Esto dispara OnEnable()
+                    found.gameObject.SetActive(false); // Lo volvemos a desactivar
                 }
             }
         }
@@ -139,14 +124,19 @@ public class SkillTreeUI : MonoBehaviour
 
     public void InitializeForRun()
     {
-        // 1. Aseguramos que el singleton existe
-        if (SkillTreeUI.Instance == null)
-            SkillTreeUI.Instance = this;
+        // Ya no necesitamos esto → puede hacer daño
+        // if (SkillTreeUI.Instance == null) SkillTreeUI.Instance = this;
 
-        // 2. Reiniciamos todo para la nueva run
+        // Opcional: validar que somos la instancia correcta
+        if (SkillTreeUI.Instance != this)
+        {
+            SkillTreeUI.Instance?.InitializeForRun();
+            return;
+        }
+
         StartNewRun(internalCall: true);
 
-        // 3. Spawneamos la primera familia (¡esto es clave!)
+        // Aquí SÍ se va a instanciar la familia porque ya somos el singleton válido
         if (familyContainers != null && familyContainers.Count > 0)
         {
             ShowRandomFamilyInContainer(familyContainers[0]);
@@ -156,11 +146,10 @@ public class SkillTreeUI : MonoBehaviour
             ShowRandomFamily();
         }
 
-        // 4. Actualizamos visuales (por si ya hay nodos desbloqueados de runs anteriores)
         RefreshAllInstantiatedButtons();
         UpdateMixedNodesVisibility();
 
-        // 5. Dejamos el panel desactivado (solo se activa cuando el jugador lo abre)
+        // Lo dejamos desactivado hasta que el jugador lo abra
         gameObject.SetActive(false);
     }
 

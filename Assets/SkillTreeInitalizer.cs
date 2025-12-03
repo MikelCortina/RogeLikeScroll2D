@@ -6,10 +6,12 @@ public class SkillTreeInitializer : MonoBehaviour
 
     private void Awake()
     {
-        // Esto se ejecuta al cargar la escena de juego (siempre)
-        if (skillTreeUI != null)
+        // Esto fuerza que el singleton se cree aunque esté desactivado
+        var skillTree = SkillTreeUI.GetInstance();
+
+        if (skillTree != null)
         {
-            skillTreeUI.InitializeForRun();
+            skillTree.InitializeForRun();
         }
     }
 }

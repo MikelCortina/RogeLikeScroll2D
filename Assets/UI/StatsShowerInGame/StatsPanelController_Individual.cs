@@ -49,6 +49,7 @@ public class StatsPanelController_Individual : MonoBehaviour
     public GameObject bordes; // Prefab con StatLineUI
     public Transform contentParent;   // Contenedor con VerticalLayoutGroup
     public SkillTreeUI skillTreeUI;
+    public GameObject panelArbol;
 
     [Header("Options")]
     public bool startVisible = false;
@@ -73,6 +74,7 @@ public class StatsPanelController_Individual : MonoBehaviour
         }
         bordes.SetActive(false);
         mixPanel.SetActive(false);
+        panelArbol.SetActive(false);
         panel.SetActive(startVisible);
         buttonPanel.SetActive(startVisible);
         ApplyGameState(startVisible);
@@ -136,6 +138,10 @@ public class StatsPanelController_Individual : MonoBehaviour
                 buttonPanel.SetActive(newState);
             }
 
+            if (panelArbol != null)
+            {
+                panelArbol.SetActive(newState);
+            }
 
             if (bordes != null)
             {

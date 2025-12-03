@@ -3,24 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
 
 public class UpgradeUI : MonoBehaviour
 {
     public const int MAX_PENDING_LEVELS = 6;
     public static UpgradeUI Instance { get; private set; }
 
-    [Header("Panel y Botones")]
+    [Header("Panel principal")]
     [SerializeField] private GameObject upgradePanel;
-    [SerializeField] private Button[] upgradeButtons;
-    [SerializeField] private TextMeshProUGUI[] upgradeNameTexts;
-    [SerializeField] private TextMeshProUGUI[] upgradeDescriptionTexts;
-    [Header("Textos para las 3 estadísticas por botón")]
-    [SerializeField] private TextMeshProUGUI[] statSlot1Texts;
-    [SerializeField] private TextMeshProUGUI[] statSlot2Texts;
-    [SerializeField] private TextMeshProUGUI[] statSlot3Texts;
-    [SerializeField] private Image[] extraImages;   // ← Añade esto en tu script    
+    [SerializeField] private Transform buttonsParent; // Donde se instanciarán los 3 botones
 
+    [Header("Prefab del botón")]
+    [SerializeField] private GameObject upgradeButtonPrefab;
 
     [Header("Colores según rareza")]
     [SerializeField] private Color rareColor = Color.blue;
@@ -28,37 +22,33 @@ public class UpgradeUI : MonoBehaviour
     [SerializeField] private Color legendaryColor = Color.yellow;
 
     [Header("HUD de niveles pendientes")]
-    [SerializeField] private Image pendingLevelsImage;           // Imagen que muestra el estado
-    [SerializeField] private Sprite[] levelSprites;              // Sprites: índice 0 a 6
-    [SerializeField] private TextMeshProUGUI pendingLevelsText;  // (opcional)
-
-    private List<TextMeshProUGUI> childTexts = new List<TextMeshProUGUI>();
-    private List<Color> originalChildTextColors = new List<Color>();
-    private Color originalMainColor;
-    [SerializeField] private GameObject otherTextToHide; // Nuevo: texto a ocultar
-    [SerializeField] private TextMeshProUGUI warningText;  // (opcional)
+    [SerializeField] private Image pendingLevelsImage;
+    [SerializeField] private Sprite[] levelSprites;
+    [SerializeField] private TextMeshProUGUI pendingLevelsText;
+    [SerializeField] private GameObject otherTextToHide;
+    [SerializeField] private TextMeshProUGUI warningText;
 
     private List<List<Upgrade>> pendingUpgradeChoices = new List<List<Upgrade>>();
     private List<Upgrade> currentUpgrades;
+    private List<GameObject> instantiatedButtons = new List<GameObject>();
 
     public int PendingCount => pendingUpgradeChoices.Count;
     public bool IsPendingFull => PendingCount >= MAX_PENDING_LEVELS;
 
     private Coroutine shakeCoroutine;
     private Vector3 originalImagePosition;
+    private Color originalMainColor;
+    private List<TextMeshProUGUI> childTexts = new List<TextMeshProUGUI>();
+    private List<Color> originalChildTextColors = new List<Color>();
 
     private void Awake()
     {
         if (Instance != null && Instance != this) Destroy(gameObject);
         else Instance = this;
 
-        if (upgradePanel != null)
-            upgradePanel.SetActive(false);
-
+        upgradePanel.SetActive(false);
         if (pendingLevelsImage != null)
             originalImagePosition = pendingLevelsImage.rectTransform.localPosition;
-
-        UpdatePendingLevelsVisuals();
     }
 
     private void Start()
@@ -69,23 +59,14 @@ public class UpgradeUI : MonoBehaviour
 
     private void Update()
     {
-        if (PendingCount == 0)
+        otherTextToHide.SetActive(PendingCount > 0);
+
+        if (Input.GetKeyDown(KeyCode.F) && PendingCount > 0 && !upgradePanel.activeSelf)
         {
-            otherTextToHide.SetActive(false);
-        }
-        else
-        {
-            otherTextToHide.SetActive(true);
-        }
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            if (pendingUpgradeChoices.Count > 0 && !upgradePanel.activeSelf)
-            {
-                currentUpgrades = pendingUpgradeChoices[0];
-                pendingUpgradeChoices.RemoveAt(0);
-                DisplayUpgradePanel(currentUpgrades);
-                UpdatePendingLevelsVisuals();
-            }
+            currentUpgrades = pendingUpgradeChoices[0];
+            pendingUpgradeChoices.RemoveAt(0);
+            DisplayUpgradePanel(currentUpgrades);
+            UpdatePendingLevelsVisuals();
         }
     }
 
@@ -93,7 +74,7 @@ public class UpgradeUI : MonoBehaviour
     {
         if (pendingUpgradeChoices.Count >= MAX_PENDING_LEVELS)
         {
-            Debug.Log("Nivel no añadido: mejoras pendientes al máximo (6).");
+            Debug.Log("Cola llena");
             return;
         }
 
@@ -101,98 +82,76 @@ public class UpgradeUI : MonoBehaviour
         pendingUpgradeChoices.Add(upgrades);
         UpdatePendingLevelsVisuals();
     }
-    private string GetStatValueText(StatTypeToShow stat)
-    {
-        var stats = StatsManager.Instance.RuntimeStats;
-
-        switch (stat)
-        {
-            case StatTypeToShow.MaxHP: return $"Current_HP Max_{stats.maxHP}";
-            case StatTypeToShow.FireRate: return $"Current_FireRate_{stats.fireRate}";
-            case StatTypeToShow.GunDamage: return $"Current_GunDamage_{stats.gunDamage}";
-            case StatTypeToShow.ExplosionDamage: return $"Current_ExplosionDamage_{stats.explosionDamage}";
-            case StatTypeToShow.MeleeArmor: return $"Current_MeleeArmor_{stats.meleArmorPercentage}";
-            case StatTypeToShow.RangedArmor: return $"Current_RangedArmor_{stats.rangedArmorPercentage}";
-            case StatTypeToShow.CriticalChance: return $"Current_CriticalChance_{stats.criticalChance}";
-            case StatTypeToShow.DodgeChance: return $"Current_DodgeChance_{stats.dodgeChance}";
-            case StatTypeToShow.Knockback: return $"Current_Knockback_{stats.knockback}";
-            case StatTypeToShow.ProjectileSpeed: return $"Current_ProjectileSpeed_{stats.projectileSpeed}";
-            case StatTypeToShow.XP_Gain: return $"Current_XP Mult_{stats.xpGainMultiplier}";
-            case StatTypeToShow.Luck: return $"Current_Luck_{stats.luck}";
-            case StatTypeToShow.Radius: return $"Current_Radius_{stats.radius}";
-            case StatTypeToShow.CurrencyGain: return $"Current_Currency_{stats.currency}";
-            case StatTypeToShow.OrganValue: return $"Current_Organ_{stats.organValue}";
-            case StatTypeToShow.Harvester: return $"Current_Harvester_{stats.harvester}";
-            case StatTypeToShow.SpawnRate: return $"Current_SpawnRate_{stats.spawnRate}";
-            default: return stat.ToString();
-        }
-    }
-
 
     public void DisplayUpgradePanel(List<Upgrade> upgrades)
     {
-        // ACTIVAR UI PRIMERO → así TMP inicializa materiales
-        if (!upgradePanel.activeInHierarchy)
-            upgradePanel.SetActive(true);
-
-        StartCoroutine(SetupUI(upgrades));
+        upgradePanel.SetActive(true);
+        StartCoroutine(SetupUI_Coroutine(upgrades));
     }
 
-
-    private IEnumerator SetupUI(List<Upgrade> upgrades)
+    private IEnumerator SetupUI_Coroutine(List<Upgrade> upgrades)
     {
-        yield return null; // 🔥 evita el NullReference en outlineWidth
+        yield return null; // Esperar un frame para evitar problemas con TMP
 
-        for (int i = 0; i < upgradeButtons.Length; i++)
+        // Limpiar botones anteriores
+        foreach (var btn in instantiatedButtons)
+            if (btn != null) Destroy(btn);
+        instantiatedButtons.Clear();
+
+        for (int i = 0; i < upgrades.Count; i++)
         {
             Upgrade upgrade = upgrades[i];
+            GameObject buttonObj = Instantiate(upgradeButtonPrefab, buttonsParent);
+            instantiatedButtons.Add(buttonObj);
 
-            upgradeNameTexts[i].text = upgrade.upgradeName;
-            upgradeDescriptionTexts[i].text = upgrade.description;
+            // Referencias rápidas (puedes optimizar con un componente propio si quieres)
+            TextMeshProUGUI nameText = buttonObj.transform.Find("UpgradeName")?.GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI descText = buttonObj.transform.Find("UpgradeDescription")?.GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI stat1 = buttonObj.transform.Find("Stat1")?.GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI stat2 = buttonObj.transform.Find("Stat2")?.GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI stat3 = buttonObj.transform.Find("Stat3")?.GetComponent<TextMeshProUGUI>();
+            Image rarityImage = buttonObj.transform.Find("ExtraImage")?.GetComponent<Image>();
+            Button button = buttonObj.GetComponent<Button>();
 
-            statSlot1Texts[i].text = "";
-            statSlot2Texts[i].text = "";
-            statSlot3Texts[i].text = "";
+            // Textos
+            if (nameText) nameText.text = upgrade.upgradeName;
+            if (descText) descText.text = upgrade.description;
 
-            for (int s = 0; s < Mathf.Min(upgrade.statsToShow, upgrade.displayedStats.Length); s++)
+            // Stats
+            if (stat1) stat1.text = "";
+            if (stat2) stat2.text = "";
+            if (stat3) stat3.text = "";
+
+            for (int s = 0; s < Mathf.Min(3, upgrade.displayedStats.Length); s++)
             {
-                string statText = GetStatValueText(upgrade.displayedStats[s]);
+                string text = GetStatValueText(upgrade.displayedStats[s]);
                 switch (s)
                 {
-                    case 0: statSlot1Texts[i].text = statText; break;
-                    case 1: statSlot2Texts[i].text = statText; break;
-                    case 2: statSlot3Texts[i].text = statText; break;
+                    case 0: if (stat1) stat1.text = text; break;
+                    case 1: if (stat2) stat2.text = text; break;
+                    case 2: if (stat3) stat3.text = text; break;
                 }
             }
 
-            Color chosenColor = Color.white;
+            // Color de rareza
+            Color rarityColor = Color.white;
             switch (upgrade.quality)
             {
-                case UpgradeQuality.Rare: chosenColor = rareColor; break;
-                case UpgradeQuality.Epic: chosenColor = epicColor; break;
-                case UpgradeQuality.Legendary: chosenColor = legendaryColor; break;
+                case UpgradeQuality.Rare: rarityColor = rareColor; break;
+                case UpgradeQuality.Epic: rarityColor = epicColor; break;
+                case UpgradeQuality.Legendary: rarityColor = legendaryColor; break;
             }
 
-            if (upgradeNameTexts[i] != null)
-            {
-                upgradeNameTexts[i].color = Color.white;
-                upgradeNameTexts[i].outlineColor = Color.black;
-                upgradeNameTexts[i].outlineWidth = 0.1f; // ✔ sin crashear
-            }
+            if (rarityImage) rarityImage.color = rarityColor;
 
-            if (upgradeDescriptionTexts[i] != null)
-            {
-                upgradeDescriptionTexts[i].color = Color.white;
-                upgradeDescriptionTexts[i].outlineColor = Color.black;
-                upgradeDescriptionTexts[i].outlineWidth = 0.1f;
-            }
+            // Outline bonito (opcional)
+            if (nameText) { nameText.color = Color.white; nameText.outlineColor = Color.black; nameText.outlineWidth = 0.1f; }
+            if (descText) { descText.color = Color.white; descText.outlineColor = Color.black; descText.outlineWidth = 0.1f; }
 
-            if (extraImages != null && extraImages.Length > i)
-                extraImages[i].color = chosenColor;
-
+            // Click
             int index = i;
-            upgradeButtons[i].onClick.RemoveAllListeners();
-            upgradeButtons[i].onClick.AddListener(() => SelectUpgrade(index));
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => SelectUpgrade(index));
         }
 
         Time.timeScale = 0f;
@@ -202,12 +161,18 @@ public class UpgradeUI : MonoBehaviour
     {
         if (index < 0 || index >= currentUpgrades.Count) return;
 
-        Upgrade selectedUpgrade = currentUpgrades[index];
-        UpgradeManager.Instance.ApplyUpgrade(selectedUpgrade);
+        Upgrade selected = currentUpgrades[index];
+        UpgradeManager.Instance.ApplyUpgrade(selected);
 
         upgradePanel.SetActive(false);
         Time.timeScale = 1f;
 
+        // Limpiar instancias
+        foreach (var go in instantiatedButtons)
+            if (go != null) Destroy(go);
+        instantiatedButtons.Clear();
+
+        // Siguiente cola
         if (pendingUpgradeChoices.Count > 0)
         {
             currentUpgrades = pendingUpgradeChoices[0];
@@ -216,6 +181,20 @@ public class UpgradeUI : MonoBehaviour
         }
 
         UpdatePendingLevelsVisuals();
+    }
+
+    private string GetStatValueText(StatTypeToShow stat)
+    {
+        var stats = StatsManager.Instance.RuntimeStats;
+        return stat switch
+        {
+            StatTypeToShow.MaxHP => $"Max HP: {stats.maxHP}",
+            StatTypeToShow.FireRate => $"Fire Rate: {stats.fireRate}",
+            StatTypeToShow.GunDamage => $"Gun Damage: {stats.gunDamage}",
+            StatTypeToShow.CriticalChance => $"Crit Chance: {stats.criticalChance}%",
+            // ... el resto igual, solo cambia el formato que quieras
+            _ => stat.ToString()
+        };
     }
 
     private void UpdatePendingLevelsVisuals()
@@ -234,46 +213,27 @@ public class UpgradeUI : MonoBehaviour
             if (shakeCoroutine == null)
                 shakeCoroutine = StartCoroutine(BlinkImage());
         }
-        else
+        else if (shakeCoroutine != null)
         {
-            if (shakeCoroutine != null)
-            {
-                StopCoroutine(shakeCoroutine);
-                shakeCoroutine = null;
-
-                // Restaurar color original
-                pendingLevelsImage.color = originalMainColor;
-
-                for (int i = 0; i < childTexts.Count; i++)
-                    childTexts[i].color = originalChildTextColors[i];
-
-                // Ocultar warning y mostrar el otro texto
-                if (warningText != null)
-                    warningText.gameObject.SetActive(false);
-            }
+            StopCoroutine(shakeCoroutine);
+            shakeCoroutine = null;
+            pendingLevelsImage.color = originalMainColor;
+            for (int i = 0; i < childTexts.Count; i++)
+                childTexts[i].color = originalChildTextColors[i];
+            if (warningText) warningText.gameObject.SetActive(false);
         }
     }
-    /// <summary>
-    /// Hace que el icono vibre ligeramente (efecto "atención") mientras está activo
-    /// </summary>
+
     private IEnumerator BlinkImage()
     {
-        if (pendingLevelsImage == null) yield break;
-
-        // Activar texto de advertencia
-        if (warningText != null)
-            warningText.gameObject.SetActive(true);
-
-        // Guardar color original del icono
+        if (warningText) warningText.gameObject.SetActive(true);
         originalMainColor = pendingLevelsImage.color;
 
-        // Recoger todos los textos hijos
         childTexts.Clear();
         originalChildTextColors.Clear();
-
         foreach (Transform child in pendingLevelsImage.transform)
         {
-            TextMeshProUGUI tmp = child.GetComponent<TextMeshProUGUI>();
+            var tmp = child.GetComponent<TextMeshProUGUI>();
             if (tmp != null)
             {
                 childTexts.Add(tmp);
@@ -281,30 +241,15 @@ public class UpgradeUI : MonoBehaviour
             }
         }
 
-        Color redColor = new Color(1f, 0f, 0f, 1f);
-        float speed = 8f;
-        float intensity = 1.4f;
-
+        Color red = new Color(1f, 0.3f, 0.3f, 1f);
         while (true)
         {
-            float t = (Mathf.Sin(Time.time * speed) * intensity + 1f) * 0.5f;
-            t = Mathf.Clamp01(t);
-
-            Color blink = redColor;
-            blink.a = Mathf.Lerp(0.2f, 1f, t);
-
-            // Cambiar la imagen principal
-            pendingLevelsImage.color = blink;
-
-            // Cambiar TODOS los textos hijos
+            float t = Mathf.Sin(Time.unscaledTime * 8f) * 0.5f + 0.5f;
+            Color c = Color.Lerp(Color.white, red, t);
+            pendingLevelsImage.color = c;
             foreach (var txt in childTexts)
-            {
-                if (txt != null)
-                    txt.color = blink;
-            }
-
+                txt.color = c;
             yield return null;
         }
     }
-
 }

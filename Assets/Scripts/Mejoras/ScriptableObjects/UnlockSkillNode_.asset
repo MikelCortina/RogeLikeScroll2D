@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e342bd983945f6449eaed7b13bbde88, type: 3}
   m_Name: UnlockSkillNode_
   m_EditorClassIdentifier: 
-  upgradeName: 
-  description: 
+  upgradeName: Knife
+  description: 'Unlock The Knife, '
   quality: 0
   displayedStats: 000000000000000000000000
   statsToShow: 1
