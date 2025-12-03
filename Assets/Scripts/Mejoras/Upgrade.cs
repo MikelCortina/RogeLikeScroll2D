@@ -18,7 +18,7 @@ public class Upgrade : ScriptableObject
     public int statsToShow = 3;  // <-- Ahora configurable por cada ScriptableObject
 
     // Convierte las stats a texto para el UI
-    public string GetStatsPreview()
+    public virtual string GetStatsPreview()
     {
         string result = "";
         for (int i = 0; i < Mathf.Min(statsToShow, displayedStats.Length); i++)

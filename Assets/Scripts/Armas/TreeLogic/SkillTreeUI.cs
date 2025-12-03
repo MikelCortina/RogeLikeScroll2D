@@ -24,6 +24,7 @@ public class SkillTreeUI : MonoBehaviour
     [Header("UI")]
     public TextMeshProUGUI titleText;
     public TextMeshProUGUI precioRefresh;
+    private bool unlockIsFreeThisTime = false; // NUEVO
 
     // -------------------------
     // --- Spawn cost settings (familias)
@@ -75,6 +76,7 @@ public class SkillTreeUI : MonoBehaviour
     public List<MixedNodeEntry> mixedNodes = new List<MixedNodeEntry>();
 
     private Dictionary<string, SkillNodeButton> instantiatedMixedNodes = new Dictionary<string, SkillNodeButton>();
+    public static SkillTreeUI Instance { get; private set; }
 
     [System.Serializable]
     public class MixedNodeEntry
@@ -90,23 +92,76 @@ public class SkillTreeUI : MonoBehaviour
     // *** NUEVO: coste global del siguiente objeto a comprar (siempre se duplica tras cada compra)
     private int nextPurchaseCostRuntime = -1;
 
+    [Header("=== DEBUG Singleton ===")]
+    [SerializeField] private bool dontDestroyOnLoad = true; // marca esto si quieres que sobreviva entre escenas
+
     private void Awake()
     {
+        // Si ya hay una instancia y no soy yo → me destruyo
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        // Soy la instancia válida
+        Instance = this;
+
+        // IMPORTANTE: Esto hace que el objeto sobreviva y que el Awake se ejecute aunque esté desactivado
+        if (dontDestroyOnLoad)
+        {
+            DontDestroyOnLoad(gameObject);
+        }
         playerResources = GameObject.FindWithTag("Player")?.GetComponent<PlayerResources>();
     }
-
-    private IEnumerator Start()
+    public static SkillTreeUI GetInstance()
     {
-        yield return null;
+        if (Instance == null)
+        {
+            // Busca incluso si está desactivado
+            var found = FindObjectOfType<SkillTreeUI>(true); // true = incluye objetos inactivos
+            if (found != null)
+            {
+                Instance = found;
+                // Forzamos que se ejecute Awake si aún no lo hizo
+                if (!found.gameObject.activeInHierarchy)
+                {
+                    // Truco: activamos temporalmente para que corra Awake, luego lo desactivamos otra vez
+                    bool wasActive = found.gameObject.activeSelf;
+                    found.gameObject.SetActive(true);
+                    found.gameObject.SetActive(wasActive);
+                }
+            }
+        }
+        return Instance;
+    }
+
+
+    public void InitializeForRun()
+    {
+        // 1. Aseguramos que el singleton existe
+        if (SkillTreeUI.Instance == null)
+            SkillTreeUI.Instance = this;
+
+        // 2. Reiniciamos todo para la nueva run
         StartNewRun(internalCall: true);
 
+        // 3. Spawneamos la primera familia (¡esto es clave!)
         if (familyContainers != null && familyContainers.Count > 0)
+        {
             ShowRandomFamilyInContainer(familyContainers[0]);
+        }
         else
+        {
             ShowRandomFamily();
+        }
 
-        if (subscribeCoroutine == null)
-            subscribeCoroutine = StartCoroutine(SubscribeToCurrencyWhenReady());
+        // 4. Actualizamos visuales (por si ya hay nodos desbloqueados de runs anteriores)
+        RefreshAllInstantiatedButtons();
+        UpdateMixedNodesVisibility();
+
+        // 5. Dejamos el panel desactivado (solo se activa cuando el jugador lo abre)
+        gameObject.SetActive(false);
     }
 
     private void OnEnable()
@@ -1036,6 +1091,31 @@ public class SkillTreeUI : MonoBehaviour
 
             // Asignar/actualizar el coste mostrado al coste global actual
             runtimeCosts[node.nodeId] = Mathf.Clamp(nextPurchaseCostRuntime, 0, int.MaxValue / 2);
+        }
+    }
+
+    public void ForceSpawnFamilyContainingNode(ItemNode targetNode)
+    {
+        if (targetNode == null) return;
+
+        SkillFamily family = null;
+        foreach (var f in skillFamilies)
+        {
+            if (f != null && f.nodes != null && System.Array.Exists(f.nodes, n => n == targetNode))
+            {
+                family = f;
+                break;
+            }
+        }
+
+        if (family == null) return;
+
+        if (activeFamilyNames.Contains(family.name)) return;
+
+        Transform container = GetNextAvailableFamilyContainer();
+        if (container != null)
+        {
+            ShowFamilyInContainer(family, container);
         }
     }
 }

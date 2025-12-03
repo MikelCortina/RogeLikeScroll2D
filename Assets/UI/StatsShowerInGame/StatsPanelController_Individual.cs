@@ -44,6 +44,7 @@ public class StatsPanelController_Individual : MonoBehaviour
     [Header("UI References")]
     public GameObject panel;
     public GameObject mixPanel;
+    public GameObject buttonPanel;
     public GameObject statLinePrefab; // Prefab con StatLineUI
     public GameObject bordes; // Prefab con StatLineUI
     public Transform contentParent;   // Contenedor con VerticalLayoutGroup
@@ -73,6 +74,7 @@ public class StatsPanelController_Individual : MonoBehaviour
         bordes.SetActive(false);
         mixPanel.SetActive(false);
         panel.SetActive(startVisible);
+        buttonPanel.SetActive(startVisible);
         ApplyGameState(startVisible);
 
         // Si quieres que al arrancar también se sincronice el skillTree con el estado inicial:
@@ -128,6 +130,10 @@ public class StatsPanelController_Individual : MonoBehaviour
             if (mixPanel != null)
             {
                 mixPanel.SetActive(newState);
+            }
+            if (buttonPanel != null)
+            {
+                buttonPanel.SetActive(newState);
             }
 
 

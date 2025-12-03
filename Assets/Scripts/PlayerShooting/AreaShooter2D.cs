@@ -65,7 +65,7 @@ public class AreaShooter2D : MonoBehaviour
 
         shootTimer -= Time.deltaTime;
 
-        if (shootTimer <= 0f && Input.GetMouseButton(0))
+        if (shootTimer <= 0f )
         {
             Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2 randomOffset = Random.insideUnitCircle * aimSpreadRadius;

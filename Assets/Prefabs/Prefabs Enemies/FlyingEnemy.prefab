@@ -82,7 +82,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waveSpace: 5
-  maxHealth: 34
+  maxHealth: 11
   contactDamage: 5.4
   useLevelScaling: 1
   detectRadius: 10000

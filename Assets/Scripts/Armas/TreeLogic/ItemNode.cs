@@ -1,4 +1,4 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 using System.Collections.Generic;
 
 [CreateAssetMenu(menuName = "SkillTree/ItemNode", fileName = "ItemNode")]
@@ -12,7 +12,7 @@ public class ItemNode : ScriptableObject
     public ScriptableObject effectToActivate;
 
     [Header("Visual / Button Prefab")]
-    [Tooltip("Prefab del botÛn que representar· este nodo (opcional). Si est· vacÌo se usar· el default en SkillTreeUI.")]
+    [Tooltip("Prefab del bot√≥n que representar√° este nodo (opcional). Si est√° vac√≠o se usar√° el default en SkillTreeUI.")]
     public SkillNodeButton buttonPrefab;
 
     [Header("Cost & requirements")]

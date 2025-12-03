@@ -15,7 +15,8 @@ public enum StatCategory
     XP,
     Dodge,
     Suerte,
-    Knockback
+    Knockback,
+    Nodo
 }
 
 [System.Serializable]
@@ -28,6 +29,8 @@ public class UpgradeGroup
 
 public class UpgradeManager : MonoBehaviour
 {
+    [SerializeField] private float chanceToOfferSkillNodeUnlock = 0.25f; // 25%
+    [SerializeField] private UpgradeQuality skillNodeUpgradeQuality = UpgradeQuality.Epic; // o Legendary
     public static UpgradeManager Instance { get; private set; }
 
     // Grupos visibles en el inspector para organizar los upgrades por tipo de estadística.
@@ -43,6 +46,7 @@ public class UpgradeManager : MonoBehaviour
         else Instance = this;
 
         SyncAllUpgradesFromGroups();
+        FindObjectOfType<SkillTreeUI>()?.InitializeForRun();
     }
 
     /// <summary>
@@ -112,12 +116,31 @@ public class UpgradeManager : MonoBehaviour
         List<Upgrade> options = new List<Upgrade>();
         int attempts = 0;
 
-        while (options.Count < count && attempts < 200)
+        // Primero decidimos si esta tanda incluye un desbloqueo de nodo
+        bool includeSkillNode = Random.value < chanceToOfferSkillNodeUnlock;
+
+        Upgrade skillNodeUpgrade = null;
+        if (includeSkillNode)
+        {
+            skillNodeUpgrade = TryCreateSkillNodeUpgrade();
+            if (skillNodeUpgrade != null)
+            {
+                options.Add(skillNodeUpgrade);
+                count--; // ya hemos puesto una, pedimos una menos del pool normal
+            }
+        }
+
+        // Rellenamos el resto con upgrades normales
+        while (options.Count < Mathf.Max(1, count) && attempts < 200)
         {
             attempts++;
             if (allUpgrades == null || allUpgrades.Count == 0) break;
+
             int index = Random.Range(0, allUpgrades.Count);
             Upgrade candidate = allUpgrades[index];
+
+            // Evitamos duplicados en esta selección
+            if (options.Contains(candidate)) continue;
 
             if (RollSpawnByQuality(candidate.quality))
             {
@@ -125,6 +148,62 @@ public class UpgradeManager : MonoBehaviour
             }
         }
 
-        return options;
+        // Si no conseguimos 3, rellenamos con cualquiera (para que siempre haya 3 opciones)
+        while (options.Count < 3 && allUpgrades.Count > 0)
+        {
+            var fallback = allUpgrades[Random.Range(0, allUpgrades.Count)];
+            if (!options.Contains(fallback))
+                options.Add(fallback);
+        }
+
+        return options.Take(3).ToList();
+    }
+    private Upgrade TryCreateSkillNodeUpgrade()
+    {
+        // 1. Obtenemos la referencia al SkillTreeUI
+        var skillTree = FindObjectOfType<SkillTreeUI>();
+        if (skillTree == null)
+        {
+            Debug.LogWarning("No se encontró SkillTreeUI en la escena. No se pueden ofrecer desbloqueos de nodos.");
+            return null;
+        }
+
+        // 2. Lista de todos los nodos del árbol que aún NO están desbloqueados
+        var availableNodes = new List<ItemNode>();
+
+        foreach (var family in skillTree.skillFamilies)
+        {
+            if (family?.nodes == null) continue;
+            foreach (var node in family.nodes)
+            {
+                if (node != null && !skillTree.IsUnlocked(node.nodeId)) // ← usamos skillTree.IsUnlocked()
+                {
+                    availableNodes.Add(node);
+                }
+            }
+        }
+
+        if (availableNodes.Count == 0)
+        {
+            // Debug.Log("Ya tienes todos los nodos desbloqueados!");
+            return null;
+        }
+
+        // Elegimos uno al azar
+        var chosenNode = availableNodes[Random.Range(0, availableNodes.Count)];
+
+        // Creamos la mejora especial en tiempo de ejecución
+        var upgradeInstance = ScriptableObject.CreateInstance<Upgrade_SkillNode>();
+        upgradeInstance.name = $"UNLOCK_{chosenNode.nodeId}";
+        upgradeInstance.upgradeName = $"¡NUEVA ARMA!\n{chosenNode.displayName}";
+        upgradeInstance.description = $"Desbloquea permanentemente:\n{chosenNode.description}";
+        upgradeInstance.quality = skillNodeUpgradeQuality;
+        upgradeInstance.nodeToUnlock = chosenNode;
+
+        // Opcional: mostrar algo en los slots de stats
+        upgradeInstance.displayedStats = new StatTypeToShow[] { StatTypeToShow.GunDamage };
+        upgradeInstance.statsToShow = 1;
+
+        return upgradeInstance;
     }
 }
