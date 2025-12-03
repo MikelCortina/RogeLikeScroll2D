@@ -853,51 +853,7 @@ public class SkillTreeUI : MonoBehaviour
     // -------------------------
     // Mixed nodes helpers (ahora usan contenedores asignados)
     // -------------------------
-    private bool IsLastNodeInItsFamily(ItemNode node)
-    {
-        if (node == null) return false;
-        foreach (var fam in skillFamilies)
-        {
-            if (fam == null || fam.nodes == null || fam.nodes.Length == 0) continue;
-
-            ItemNode lastNonNull = null;
-            for (int i = fam.nodes.Length - 1; i >= 0; i--)
-            {
-                if (fam.nodes[i] == null) continue;
-                lastNonNull = fam.nodes[i];
-                break;
-            }
-
-            if (lastNonNull != null && lastNonNull.nodeId == node.nodeId)
-                return true;
-        }
-        return false;
-    }
-
-    private SkillNodeButton FindInstantiatedButtonByNodeId(string nodeId)
-    {
-        if (string.IsNullOrEmpty(nodeId)) return null;
-
-        foreach (var kv in instantiatedButtonsPerContainer)
-        {
-            var list = kv.Value;
-            if (list == null) continue;
-            foreach (var b in list)
-            {
-                if (b != null && b.node != null && b.node.nodeId == nodeId)
-                    return b;
-            }
-        }
-
-        var allButtons = GameObject.FindObjectsOfType<SkillNodeButton>();
-        foreach (var b in allButtons)
-        {
-            if (b != null && b.node != null && b.node.nodeId == nodeId)
-                return b;
-        }
-
-        return null;
-    }
+   
 
     private Transform GetFamilyRootForButton(Transform btnTransform)
     {
