@@ -7,7 +7,7 @@ using static PlayerResources;
 public class StatsData
 {
     [Header("HP")]
-    public float maxHP; public float currentHP; public float harvester, currentMaxHP;
+    public float maxHP; public float currentHP; public float harvester;
     [Header("Projectile")]
     public float projectileSpeed;
     [Header("Movimiento")]
@@ -38,7 +38,6 @@ public class StatsData
         {
             maxHP = this.maxHP,
             currentHP = this.currentHP,
-            currentMaxHP = this.currentMaxHP,
             gunDamage = this.gunDamage,
             explosionDamage = this.explosionDamage,
             projectileSpeed = this.projectileSpeed,
@@ -126,7 +125,6 @@ public class StatsManager : MonoBehaviour
                 renderersToFlash = new SpriteRenderer[] { sr };
 
         }
-        RuntimeStats.currentMaxHP = RuntimeStats.maxHP;
     }
 
     // --- Este es el metodo que finalmente otorga al jugador la experiencia total que ganara por eliminar el enemigo---
@@ -184,12 +182,11 @@ public class StatsManager : MonoBehaviour
         if (amount <= 0 || isInvulnerable) return;
 
         RuntimeStats.currentHP = Mathf.Max(0, RuntimeStats.currentHP - amount);
-        Debug.Log($"Player took {amount} damage. Current HP: {RuntimeStats.currentHP}/{RuntimeStats.currentMaxHP}");
-        OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.currentMaxHP);
+        Debug.Log($"Player took {amount} damage. Current HP: {RuntimeStats.currentHP}/{RuntimeStats.maxHP}");
+        OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
 
         if (iFrameDuration > 0f) StartCoroutine(InvulnerabilityCoroutine());
 
-        HealthDecay.Instance.OnTakeDamage();
 
         if (RuntimeStats.currentHP <= 0)
             PlayerDeath();
@@ -199,7 +196,7 @@ public class StatsManager : MonoBehaviour
     public void HealPlayer(float amount)
     {
         if (amount <= 0) return;
-        RuntimeStats.currentHP = Mathf.Min(RuntimeStats.currentMaxHP, RuntimeStats.currentHP + amount);
+        RuntimeStats.currentHP = Mathf.Min(RuntimeStats.maxHP, RuntimeStats.currentHP + amount);
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
     }
 
@@ -209,16 +206,7 @@ public class StatsManager : MonoBehaviour
         RuntimeStats.currentHP = Mathf.Min(RuntimeStats.currentHP, RuntimeStats.maxHP);
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
     }
-    public void AddCurrentMaxHP(float delta)
-    {
-        RuntimeStats.currentMaxHP = Mathf.Max(1, RuntimeStats.currentMaxHP + delta);
-        RuntimeStats.currentHP += delta;
-        RuntimeStats.currentHP = Mathf.Min(RuntimeStats.currentHP, RuntimeStats.currentMaxHP);
 
-        OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.currentMaxHP);
-    }
-
-   
     public void AddGunDamage(float delta)
     {
         RuntimeStats.gunDamage = Mathf.Max(0, RuntimeStats.gunDamage + delta);
@@ -271,19 +259,14 @@ public class StatsManager : MonoBehaviour
     {
         RuntimeStats.luck = Mathf.Max(0, RuntimeStats.luck + delta);
     }
-    public void ResetMaxHP()
-    {
-        RuntimeStats.currentMaxHP = RuntimeStats.maxHP;
-        OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.currentMaxHP);
-        RuntimeStats.currentHP = RuntimeStats.currentMaxHP;
-    }
+
 
     public void AddCurrency(int amount)
     {
         RuntimeStats.currency += amount*RuntimeStats.organValue;
         OnCurrencyChanged?.Invoke(RuntimeStats.currency);
-        Debug.Log("Moneda agregada" + RuntimeStats.currency);
-        Debug.Log("StatsManager emitiendo evento: " + this);
+       // Debug.Log("Moneda agregada" + RuntimeStats.currency);
+      //  Debug.Log("StatsManager emitiendo evento: " + this);
     }
     public void SetCurrency(int newAmount)
     {
@@ -322,6 +305,7 @@ public class StatsManager : MonoBehaviour
         OnPlayerDied?.Invoke();
         Debug.Log("Jugador muri�");
         runResetter.OnPlayerDeath();
+        SceneManager.LoadScene("MainMenu"); 
     }
     public void NotifyHealthChanged()
     {

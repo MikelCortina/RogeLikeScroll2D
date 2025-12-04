@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e035a91d2713dce4281c851b30a9bce9, type: 3}
+  m_Name: NewSkillFamily
+  m_EditorClassIdentifier: 
+  familyId: Penetration
+  nodes:
+  - {fileID: 11400000, guid: 8f8d9b604aed21a4a92b8fdfa18f5c83, type: 2}
+  - {fileID: 11400000, guid: 9d7c8b0f874a90e48aa201685c643b52, type: 2}
+  - {fileID: 11400000, guid: 7506fa634318a7d40a0eee5c1d23805a, type: 2}

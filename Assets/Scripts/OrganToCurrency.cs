@@ -14,8 +14,8 @@
                 Resources = FindObjectOfType<PlayerResources>();
                 if (Resources != null)
                     Debug.Log("[OrganToCurrency] PlayerResources linked automatically: " + Resources.name);
-                else
-                    Debug.LogWarning("[OrganToCurrency] No PlayerResources encontrado. Asigna la referencia en el inspector.");
+              //  else
+                    //Debug.LogWarning("[OrganToCurrency] No PlayerResources encontrado. Asigna la referencia en el inspector.");
             }
         }
 
@@ -32,7 +32,7 @@
                 else
                 {
                     StatsManager.Instance.AddCurrency(value);
-                    Debug.Log($"[OrganToCurrency] Añadido {value} currency. Total ahora: {StatsManager.Instance.RuntimeStats.currency}");
+                    //Debug.Log($"[OrganToCurrency] Añadido {value} currency. Total ahora: {StatsManager.Instance.RuntimeStats.currency}");
                 }
 
                 // Destruye el objeto de forma segura

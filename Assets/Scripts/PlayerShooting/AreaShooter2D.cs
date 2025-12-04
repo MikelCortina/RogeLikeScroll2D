@@ -65,7 +65,7 @@ public class AreaShooter2D : MonoBehaviour
 
         shootTimer -= Time.deltaTime;
 
-        if (shootTimer <= 0f )
+        if (shootTimer <= 0f)
         {
             Vector2 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2 randomOffset = Random.insideUnitCircle * aimSpreadRadius;
@@ -128,7 +128,18 @@ public class AreaShooter2D : MonoBehaviour
         projectilePool.Add(newProj);
         return newProj;
     }
+    private int GetPenetrationCount()
+    {
+        int total = 0;
 
+        foreach (var effect in RunEffectManager.Instance.GetActiveEffects())
+        {
+            if (effect is PenetrationEffect p)
+                total += p.penetrationCount;
+        }
+
+        return total;
+    }
     void Shoot(Vector2 targetPos)
     {
         fireSpriteLeft.Play();
@@ -148,68 +159,60 @@ public class AreaShooter2D : MonoBehaviour
         float fireRange = maxRange;
         float rayRadius = 0.1f;
 
-        // 🔹 En lugar de un solo hit, obtenemos todos los impactos
+
         RaycastHit2D[] hits = Physics2D.CircleCastAll(activeFirePoint.position, rayRadius, dir, fireRange, enemyLayer);
 
-        bool hitSomething = false;
-        Vector2 hitPoint = (Vector2)activeFirePoint.position + dir * fireRange;
-        Transform hitTransform = null;
+        Vector2 finalHitPoint = (Vector2)activeFirePoint.position + dir * fireRange;
+        int penetrationRemaining = GetPenetrationCount();
 
-        float knockback = StatsManager.Instance.RuntimeStats.knockback;
-
-        // 🔹 Recorremos todos los impactos en orden de distancia
         foreach (RaycastHit2D hit in hits)
         {
             if (hit.collider == null) continue;
 
-            // Si es proyectil enemigo → destruirlo y seguir
             if (hit.collider.CompareTag(enemyProjectileTag))
             {
                 Projectile2D enemyProjComponent = hit.collider.GetComponentInParent<Projectile2D>();
                 if (enemyProjComponent != null)
-                {
                     enemyProjComponent.gameObject.SetActive(false);
-                }
                 else
-                {
                     Destroy(hit.collider.gameObject);
-                }
-                // No rompemos → seguimos buscando enemigos detrás
-                continue;
+
+                continue; // No reducimos penetración
             }
 
-            // Si es enemigo → aplicar daño y detener el rayo ahí
             if (hit.collider.CompareTag(enemyTag))
             {
-                hitSomething = true;
-                hitPoint = hit.point;
                 EnemyBase enemy = hit.collider.GetComponentInParent<EnemyBase>();
-
                 if (enemy != null)
                 {
-                    hitTransform = enemy.transform;
                     float dmg = StatsCommunicator.Instance.CalculateGunDamage();
                     enemy.TakeContactDamage(dmg, true);
 
                     Vector2 knockbackDir = ((Vector2)enemy.transform.position - (Vector2)transform.position).normalized;
-                    enemy.ApplyKnockback(knockbackDir * knockback / 7.5f);
+                    enemy.ApplyKnockback(knockbackDir * StatsManager.Instance.RuntimeStats.knockback / 7.5f);
                 }
 
-                // 💥 Solo el primer enemigo recibe daño → rompemos aquí
-                break;
+                // Ejecutar efectos de impacto
+                EffectSpawner effectSpawner1 = GetComponent<EffectSpawner>();
+                if (effectSpawner1 != null)
+                {
+                    foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
+                    {
+                        if (activeEffect is ProjectileEffect effect)
+                            effect.Execute(hit.point, gameObject);
+                    }
+                }
+
+                penetrationRemaining--;
+                if (penetrationRemaining <= 0)
+                {
+                    finalHitPoint = hit.point; // El rayo se detiene aquí si ya no hay penetración
+                    break;
+                }
             }
         }
 
-        // 🔹 Efectos visuales, igual que antes
-        EffectSpawner effectSpawner = GetComponent<EffectSpawner>();
-        if (effectSpawner != null)
-        {
-            foreach (var activeEffect in RunEffectManager.Instance.GetActiveEffects())
-            {
-                effectSpawner.TriggerEffect(activeEffect, hitPoint, gameObject);
-            }
-        }
-
+        // Visual de la bala / LineTracer siempre va hasta finalHitPoint
         GameObject visual = GetPooledProjectile();
         visual.transform.position = activeFirePoint.position;
         visual.SetActive(true);
@@ -217,12 +220,8 @@ public class AreaShooter2D : MonoBehaviour
         Projectile2D p = visual.GetComponent<Projectile2D>();
         if (p != null)
         {
-            p.InitializeVisual(dir, projectileSpeed, hitPoint, hitTransform);
+            p.InitializeVisual(dir, projectileSpeed, finalHitPoint, null); // hitTransform opcional
         }
 
-#if UNITY_EDITOR
-        Debug.DrawRay(activeFirePoint.position, dir * fireRange, Color.yellow, 0.15f);
-#endif
     }
-
 }

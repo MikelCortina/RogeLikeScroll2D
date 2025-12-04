@@ -90,6 +90,6 @@ public class TriggerCinematic : MonoBehaviour
 
     private void OnDestroy()
     {
-        Debug.Log($"{name} OnDestroy (posible causa: buscar 'Destroy(' en proyecto, o escena cargada, o Timeline).");
+       // Debug.Log($"{name} OnDestroy (posible causa: buscar 'Destroy(' en proyecto, o escena cargada, o Timeline).");
     }
 }

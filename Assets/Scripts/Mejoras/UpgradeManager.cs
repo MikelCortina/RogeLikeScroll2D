@@ -92,6 +92,34 @@ public class UpgradeManager : MonoBehaviour
     public void ApplyUpgrade(Upgrade upgrade)
     {
         upgrade.Apply(StatsManager.Instance);
+
+        if (upgrade is Upgrade_SkillNode skillNodeUpgrade)
+        {
+            // ...eliminamos este upgrade del pool global
+            allUpgrades.Remove(upgrade);
+
+            // Por si estaba dentro de algún grupo también lo borramos
+            foreach (var group in upgradeGroups)
+            {
+                group.upgrades.Remove(upgrade);
+            }
+        }
+    }
+    public void RemoveUpgradesRelatedToNode(ItemNode node)
+    {
+        if (node == null) return;
+
+        // Busca upgrades de tipo Upgrade_SkillNode que apunten a este nodo
+        var toRemove = allUpgrades
+            .Where(u => u is Upgrade_SkillNode sn && sn.nodeToUnlock == node)
+            .ToList();
+
+        foreach (var up in toRemove)
+        {
+            allUpgrades.Remove(up);
+            foreach (var g in upgradeGroups)
+                g.upgrades.Remove(up);
+        }
     }
 
     private bool RollSpawnByQuality(UpgradeQuality quality)

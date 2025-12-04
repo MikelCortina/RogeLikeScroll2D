@@ -299,7 +299,8 @@ public class SkillTreeUI : MonoBehaviour
         if (!CanUnlock(node)) return;
 
         int cost = GetNodeEffectiveCost(node);
-        if (playerResources != null && cost > 0) playerResources.SpendCurrency(cost);
+        if (playerResources != null && cost > 0)
+            playerResources.SpendCurrency(cost);
 
         foreach (var p in node.requiredEffectIdsToRemove)
             RemoveEffect(p);
@@ -309,6 +310,9 @@ public class SkillTreeUI : MonoBehaviour
 
         ApplyEffect(node);
         unlocked.Add(node.nodeId);
+
+        // 🔥 NUEVO: avisar a UpgradeManager para que borre upgrades de este nodo
+        UpgradeManager.Instance?.RemoveUpgradesRelatedToNode(node);
 
         // *** NUEVO: actualizar tracking de compra y el coste global siguiente
         if (cost > 0)
@@ -326,6 +330,7 @@ public class SkillTreeUI : MonoBehaviour
 
         RefreshAllInstantiatedButtons();
     }
+
 
     private void UpdateAllUnpurchasedRuntimeCostsToGlobal()
     {

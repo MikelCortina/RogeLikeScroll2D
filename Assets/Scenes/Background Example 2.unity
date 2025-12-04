@@ -11608,7 +11608,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da9bc00e18cc791418e4563b3c51e727, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dontDestroyOnLoad: 1
+  dontDestroyOnLoad: 0
   uiWindows:
   - {fileID: 448683330}
   - {fileID: 891587751}
@@ -23936,7 +23936,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dc597d837423f4f4cb5403058b972b90, type: 2}
   - {fileID: 11400000, guid: 0bc6e82c23a834e4bbf682bf9fcffbfb, type: 2}
   - {fileID: 11400000, guid: a6c0c7974271fe445afec55e3ec5b990, type: 2}
-  - {fileID: 11400000, guid: 20d4db2bc0c73bd4793942e09f96e2a2, type: 2}
+  - {fileID: 11400000, guid: e03e4ad1c2630d64dab263f0a71c62fd, type: 2}
   mixedNodeContainers:
   - {fileID: 181393122}
   - {fileID: 553164067}
@@ -28835,6 +28835,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6088042958420912766, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6088042958420912766, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: isGrounded
       value: 1
       objectReference: {fileID: 0}
@@ -28899,6 +28903,10 @@ PrefabInstance:
       value: 8200
       objectReference: {fileID: 0}
     - target: {fileID: 6984263049170736589, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6984263049170736589, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: baseDecayPerSecond
       value: 0
       objectReference: {fileID: 0}
@@ -28960,6 +28968,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1544146404262330019, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+    - {fileID: 6984263049170736589, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
     m_RemovedGameObjects:
     - {fileID: 9046920665116844458, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
     - {fileID: 5092950243809462879, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
@@ -28981,7 +28990,7 @@ PrefabInstance:
       insertIndex: 4
       addedObject: {fileID: 362480691}
     - targetCorrespondingSourceObject: {fileID: 7855709122196565549, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
-      insertIndex: 13
+      insertIndex: 12
       addedObject: {fileID: 362480664}
     - targetCorrespondingSourceObject: {fileID: 7855709122196565549, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       insertIndex: -1

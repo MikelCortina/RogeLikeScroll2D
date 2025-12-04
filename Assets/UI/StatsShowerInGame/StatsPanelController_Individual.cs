@@ -234,7 +234,6 @@ public class StatsPanelController_Individual : MonoBehaviour
         switch (cfg.stat)
         {
             case StatType.MaxHP: raw = s.maxHP; break;
-            case StatType.CurrentMaxHP: raw = s.currentMaxHP; break;
             case StatType.MeleArmorPercentage: raw = s.meleArmorPercentage; break;
             case StatType.RangedArmorPercentage: raw = s.rangedArmorPercentage; break;
             case StatType.GunDamage: raw = s.gunDamage; break;

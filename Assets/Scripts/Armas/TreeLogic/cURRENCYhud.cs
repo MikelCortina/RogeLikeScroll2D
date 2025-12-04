@@ -12,7 +12,7 @@ public class CurrencyHUD : MonoBehaviour
         if (StatsManager.Instance != null)
         {
             StatsManager.Instance.OnCurrencyChanged += UpdateCurrencyText;
-            Debug.Log("Suscribiendo HUD a StatsManager: " + StatsManager.Instance);
+           // Debug.Log("Suscribiendo HUD a StatsManager: " + StatsManager.Instance);
 
 
             // Asegurar que el HUD muestra el valor actual aunque el evento ya se haya disparado antes
@@ -29,7 +29,7 @@ public class CurrencyHUD : MonoBehaviour
 
     public void UpdateCurrencyText(int newAmount)
     {
-        Debug.Log("Actualizando HUD de moneda: " + newAmount);
+       // Debug.Log("Actualizando HUD de moneda: " + newAmount);
         if (currencyText == null) return;
         currencyText.text = newAmount.ToString();
     }

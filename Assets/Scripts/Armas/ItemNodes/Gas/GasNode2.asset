@@ -20,5 +20,6 @@ MonoBehaviour:
   buttonPrefab: {fileID: 0}
   cost: 0
   requiredEffectIdsToRemove: []
-  prerequisiteNodeIds: []
+  prerequisiteNodeIds:
+  - GasNode
   debug_unlocked: 0

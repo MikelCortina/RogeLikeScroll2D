@@ -312,7 +312,7 @@ public class EnemyBase : MonoBehaviour
         float xpGained = StatsManager.Instance.GetXPForEnemy(enemyLevel, baseXP);
         StatsManager.Instance.GainXP(xpGained);
         ScoreManager.Instance.EnemyDied();
-        HealthDecay.Instance.GetBackHP();
+      
 
         DestroyChildrenWithTag("MeleAtack");
 
