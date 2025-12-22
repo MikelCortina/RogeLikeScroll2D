@@ -242,6 +242,7 @@ public class EnemyBase : MonoBehaviour
         }
 
        // StartCoroutine(HitPause(0.02f));
+       ConsoleManager.Instance.Log($"You made {amount} damage");
     }
 
     IEnumerator HitPause(float duration)

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c5c317566d6e4d4e80fc176bb7867a5, type: 3}
-  m_Name: ItemNode
+  m_Name: MisilNode 2
   m_EditorClassIdentifier: 
-  nodeId: Pene1
-  displayName: Pene1
+  nodeId: MisilID
+  displayName: Misil
   icon: {fileID: 1786102465050247127, guid: 12d718501d73aec45b68f2a21db173ea, type: 3}
   description: 
-  effectToActivate: {fileID: 11400000, guid: 011bc531022039e42b236087077feb4e, type: 2}
+  effectToActivate: {fileID: 11400000, guid: 8b1fa45e2f8720f4fb5ec0feefc9af6b, type: 2}
   buttonPrefab: {fileID: 0}
   cost: 0
   requiredEffectIdsToRemove: []

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e035a91d2713dce4281c851b30a9bce9, type: 3}
   m_Name: NewSkillFamily
   m_EditorClassIdentifier: 
-  familyId: Penetration
+  familyId: MisilID
   nodes:
-  - {fileID: 11400000, guid: 8f8d9b604aed21a4a92b8fdfa18f5c83, type: 2}
-  - {fileID: 11400000, guid: 9d7c8b0f874a90e48aa201685c643b52, type: 2}
-  - {fileID: 11400000, guid: 7506fa634318a7d40a0eee5c1d23805a, type: 2}
+  - {fileID: 11400000, guid: 9a8d056f35b9fa64e9838d8fd566a6f2, type: 2}
+  - {fileID: 11400000, guid: e637a4e1e48fd9740860deed5722cb16, type: 2}
+  - {fileID: 11400000, guid: d9d246d80e4828d449c9540199957644, type: 2}
