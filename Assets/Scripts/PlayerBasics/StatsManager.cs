@@ -133,12 +133,12 @@ public class StatsManager : MonoBehaviour
         // Si existe la UI y la cola está llena, descartamos la experiencia.
         if (UpgradeUI.Instance != null && UpgradeUI.Instance.IsPendingFull)
         {
-            Debug.Log("XP descartada: mejoras pendientes al máximo.");
+            Debug.Log("XP_Lost_Maxed_HP_Qeue");
             return;
         }
 
         // Mostramos cuánta XP se gana
-        Debug.Log($"Gained {xp} XP");
+       // Debug.Log($"Gained {xp} XP");
 
         currentXP += xp;
 
@@ -182,7 +182,7 @@ public class StatsManager : MonoBehaviour
         if (amount <= 0 || isInvulnerable) return;
 
         RuntimeStats.currentHP = Mathf.Max(0, RuntimeStats.currentHP - amount);
-        Debug.Log($"Player took {amount} damage. Current HP: {RuntimeStats.currentHP}/{RuntimeStats.maxHP}");
+       // Debug.Log($"Player took {amount} damage. Current HP: {RuntimeStats.currentHP}/{RuntimeStats.maxHP}");
         OnHealthChanged?.Invoke(RuntimeStats.currentHP, RuntimeStats.maxHP);
 
         if (iFrameDuration > 0f) StartCoroutine(InvulnerabilityCoroutine());
@@ -303,9 +303,9 @@ public class StatsManager : MonoBehaviour
     private void PlayerDeath()
     {
         OnPlayerDied?.Invoke();
-        Debug.Log("Jugador muri�");
+       // Debug.Log("Jugador muri�");
         runResetter.OnPlayerDeath();
-        SceneManager.LoadScene("MainMenu"); 
+       
     }
     public void NotifyHealthChanged()
     {

@@ -79,6 +79,6 @@ public class RunInventory : MonoBehaviour
     public void ResetInventory()
     {
         inventory.Clear();
-        Debug.Log("[RunInventory] Inventario reseteado para nueva run");
+       // Debug.Log("[RunInventory] Inventario reseteado para nueva run");
     }
 }

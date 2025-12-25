@@ -489,7 +489,7 @@ public class SkillTreeUI : MonoBehaviour
         if (skillFamilies == null || skillFamilies.Count == 0)
             Debug.LogWarning("[SkillTreeUI] ShowFamilyInContainer: skillFamilies está vacío.");
 
-        Debug.Log($"[SkillTreeUI] Intentando spawnear family '{familyName}' en container '{container.name}'.");
+      //  Debug.Log($"[SkillTreeUI] Intentando spawnear family '{familyName}' en container '{container.name}'.");
 
         if (activeFamilyNames.Contains(familyName))
         {
@@ -568,7 +568,7 @@ public class SkillTreeUI : MonoBehaviour
         instantiatedButtonsPerContainer[container] = created;
         activeFamilyNames.Add(familyName);
 
-        Debug.Log($"[SkillTreeUI] Family '{familyName}' instanciada en '{container.name}' con {createdCount} nodos creados.");
+        //Debug.Log($"[SkillTreeUI] Family '{familyName}' instanciada en '{container.name}' con {createdCount} nodos creados.");
 
         RefreshAllInstantiatedButtons();
         UpdateMixedNodesVisibility();

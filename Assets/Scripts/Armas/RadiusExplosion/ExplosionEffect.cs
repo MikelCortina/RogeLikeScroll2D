@@ -47,7 +47,7 @@ public class ExplosionEffect : ProjectileEffect
             {
                 enemy.TakeContactDamage(damage, false);
                 ConsoleManager.Instance.Log($"Explosion damage dealed: {damage}");
-                Debug.Log(damage);
+               // Debug.Log(damage);
                 // Llamamos a ApplyKnockback para que la propia IA gestione el estado de knockback
                 enemy.ApplyKnockback(dir * knockback);
             }
@@ -57,7 +57,7 @@ public class ExplosionEffect : ProjectileEffect
                 rb.AddForce(dir * knockback, ForceMode2D.Impulse);
             }
 
-            Debug.Log("Explosion hit: " + col.name);
+          //  Debug.Log("Explosion hit: " + col.name);
         }
 
         // Debug: dibujar el radio en Game View (temporal)

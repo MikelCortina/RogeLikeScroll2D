@@ -22,7 +22,7 @@ public class RunEffectManager : MonoBehaviour
     {
         if (effect == null) return;
         activeEffects.Add(effect);
-        Debug.Log($"[RunEffectManager] Activado efecto: {effect.name}");
+        Debug.Log($"{effect.name}_Unlocked");
         if (effect is IEffect gameEffect)
         {
             // Ejecutarlo en la posición del player (o Vector2.zero)
@@ -59,6 +59,6 @@ public class RunEffectManager : MonoBehaviour
         }
 
         activeEffects.Clear();
-        Debug.Log("[RunEffectManager] Todos los efectos reseteados y eliminados");
+       // Debug.Log("[RunEffectManager] Todos los efectos reseteados y eliminados");
     }
 }

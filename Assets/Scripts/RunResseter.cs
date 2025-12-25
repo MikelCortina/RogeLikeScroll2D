@@ -10,7 +10,7 @@ public class RunResetter : MonoBehaviour
     public void ResetRun()
     {
         RunInventory.Instance.ResetInventory();
-        Debug.Log("=== Reinicio total de la run ===");
+       //Debug.Log("=== Reinicio total de la run ===");
 
         // 1️⃣ Destruir todos los objetos de la escena
         foreach (var obj in FindObjectsOfType<GameObject>())
@@ -21,6 +21,8 @@ public class RunResetter : MonoBehaviour
         // 2️⃣ Recargar la escena
         // Esto es importante porque destruyendo objetos no reinicia cosas como la escena en sí
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        SceneManager.LoadScene("MainMenu");
     }
 
     // Método de ejemplo para llamar desde PlayerDeath

@@ -32,13 +32,13 @@ public class ScriptBlockerByAnimation : MonoBehaviour
             s.enabled = true;
         }
 
-        Debug.Log("Scripts desbloqueados por animación.");
+      //  Debug.Log("Scripts desbloqueados por animación.");
     }
 
     // Llamado por Animation Event para cambiar de animación
     public void PlayNextAnimation(string animationName)
     {
         animator.Play(animationName);
-        Debug.Log("Cambiada a animación: " + animationName);
+       // Debug.Log("Cambiada a animación: " + animationName);
     }
 }

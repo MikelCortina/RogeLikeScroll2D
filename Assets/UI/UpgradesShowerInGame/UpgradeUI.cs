@@ -74,7 +74,7 @@ public class UpgradeUI : MonoBehaviour
     {
         if (pendingUpgradeChoices.Count >= MAX_PENDING_LEVELS)
         {
-            Debug.Log("Cola llena");
+            Debug.Log("Cola de niveles llena");
             return;
         }
 
