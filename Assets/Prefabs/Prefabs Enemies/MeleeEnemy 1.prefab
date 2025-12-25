@@ -173,7 +173,7 @@ MonoBehaviour:
   lastAttackTime: -999
   enemyLevel: 0
   enemyLevelManager: {fileID: 5311849784333808177, guid: cb7045c3fae47eb4694b9823c1e51f45, type: 3}
-  baseXP: 50
+  baseXP: 1000000
   renderersToFlash:
   - {fileID: 7474790222286392728}
   flashDuration: 0.1

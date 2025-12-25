@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class RunResetter : MonoBehaviour
 {
+    public RunEffectManager runEffectManager;
     /// <summary>
     /// Reinicia absolutamente todo, como detener y volver a iniciar Play en editor.
     /// </summary>
@@ -26,5 +27,6 @@ public class RunResetter : MonoBehaviour
     public void OnPlayerDeath()
     {
         ResetRun();
+        runEffectManager.ClearAllEffects();
     }
 }

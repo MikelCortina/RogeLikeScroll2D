@@ -252,4 +252,30 @@ public class SpawnTwoProjectilesReturningEffect : ScriptableObject, IPersistentE
     }
 
     #endregion
+    public void ResetRuntime()
+    {
+        // Detener la coroutine principal
+        if (activeCoroutine != null)
+        {
+            CoroutineRunner.Instance.StopCoroutine(activeCoroutine);
+            activeCoroutine = null;
+        }
+
+        // Destruir y limpiar instancias de proyectiles
+        for (int i = 0; i < instances.Length; i++)
+        {
+            if (instances[i] != null)
+            {
+                Object.Destroy(instances[i]);
+                instances[i] = null;
+            }
+
+            projScripts[i] = null;
+            collected[i] = false;
+        }
+
+        // Limpiar owner runtime
+        runtimeOwner = null;
+    }
+
 }

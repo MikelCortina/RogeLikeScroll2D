@@ -181,5 +181,13 @@ public class SpawnTwoProjectilesEffect : ScriptableObject, IPersistentEffect
         ApplyTo(owner);
 
     }
+    public void ResetRuntime()
+    {
+        if (activeCoroutine != null)
+        {
+            CoroutineRunner.Instance.StopCoroutine(activeCoroutine);
+            activeCoroutine = null;
+        }
+    }
 
 }

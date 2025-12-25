@@ -206,6 +206,44 @@ public class FlyingBombDropper : ScriptableObject, IPersistentEffect
         }
     }
 
+    public void ResetRuntime()
+    {
+        // Parar coroutines
+        if (moveCoroutine != null)
+        {
+            CoroutineRunner.Instance.StopCoroutine(moveCoroutine);
+            moveCoroutine = null;
+        }
+
+        if (bombCoroutine != null)
+        {
+            CoroutineRunner.Instance.StopCoroutine(bombCoroutine);
+            bombCoroutine = null;
+        }
+
+        // Desactivar instancia voladora
+        if (instance != null)
+        {
+            instance.SetActive(false);
+            instance = null;
+        }
+
+        // Desactivar todas las bombas del pool
+        if (bombPool != null)
+        {
+            foreach (var bomb in bombPool)
+            {
+                if (bomb != null)
+                    bomb.SetActive(false);
+            }
+
+            bombPool.Clear();
+        }
+
+        // Limpiar referencias runtime
+        mainCam = null;
+        instancePhase = 0f;
+    }
 
     #endregion
 }

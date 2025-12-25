@@ -188,15 +188,20 @@ public class UpgradeManager : MonoBehaviour
     }
     private Upgrade TryCreateSkillNodeUpgrade()
     {
-        // 1. Obtenemos la referencia al SkillTreeUI
         var skillTree = FindObjectOfType<SkillTreeUI>();
         if (skillTree == null)
         {
-            Debug.LogWarning("No se encontró SkillTreeUI en la escena. No se pueden ofrecer desbloqueos de nodos.");
+            Debug.LogWarning("No se encontró SkillTreeUI en la escena.");
             return null;
         }
 
-        // 2. Lista de todos los nodos del árbol que aún NO están desbloqueados
+        var runEffectManager = RunEffectManager.Instance;
+        if (runEffectManager == null)
+        {
+            Debug.LogWarning("No se encontró RunEffectManager.");
+            return null;
+        }
+
         var availableNodes = new List<ItemNode>();
 
         foreach (var family in skillTree.skillFamilies)
@@ -204,7 +209,17 @@ public class UpgradeManager : MonoBehaviour
             if (family?.nodes == null) continue;
             foreach (var node in family.nodes)
             {
-                if (node != null && !skillTree.IsUnlocked(node.nodeId)) // ← usamos skillTree.IsUnlocked()
+                if (node == null) continue;
+
+                // NUEVA CONDICIÓN:
+                // Solo si el efecto NO está activo esta run
+                if (node.effectToActivate != null &&
+                    !runEffectManager.IsEffectActive(node.effectToActivate))
+                {
+                    availableNodes.Add(node);
+                }
+                // Opcional: también permitir nodos sin efecto (raros, pero por completitud)
+                else if (node.effectToActivate == null)
                 {
                     availableNodes.Add(node);
                 }
@@ -213,24 +228,18 @@ public class UpgradeManager : MonoBehaviour
 
         if (availableNodes.Count == 0)
         {
-            // Debug.Log("Ya tienes todos los nodos desbloqueados!");
+            // Debug.Log("No hay nodos disponibles cuyo efecto no esté ya activo esta run.");
             return null;
         }
 
-        // Elegimos uno al azar
         var chosenNode = availableNodes[Random.Range(0, availableNodes.Count)];
 
-        // Creamos la mejora especial en tiempo de ejecución
         var upgradeInstance = ScriptableObject.CreateInstance<Upgrade_SkillNode>();
         upgradeInstance.name = $"UNLOCK_{chosenNode.nodeId}";
-        upgradeInstance.upgradeName = $"¡NUEVA ARMA!\n{chosenNode.displayName}";
-        upgradeInstance.description = $"Desbloquea permanentemente:\n{chosenNode.description}";
+        upgradeInstance.upgradeName = $"¡NUEVA HABILIDAD!\n{chosenNode.displayName}";
+        upgradeInstance.description = $"Desbloquea:\n{chosenNode.description}";
         upgradeInstance.quality = skillNodeUpgradeQuality;
         upgradeInstance.nodeToUnlock = chosenNode;
-
-        // Opcional: mostrar algo en los slots de stats
-        upgradeInstance.displayedStats = new StatTypeToShow[] { StatTypeToShow.GunDamage };
-        upgradeInstance.statsToShow = 1;
 
         return upgradeInstance;
     }

@@ -177,4 +177,44 @@ public class BolaDeGoma : ScriptableObject, IPersistentEffect
         projectilePool.Enqueue(obj);
     }
     #endregion
+
+    public void ResetRuntime()
+    {
+        // Detener la coroutine principal
+        if (activeCoroutine != null && CoroutineRunner.Instance != null)
+        {
+            CoroutineRunner.Instance.StopCoroutine(activeCoroutine);
+            activeCoroutine = null;
+        }
+
+        // Desactivar todos los proyectiles activos en la escena
+        foreach (var ball in projectilePool)
+        {
+            if (ball != null)
+            {
+                ball.SetActive(false);
+
+                Rigidbody2D rb = ball.GetComponent<Rigidbody2D>();
+                if (rb != null)
+                {
+                    rb.simulated = false;
+                    rb.linearVelocity = Vector2.zero;
+                    rb.angularVelocity = 0f;
+                }
+
+                var bolaScript = ball.GetComponent<BolaGoma>();
+                if (bolaScript != null)
+                {
+                    bolaScript.ResetValues();
+                }
+            }
+        }
+
+        // Limpiar la cola del pool
+        projectilePool.Clear();
+
+        // Limpiar owner
+        runtimeOwner = null;
+    }
+
 }

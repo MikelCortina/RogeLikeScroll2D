@@ -7,4 +7,6 @@ public interface IPersistentEffect : IEffect
 
     // (Opcional) para efectos que se puedan remover
     void RemoveFrom(GameObject player);
+
+    void ResetRuntime(); // ?? NUEVO
 }

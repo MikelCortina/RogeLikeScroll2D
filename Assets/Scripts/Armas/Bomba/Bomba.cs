@@ -53,7 +53,17 @@ public class Bomba : ScriptableObject, IPersistentEffect
 
         activeCoroutine = CoroutineRunner.Instance.StartCoroutine(ShootParabolicFan());
     }
+    public void ResetRuntime()
+    {
+        if (activeCoroutine != null)
+        {
+            CoroutineRunner.Instance.StopCoroutine(activeCoroutine);
+            activeCoroutine = null;
+        }
 
+        runtimeOwner = null;
+        projectilePool.Clear();
+    }
     public void RemoveFrom(GameObject owner)
     {
         if (activeCoroutine != null)

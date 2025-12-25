@@ -137,6 +137,25 @@ public class ScreenLooperPersistentOscilator : ScriptableObject, IPersistentEffe
 
         activeCoroutine = null;
     }
+    public void ResetRuntime()
+    {
+        // Parar coroutine activa
+        if (activeCoroutine != null)
+        {
+            CoroutineRunner.Instance.StopCoroutine(activeCoroutine);
+            activeCoroutine = null;
+        }
 
+        // Desactivar y destruir referencia runtime
+        if (instance != null)
+        {
+            instance.SetActive(false);
+            instance = null;
+        }
+
+        // Limpiar referencias runtime
+        mainCam = null;
+        instancePhase = 0f;
+    }
     #endregion
 }

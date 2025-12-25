@@ -47,4 +47,18 @@ public class RunEffectManager : MonoBehaviour
     {
         foreach (var e in activeEffects) yield return e;
     }
+
+    public void ClearAllEffects()
+    {
+        foreach (var effect in activeEffects)
+        {
+            if (effect is IPersistentEffect persistent)
+            {
+                persistent.ResetRuntime();
+            }
+        }
+
+        activeEffects.Clear();
+        Debug.Log("[RunEffectManager] Todos los efectos reseteados y eliminados");
+    }
 }

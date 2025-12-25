@@ -147,6 +147,18 @@ public class BombGasSpawnerPersistentEffect : ScriptableObject, IPersistentEffec
             gasDamagePerSecond: gasDamagePerSecond
         );
     }
+    public void ResetRuntime()
+    {
+        // Parar la coroutine activa
+        if (activeCoroutine != null)
+        {
+            CoroutineRunner.Instance.StopCoroutine(activeCoroutine);
+            activeCoroutine = null;
+        }
+
+        // Limpiar owner runtime
+        runtimeOwner = null;
+    }
 
     #endregion
 }

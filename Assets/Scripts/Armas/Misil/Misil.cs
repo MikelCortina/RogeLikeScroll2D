@@ -149,4 +149,27 @@ public class PersistentMisilEffect : ScriptableObject, IPersistentEffect, IEffec
         if (missile != null)
             ReturnMissileToPool(missile.gameObject);
     }
+
+    public void ResetRuntime()
+    {
+        // Detener la coroutine principal
+        if (activeCoroutine != null && CoroutineRunner.Instance != null)
+        {
+            CoroutineRunner.Instance.StopCoroutine(activeCoroutine);
+            activeCoroutine = null;
+        }
+
+        // Devolver todos los misiles activos al pool
+        foreach (var missile in missilePool)
+        {
+            if (missile != null)
+            {
+                missile.SetActive(false);
+            }
+        }
+
+        // Limpiar el pool
+        missilePool.Clear();
+    }
+
 }

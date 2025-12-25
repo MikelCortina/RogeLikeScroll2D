@@ -251,6 +251,31 @@ public class SpawnTwoProjectilesEmpujeEffect : ScriptableObject, IPersistentEffe
         collected[projectileIndex] = true;
         Debug.Log($"[SpawnTwoProjectilesEmpujeEffect] Projectile {projectileIndex} recogido.");
     }
+    public void ResetRuntime()
+    {
+        // Parar la coroutine principal
+        if (activeCoroutine != null)
+        {
+            CoroutineRunner.Instance.StopCoroutine(activeCoroutine);
+            activeCoroutine = null;
+        }
+
+        // Destruir / limpiar instancias de proyectiles
+        for (int i = 0; i < instances.Length; i++)
+        {
+            if (instances[i] != null)
+            {
+                Object.Destroy(instances[i]);
+                instances[i] = null;
+            }
+
+            projScripts[i] = null;
+            collected[i] = false;
+        }
+
+        // Limpiar owner runtime
+        runtimeOwner = null;
+    }
 
     #endregion
 }

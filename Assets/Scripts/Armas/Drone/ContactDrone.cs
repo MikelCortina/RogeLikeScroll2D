@@ -119,6 +119,26 @@ public class ScreenLooperPersistentOptimized : ScriptableObject, IPersistentEffe
         activeCoroutine = null;
     }
 
+    public void ResetRuntime()
+    {
+        // Parar coroutine si estaba activa
+        if (activeCoroutine != null)
+        {
+            CoroutineRunner.Instance.StopCoroutine(activeCoroutine);
+            activeCoroutine = null;
+        }
+
+        // Desactivar y limpiar la instancia
+        if (instance != null)
+        {
+            instance.SetActive(false);
+            instance = null;
+        }
+
+        // Limpiar referencias runtime
+        mainCam = null;
+    }
+
 
     #endregion
 }

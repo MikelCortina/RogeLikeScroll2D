@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro; // Solo si usas TextMesh Pro
 
 public class HPBarController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Image baseBar;       // Representa el maxHP total (gris)
     [SerializeField] private Image currentHPBar;  // Representa el currentHP (rojo)
+    [SerializeField] private TextMeshProUGUI  hpText;         // Texto clásico de Unity
+    // [SerializeField] private TextMeshProUGUI hpText; // O TextMesh Pro si prefieres
 
     private StatsManager statsManager;
 
@@ -31,14 +34,18 @@ public class HPBarController : MonoBehaviour
         if (statsManager == null || statsManager.RuntimeStats == null) return;
 
         float maxHP = statsManager.RuntimeStats.maxHP;
-       
         float currentHP = Mathf.Clamp(statsManager.RuntimeStats.currentHP, 0, maxHP);
 
-        // Capa 1: base → capacidad total
+        // Base: capacidad total
         baseBar.fillAmount = 1f;
 
-
-        // Capa 3: currentHP (proporción sobre el maxHP total también)
+        // Barra de vida actual
         currentHPBar.fillAmount = currentHP / maxHP;
+
+        // Actualizar texto
+        if (hpText != null)
+        {
+            hpText.text = $"{currentHP:F0} / {maxHP:F0}"; // F0 redondea a entero
+        }
     }
 }
