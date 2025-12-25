@@ -49,7 +49,7 @@ public class RunInventory : MonoBehaviour
             inventory[item] = new RunItemData(item, amount);
         }
 
-        Debug.Log($"[RunInventory] Añadido {amount} de {item.name}. Total: {inventory[item].quantity}");
+       // Debug.Log($"[RunInventory] Añadido {amount} de {item.name}. Total: {inventory[item].quantity}");
     }
 
     public bool RemoveItem(ScriptableObject item, int amount = 1)

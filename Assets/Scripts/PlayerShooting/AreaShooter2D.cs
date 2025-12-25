@@ -187,6 +187,7 @@ public class AreaShooter2D : MonoBehaviour
                 {
                     float dmg = StatsCommunicator.Instance.CalculateGunDamage();
                     enemy.TakeContactDamage(dmg, true);
+                    ConsoleManager.Instance.Log($"Projectile damage dealed: {dmg}");
 
                     Vector2 knockbackDir = ((Vector2)enemy.transform.position - (Vector2)transform.position).normalized;
                     enemy.ApplyKnockback(knockbackDir * StatsManager.Instance.RuntimeStats.knockback / 7.5f);

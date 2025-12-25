@@ -113,10 +113,6 @@ public class StatsCommunicator : MonoBehaviour
 
         float damage = baseDamage * (isCrit ? critMultiplier : 1f);
 
-        if (isCrit)
-            Debug.Log($"CRIT! roll={roll:F3} < critChance={critChance:F3} -> damage={damage:F2}");
-        else
-            Debug.Log($"No crit. roll={roll:F3} >= critChance={critChance:F3} -> damage={damage:F2}");
 
         return damage;
     }

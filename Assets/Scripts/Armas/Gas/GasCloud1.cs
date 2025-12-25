@@ -139,12 +139,14 @@ public class GasCloud : MonoBehaviour
         foreach (var mb in monos)
         {
             if (mb == null) continue;
-            var mi = mb.GetType().GetMethod("TakeContactDamage", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var mi = mb.GetType().GetMethod( "TakeContactDamage",BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,null,new System.Type[] { typeof(float), typeof(bool) },null);
             if (mi != null)
             {
                 try
                 {
-                    mi.Invoke(mb, new object[] { damage });
+                    mi.Invoke(mb, new object[] { damage, false });
+
+                    ConsoleManager.Instance.Log($"GasCloud applied {damage} damage to {target.name} via {mb.GetType().Name}.");
                 }
                 catch
                 {

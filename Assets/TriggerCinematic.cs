@@ -10,12 +10,12 @@ public class TriggerCinematic : MonoBehaviour
 
     private void OnEnable()
     {
-        Debug.Log($"{name} OnEnable - active in hierarchy: {gameObject.activeInHierarchy}");
+      //  Debug.Log($"{name} OnEnable - active in hierarchy: {gameObject.activeInHierarchy}");
     }
 
     private void Start()
     {
-        Debug.Log($"{name} Start - instance id: {GetInstanceID()}, tag: {gameObject.tag}");
+       // Debug.Log($"{name} Start - instance id: {GetInstanceID()}, tag: {gameObject.tag}");
         foreach (var panel in panelesActivar)
         {
             panel.SetActive(false);
@@ -85,7 +85,7 @@ public class TriggerCinematic : MonoBehaviour
 
     private void OnDisable()
     {
-        Debug.Log($"{name} OnDisable");
+        //Debug.Log($"{name} OnDisable");
     }
 
     private void OnDestroy()

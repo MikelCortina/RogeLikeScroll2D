@@ -144,14 +144,14 @@ public class StatsManager : MonoBehaviour
 
         // Mostramos XP actual y lo que falta para subir de nivel
         float xpToLevel = baseXPToLevel * Mathf.Pow(xpMultiplierPerLevel, playerCurrentLevel - 1);
-        Debug.Log($"Current XP: {currentXP}/{xpToLevel}");
+        //Debug.Log($"Current XP: {currentXP}/{xpToLevel}");
 
         while (currentXP >= xpToLevel)
         {
             currentXP -= xpToLevel;
             LevelUp();
             xpToLevel = baseXPToLevel * Mathf.Pow(xpMultiplierPerLevel, playerCurrentLevel - 1);
-            Debug.Log($"Leveled up! New Level: {playerCurrentLevel}, XP remaining: {currentXP}/{xpToLevel}");
+            Debug.Log($"Leveled up! New Level: {playerCurrentLevel}");
         }
     }
 

@@ -22,6 +22,7 @@ public class DamageOnTrigger : MonoBehaviour
                 float dmg = StatsCommunicator.Instance.CalculateGunDamage();
                 enemy.TakeContactDamage(dmg, false);
                 enemy.ApplyKnockback(dir * knockback);
+                ConsoleManager.Instance.Log($"Damage dealed by your dron: {dmg}");
             }
             else if (rb != null)
             {

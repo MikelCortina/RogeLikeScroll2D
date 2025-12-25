@@ -242,7 +242,7 @@ public class EnemyBase : MonoBehaviour
         }
 
        // StartCoroutine(HitPause(0.02f));
-       ConsoleManager.Instance.Log($"You made {amount} damage");
+       //ConsoleManager.Instance.Log($"You made {amount} damage");
     }
 
     IEnumerator HitPause(float duration)
@@ -337,10 +337,12 @@ public class EnemyBase : MonoBehaviour
         if (playerHealth != null)
         {
             playerHealth.TakeMeleDamage(contactDamage);
+            ConsoleManager.Instance.Log($"Player damage received: {contactDamage}");
         }
     }
 
     public float GetContactDamage() => adjustedContactDamage;
+
     public float GetMaxHealth() => adjustedMaxHealth;
     #endregion
 
