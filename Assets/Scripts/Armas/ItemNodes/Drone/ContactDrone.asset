@@ -13,10 +13,9 @@ MonoBehaviour:
   m_Name: ContactDrone
   m_EditorClassIdentifier: 
   nodeId: ContactDroneNode
-  displayName: ContactDrone
+  displayName: Contact_Drone
   icon: {fileID: -5093623974958931509, guid: c3b4b3ff4f544fb48ac701e71434c2c1, type: 3}
-  description: Los drones en batalla tienen finalidades puramente de inteligencia,
-    o no? Si fuese un enemiigo intentaria no chocar con el de todas formas
+  description: One of the small group of drones that doesnt explode nowadays
   effectToActivate: {fileID: 11400000, guid: baf58b071b586b84094211356bdb75fd, type: 2}
   buttonPrefab: {fileID: 0}
   cost: 0

@@ -15,5 +15,5 @@ MonoBehaviour:
   repetible: 1
   quality: 2
   icon: {fileID: -230320821942541813, guid: 15c496e01318f0a4b9e14f1d7c23f6ef, type: 3}
-  description: "Convierte todos tus organos en da\xF1o de projectiles (1 de da\xF1o
-    por cada 2 organos)"
+  description: Convert all your organs into projectile damage (1 damage for every
+    2 organs)

@@ -15,4 +15,4 @@ MonoBehaviour:
   repetible: 1
   quality: 2
   icon: {fileID: 1700863669065140385, guid: 725b348e4352d8c49a2d3e28152a734e, type: 3}
-  description: "Convierte todo tu da\xF1o de projectiles en da\xF1o explosivo"
+  description: Convert all your projectile damage into explosive damage

@@ -15,4 +15,7 @@ MonoBehaviour:
   repetible: 1
   quality: 1
   icon: {fileID: 2137313143374881376, guid: 9cd2581f61208d643927a7da8748cb11, type: 3}
-  description: "Gana un 50% de cadencia de disparo \nPierde un 50% de da\xF1o explosivo "
+  description: 'Gain 50% increased rate of fire.
+
+    Lose 50% reduced explosive
+    damage.'

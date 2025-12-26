@@ -15,4 +15,6 @@ MonoBehaviour:
   repetible: 1
   quality: 0
   icon: {fileID: 21300000, guid: 56f0444649345d24b93d1a11fb4cc696, type: 3}
-  description: "Gana un 15% de probabilidad de dodge\nPierde 5 de da\xF1o de projectiles"
+  description: 'Gain a 15% chance to dodge.
+
+    Lose 5 projectile damage.'

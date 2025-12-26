@@ -15,7 +15,6 @@ MonoBehaviour:
   repetible: 1
   quality: 0
   icon: {fileID: -6196824649850634211, guid: 0a6f20c075807a2489d62e9defe5c30b, type: 3}
-  description: 'Gana 10 de armadura a distancia
+  description: 'Gain 10 ranged armor
 
-    Pierde un 5% de probabilidad
-    de dodge'
+    Lose 5% dodge chance'

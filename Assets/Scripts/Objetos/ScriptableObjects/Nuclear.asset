@@ -15,9 +15,6 @@ MonoBehaviour:
   repetible: 1
   quality: 1
   icon: {fileID: 8967370234478684454, guid: ce29c99d337de75469403ede31ddf8d8, type: 3}
-  description: 'Elimina todos los enemigos en panalla
+  description: 'Eliminate all enemies on screen.
 
-    Pierde la mitad de tu
-    vida
-
-'
+    Lose half your health.'

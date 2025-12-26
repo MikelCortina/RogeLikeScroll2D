@@ -13,12 +13,14 @@ MonoBehaviour:
   m_Name: PenetracionNode3
   m_EditorClassIdentifier: 
   nodeId: pene3
-  displayName: pene3
+  displayName: LVL3_Penetration_Bullets
   icon: {fileID: 1786102465050247127, guid: 12d718501d73aec45b68f2a21db173ea, type: 3}
-  description: 
+  description: Traspasses even more enemies
   effectToActivate: {fileID: 11400000, guid: adeec75774149d74b8410f2955163fd9, type: 2}
   buttonPrefab: {fileID: 0}
   cost: 0
-  requiredEffectIdsToRemove: []
-  prerequisiteNodeIds: []
+  requiredEffectIdsToRemove:
+  - {fileID: 11400000, guid: 9d7c8b0f874a90e48aa201685c643b52, type: 2}
+  prerequisiteNodeIds:
+  - pene2
   debug_unlocked: 0

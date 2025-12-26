@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26fe83e75451d5343921e73ed9362ac3, type: 3}
-  m_Name: Goma Bounce Effect
+  m_Name: Goma Bounce Effect 2
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 119641083227235589, guid: d0ef24b435e06da4f8d348a735959e9d, type: 3}
   lifetime: 8
-  projectilesPerShot: 1
+  projectilesPerShot: 4
   spawnDelay: 0.1
   respawnDelay: 2.5
   maxBounces: 5

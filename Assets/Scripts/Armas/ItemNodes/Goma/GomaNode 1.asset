@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c5c317566d6e4d4e80fc176bb7867a5, type: 3}
-  m_Name: ExplosiveBulletsNode
+  m_Name: GomaNode 1
   m_EditorClassIdentifier: 
-  nodeId: ExplosiveBulletsNode
-  displayName: ExplosiveBullets
-  icon: {fileID: -1431264578679839541, guid: 885d2cfe971eec24ba499ba5d7b70d1c, type: 3}
-  description: Put some TNT on your bullets to blow up those motherfuckers from within
-  effectToActivate: {fileID: 11400000, guid: 0a0969c6e553def4ea738686ba6a5964, type: 2}
+  nodeId: BolaGoma2
+  displayName: 2_Rubber_Ball_Bullets
+  icon: {fileID: 7896879507418422366, guid: 13619a56e59c22a408bb72117da8494a, type: 3}
+  description: Just 2 rubber ball bullets to break some arms
+  effectToActivate: {fileID: 11400000, guid: 3a276ba0173c84c4bbdc05424e7e772d, type: 2}
   buttonPrefab: {fileID: 0}
   cost: 0
-  requiredEffectIdsToRemove: []
+  requiredEffectIdsToRemove:
+  - {fileID: 11400000, guid: 07ef03846bfb40e499f42698a5fe2fa8, type: 2}
   prerequisiteNodeIds:
-  - EmpujeKnifeNode
-  - 5BombaParabolicaNode
+  - BolaGoma1
   debug_unlocked: 0

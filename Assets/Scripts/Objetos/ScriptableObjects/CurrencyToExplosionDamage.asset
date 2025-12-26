@@ -15,5 +15,5 @@ MonoBehaviour:
   repetible: 1
   quality: 2
   icon: {fileID: -4903572174999544725, guid: bd15ee4e9c31e5845bbafd80d66b0b8b, type: 3}
-  description: "Convierte todos tus organos en da\xF1o explosivo (1 de da\xF1o por
-    cada 2 organos)"
+  description: Convert all your organs into explosive damage (1 damage for every
+    2 organs)

@@ -147,7 +147,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveSpace: 1
   maxHealth: 11
-  contactDamage: 5.4
+  contactDamage: 0
   useLevelScaling: 1
   detectRadius: 8
   playerLayer:

@@ -15,5 +15,5 @@ MonoBehaviour:
   familyId: Goma
   nodes:
   - {fileID: 11400000, guid: 07ef03846bfb40e499f42698a5fe2fa8, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 7657752ba61c41d45932e4fa24d619a4, type: 2}
+  - {fileID: 11400000, guid: 4900cb69fa7222544920ec80d03f3a67, type: 2}

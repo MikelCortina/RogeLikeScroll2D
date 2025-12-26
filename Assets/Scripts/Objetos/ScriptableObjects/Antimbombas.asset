@@ -15,5 +15,4 @@ MonoBehaviour:
   repetible: 0
   quality: 2
   icon: {fileID: 8414460553930934020, guid: c2eed952e7b642d4096b27014d21d378, type: 3}
-  description: Haz que tu armadura de rango y mele se combinen. (Se establecera el
-    valor mas alto)
+  description: Combine your ranged and melee armor. (The highest value will be used)

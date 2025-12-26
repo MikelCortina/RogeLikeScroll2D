@@ -12,13 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c5c317566d6e4d4e80fc176bb7867a5, type: 3}
   m_Name: MisilNode 2
   m_EditorClassIdentifier: 
-  nodeId: MisilID
-  displayName: Misil
+  nodeId: Misil3
+  displayName: Dont_Stop_Shooting
   icon: {fileID: 1786102465050247127, guid: 12d718501d73aec45b68f2a21db173ea, type: 3}
-  description: 
-  effectToActivate: {fileID: 11400000, guid: 8b1fa45e2f8720f4fb5ec0feefc9af6b, type: 2}
+  description: Dont stop shooting that shit
+  effectToActivate: {fileID: 11400000, guid: 49f307a29a5cf174984dcfb8cd9bec1c, type: 2}
   buttonPrefab: {fileID: 0}
   cost: 0
-  requiredEffectIdsToRemove: []
-  prerequisiteNodeIds: []
+  requiredEffectIdsToRemove:
+  - {fileID: 11400000, guid: e637a4e1e48fd9740860deed5722cb16, type: 2}
+  prerequisiteNodeIds:
+  - Misil2
   debug_unlocked: 0

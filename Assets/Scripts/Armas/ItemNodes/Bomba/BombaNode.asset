@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: BombaNode
   m_EditorClassIdentifier: 
   nodeId: BombaParabolicaNode
-  displayName: BombaParab
+  displayName: Grenade
   icon: {fileID: 1802791925802439004, guid: 1ea07aa1572b8564592591c3abe41351, type: 3}
-  description: "Un peque\xF1o explosivo que se lanza con ojetivos puramente disuasorios"
+  description: Throws a grenade up, randomly, just to make some noise, right?
   effectToActivate: {fileID: 11400000, guid: 6bef2bf443f94594e9ecc413c622631d, type: 2}
   buttonPrefab: {fileID: 0}
   cost: 0

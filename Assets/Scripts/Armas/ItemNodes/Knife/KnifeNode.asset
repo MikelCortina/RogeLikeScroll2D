@@ -15,8 +15,8 @@ MonoBehaviour:
   nodeId: KnifeNode
   displayName: Knifes
   icon: {fileID: -1895732982348852140, guid: 2387684b7a5139b4fa9de7dc6c7a8b2c, type: 3}
-  description: "El caballo lanza un cuchillo hacia adelante y hacia atras, atraviesa
-    a los enemigos a su paso y les inflige da\xF1o de projectil"
+  description: Teach your horse how to throw a knife forward and backwards, dealing
+    some damage and passing through the enemies
   effectToActivate: {fileID: 11400000, guid: 2add402aeb5ec9343a30b5c77ac9b38e, type: 2}
   buttonPrefab: {fileID: 0}
   cost: 0

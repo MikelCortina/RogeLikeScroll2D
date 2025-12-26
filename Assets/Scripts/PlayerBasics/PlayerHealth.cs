@@ -50,13 +50,19 @@ public class PlayerHealth : MonoBehaviour
         float finalDamage = StatsCommunicator.Instance.CalculateMeleTakenDamage(amount);
         StatsManager.Instance.DamagePlayer(finalDamage);
         PlayRandomHurtSound();
-        StartCoroutine(ShaderAnim(0.1f));
+      
+        StartCoroutine(ShaderAnim(0.1f, ConvertToRange(finalDamage, 0f, 2.0f)));
   
     }
-
-    public IEnumerator ShaderAnim(float amount)
+    float ConvertToRange(float value, float min, float max)
     {
-        myMaterial.SetFloat("_Distorsion", 1f); // Activa
+        return Mathf.InverseLerp(min, max, value) * 2f;
+    }
+
+
+    public IEnumerator ShaderAnim(float amount, float distorsion)
+    {
+        myMaterial.SetFloat("_Distorsion", distorsion); // Activa
 
         yield return new WaitForSecondsRealtime(amount); // espera tiempo real
 
