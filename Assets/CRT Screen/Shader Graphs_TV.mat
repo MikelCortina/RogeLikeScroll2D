@@ -43,9 +43,10 @@ Material:
     - _DistortioAmount: 100
     - _Inferior: 0
     - _Intensity: 0
-    - _LineAmount: 0
+    - _LineAmount: 150
     - _OffSetSuperior: 0
     - _Screen_Lines_Speed: 0.05
+    - _Strength: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 0}
     - _Direccion: {r: 3, g: 3, b: 0, a: 0}

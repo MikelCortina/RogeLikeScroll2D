@@ -11,6 +11,7 @@ public class PlayerHealth : MonoBehaviour
     public UnityEvent OnDeath;
 
     public AudioClip[] hurtSounds; // 🎵 Lista de sonidos de daño
+    public AudioClip dodgeSound; // 🎵 Sonido de dodge
     public float soundCooldown = 0f; // ⏳ Tiempo mínimo entre sonidos
     private float lastSoundTime;
 
@@ -18,9 +19,12 @@ public class PlayerHealth : MonoBehaviour
 
     public Material myMaterial;
 
+  
+
     private IEnumerator Start()
     {
         myMaterial.SetFloat("_Distorsion", 0f); // Activa
+        myMaterial.SetFloat("_LineAmount", 150f); // Activa
         yield return new WaitUntil(() => StatsManager.Instance != null);
         StatsManager.Instance.OnHealthChanged += HandleHealthChanged;
         StatsManager.Instance.OnPlayerDied += HandleDeath;
@@ -49,16 +53,23 @@ public class PlayerHealth : MonoBehaviour
     {
         float finalDamage = StatsCommunicator.Instance.CalculateMeleTakenDamage(amount);
         StatsManager.Instance.DamagePlayer(finalDamage);
-        PlayRandomHurtSound();
-      
-        StartCoroutine(ShaderAnim(0.1f, ConvertToRange(finalDamage, 0f, 2.0f)));
-  
-    }
-    float ConvertToRange(float value, float min, float max)
-    {
-        return Mathf.InverseLerp(min, max, value) * 2f;
-    }
+       
+        if (finalDamage > 0)
+        {
 
+            PlayRandomHurtSound();
+
+            StartCoroutine(ShaderAnim(0.1f,1));
+
+        }
+        else
+        {
+            PlayRandomDodgeSound();
+            StartCoroutine(DodgeAnim(0.1f, new Vector2(0f, 600)));
+        }
+
+
+    }
 
     public IEnumerator ShaderAnim(float amount, float distorsion)
     {
@@ -68,6 +79,16 @@ public class PlayerHealth : MonoBehaviour
 
         myMaterial.SetFloat("_Distorsion", 0f); // Falso
     }
+
+    public IEnumerator DodgeAnim(float amount, Vector2 lineAmount)
+    {
+        myMaterial.SetVector("_LineAmount", lineAmount); // Activa
+
+        yield return new WaitForSecondsRealtime(amount); // espera tiempo real
+
+        myMaterial.SetVector("_LineAmount", new Vector2(0f, 150f)); // Valor por defecto
+    }
+
     public void TakeRangeDamage(float amount)
     {
         float finalDamage = StatsCommunicator.Instance.CalculateRangeTakenDamage(amount);
@@ -102,9 +123,28 @@ public class PlayerHealth : MonoBehaviour
         lastSoundTime = Time.time;
     }
 
+    private void PlayRandomDodgeSound()
+    {
+        // Cooldown para evitar spam
+        if (Time.time - lastSoundTime < soundCooldown)
+            return;
 
-//Cuando te curas se llama a este metodo, desde habilidades, items en el suelo etc.
-public void Heal(float amount)
+        if (hurtSounds.Length == 0)
+            return;
+
+        // Selecciona un sonido aleatorio
+        AudioClip clip = dodgeSound;
+
+        // Reproduce el sonido
+        audioSource.PlayOneShot(clip);
+
+        // Registra el último momento en que se reprodujo
+        lastSoundTime = Time.time;
+    }
+
+
+    //Cuando te curas se llama a este metodo, desde habilidades, items en el suelo etc.
+    public void Heal(float amount)
     {
         StatsManager.Instance.HealPlayer(amount);
     }

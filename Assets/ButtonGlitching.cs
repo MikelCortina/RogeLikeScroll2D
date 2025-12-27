@@ -57,7 +57,20 @@ public class ButtonGlitcher : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
         // ▶️ Reproducir sonido al soltar el click
         if (audioSource != null && releaseSound != null)
-            audioSource.PlayOneShot(releaseSound);
+            PlaySoundDetached(releaseSound);
+    }
+    public static void PlaySoundDetached(AudioClip clip, float volume = 1f)
+    {
+        if (clip == null) return;
+
+        GameObject go = new GameObject("OneShotAudio");
+        AudioSource src = go.AddComponent<AudioSource>();
+
+        src.clip = clip;
+        src.volume = volume;
+        src.Play();
+
+        Object.Destroy(go, clip.length);
     }
 
     private IEnumerator GlitchLoop()

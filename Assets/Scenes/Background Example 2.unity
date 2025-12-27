@@ -29494,6 +29494,10 @@ PrefabInstance:
       value: Player (1)
       objectReference: {fileID: 0}
     - target: {fileID: 4504788712007658705, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: dodgeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 438a1d73cbff1f34c8399039a9109b85, type: 3}
+    - target: {fileID: 4504788712007658705, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: myMaterial
       value: 
       objectReference: {fileID: 2100000, guid: 2e171dd2c1a36274cbd6e665e6fa385b, type: 2}
@@ -29643,7 +29647,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.dodgeChance
-      value: 5
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.xpMultiplier
@@ -31780,6 +31784,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameConsole: {fileID: 556389968}
+--- !u!114 &2052182034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1796160034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c123efe28f8e20a4a97b4c9ae1f666d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &2072211439 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6081704675520411271, guid: bbcdb23bdd138ce4d90d88e145acf58d, type: 3}
@@ -34897,6 +34913,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 24776288539050120, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2052182033}
+    - targetCorrespondingSourceObject: {fileID: 24776288539050120, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2052182034}
     - targetCorrespondingSourceObject: {fileID: 1701672908580987719, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       insertIndex: 2
       addedObject: {fileID: 1553025503}
