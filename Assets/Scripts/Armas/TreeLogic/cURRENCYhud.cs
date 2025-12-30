@@ -6,6 +6,7 @@ public class CurrencyHUD : MonoBehaviour
 {
     [Header("Referencias")]
     public TextMeshProUGUI currencyText; // Asigna el TextMeshProUGUI en la UI
+    public TextMeshProUGUI currencyText2; // Asigna el TextMeshProUGUI en la UI
 
     private void Awake()
     {
@@ -24,6 +25,7 @@ public class CurrencyHUD : MonoBehaviour
         // Inicializar el HUD con el valor actual
         if (StatsManager.Instance != null)
             currencyText.text = StatsManager.Instance.RuntimeStats.currency.ToString();
+             currencyText2.text = StatsManager.Instance.RuntimeStats.currency.ToString();
     }
 
 
@@ -32,6 +34,7 @@ public class CurrencyHUD : MonoBehaviour
        // Debug.Log("Actualizando HUD de moneda: " + newAmount);
         if (currencyText == null) return;
         currencyText.text = newAmount.ToString();
+        currencyText2.text = newAmount.ToString();
     }
 
     private void OnDestroy()

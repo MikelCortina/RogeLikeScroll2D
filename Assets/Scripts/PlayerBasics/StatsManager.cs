@@ -302,6 +302,7 @@ public class StatsManager : MonoBehaviour
 
     private void PlayerDeath()
     {
+        Time.timeScale = 0f; // Pausa el juego
         OnPlayerDied?.Invoke();
        // Debug.Log("Jugador muri�");
         runResetter.OnPlayerDeath();

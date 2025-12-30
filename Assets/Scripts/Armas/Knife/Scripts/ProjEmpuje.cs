@@ -224,7 +224,7 @@ public class ProjectileEmpuje : MonoBehaviour
             catch { }
             rb.linearVelocity = Vector2.zero;
         }
-        Debug.Log($"[ProjectileEmpuje] idx={index} collected");
+    //   Debug.Log($"[ProjectileEmpuje] idx={index} collected");
         parentEffect?.NotifyCollected(index);
 
         // asegurarnos de soltar cualquier enemigo restante
@@ -253,7 +253,7 @@ public class ProjectileEmpuje : MonoBehaviour
         // Si colisiona con suelo, pedimos retorno (se mantiene comportamiento)
         if (other.CompareTag("Ground"))
         {
-            Debug.Log($"[ProjectileEmpuje] idx={index} OnTrigger with Ground {other.name}. Requesting return.");
+          //  Debug.Log($"[ProjectileEmpuje] idx={index} OnTrigger with Ground {other.name}. Requesting return.");
             parentEffect?.RequestReturn(index);
             return;
         }
@@ -264,7 +264,7 @@ public class ProjectileEmpuje : MonoBehaviour
             EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
             if (enemy != null)
             {
-                Debug.Log("ProjectileEmpuje: Impacto con enemigo, aplicando daño.");
+                //Debug.Log("ProjectileEmpuje: Impacto con enemigo, aplicando daño.");
                 float dmg = StatsCommunicator.Instance.CalculateGunDamage();
                 enemy.TakeContactDamage(dmg, false);
                 ConsoleManager.Instance.Log($"Knife damage dealed: {dmg}");

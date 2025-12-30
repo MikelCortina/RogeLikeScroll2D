@@ -8,8 +8,7 @@ public class ScoreManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI scoreText;
 
-    private float timer;
-    private int score;
+    public int score;
 
     void Awake()
     {
@@ -23,22 +22,11 @@ public class ScoreManager : MonoBehaviour
         UpdateScoreUI();
     }
 
-    void Update()
-    {
-        // Sumar 1 punto cada segundo
-        timer += Time.deltaTime;
-        if (timer >= 1f)
-        {
-            score += 1;
-            timer = 0f;
-            UpdateScoreUI();
-        }
-    }
 
     // Llamar a esta función cuando un enemigo muere
     public void EnemyDied()
     {
-        score *= 2;
+        ++score;
         UpdateScoreUI();
     }
 

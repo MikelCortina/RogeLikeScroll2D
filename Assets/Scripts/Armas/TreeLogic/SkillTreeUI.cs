@@ -22,7 +22,6 @@ public class SkillTreeUI : MonoBehaviour
     public List<Transform> mixedNodeContainers = new List<Transform>();
 
     [Header("UI")]
-    public TextMeshProUGUI titleText;
     public TextMeshProUGUI precioRefresh;
     private bool unlockIsFreeThisTime = false; // NUEVO
 
@@ -31,7 +30,9 @@ public class SkillTreeUI : MonoBehaviour
     // -------------------------
     [Header("Spawn cost (para boton de crear nueva familia)")]
     [Tooltip("Coste base para spawnear la primera familia")]
-    public int spawnBaseCost = 10;
+    public int spawnBaseCost = 100;
+    [SerializeField] private float weaponCostMultiplier = 1.6f;
+    [SerializeField] private int unlockedWeaponsCount;
     [Tooltip("Coste máximo (tope) para evitar overflow al elevar al cuadrado repetidamente)")]
     public double maxSpawnCost = 1000000000.0; // 1e9 por defecto
 
@@ -641,7 +642,7 @@ public class SkillTreeUI : MonoBehaviour
         var availableFamilies = skillFamilies.Where(f => !activeFamilyNames.Contains(f.name)).ToList();
         if (availableFamilies.Count == 0)
         {
-            Debug.Log("[SkillTreeUI] No hay familias disponibles para spawnear (todas ya están instanciadas).");
+         //   Debug.Log("[SkillTreeUI] No hay familias disponibles para spawnear (todas ya están instanciadas).");
             return;
         }
 
@@ -656,7 +657,7 @@ public class SkillTreeUI : MonoBehaviour
         var availableFamilies = skillFamilies.Where(f => !activeFamilyNames.Contains(f.name)).ToList();
         if (availableFamilies.Count == 0)
         {
-            Debug.Log("[SkillTreeUI] Todas las familias están activas; no se instanciará una nueva.");
+         //   Debug.Log("[SkillTreeUI] Todas las familias están activas; no se instanciará una nueva.");
             return;
         }
 
@@ -667,10 +668,12 @@ public class SkillTreeUI : MonoBehaviour
     // PUBLIC API para UI: devuelve el coste redondeado actual que necesita el botón para spawnear.
     public int GetNextSpawnCost()
     {
-        if (nextSpawnCost <= 0) nextSpawnCost = Mathf.Max(1, spawnBaseCost);
-        return Mathf.Clamp((int)Mathf.Ceil((float)nextSpawnCost), 0, int.MaxValue);
-    }
+        int weaponIndex = unlockedWeaponsCount; // número de armas ya desbloqueadas
 
+        float cost = spawnBaseCost * Mathf.Pow(weaponCostMultiplier, weaponIndex);
+
+        return Mathf.Max(1, Mathf.CeilToInt(cost));
+    }
     public bool IsAffordableNextSpawn()
     {
         int cost = GetNextSpawnCost();
