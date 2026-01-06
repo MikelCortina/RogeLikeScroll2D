@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: 2_Rubber_Ball_Bullets
   icon: {fileID: 7896879507418422366, guid: 13619a56e59c22a408bb72117da8494a, type: 3}
   description: Just 2 rubber ball bullets to break some arms
-  effectToActivate: {fileID: 11400000, guid: 3a276ba0173c84c4bbdc05424e7e772d, type: 2}
+  effectToActivate: {fileID: 11400000, guid: 878b32efd4b99b1499d3d3673e3e236a, type: 2}
   buttonPrefab: {fileID: 0}
   cost: 0
   requiredEffectIdsToRemove:

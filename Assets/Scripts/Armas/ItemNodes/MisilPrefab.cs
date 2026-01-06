@@ -3,42 +3,60 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
 public class MisilProjectile : MonoBehaviour
 {
-    [Header("Explosion Settings")]
-    public GameObject explosionPrefab;
-    public float lifetime = 10f;
-    public float explosionRadius = 1.5f;
-    public float explosionForce = 200f;
-    public ExplosionEffect explosionEffect; // Referencia al efecto de explosi�n
+    [Header("Movimiento (opcional, si no lo controla el looper)")]
+    public float speed = 5f; // Solo se usa si no está controlado externamente
 
-    private Vector3 target;
-    private bool targetSet = false;
+    [Header("Explosion Settings")]
+    public GameObject explosionPrefab;           // VFX de explosión
+                // Tiempo máximo en pantalla
+    public float explosionRadius = 1.8f;
+    public float explosionForce = 300f;
+    public ExplosionEffect explosionEffect;      // Tu ScriptableObject de daño en área
+
+    [Header("Daño")]
+    public float damage = 25f;                   // Daño base (si lo usas directamente)
+
     private bool exploded = false;
 
-    // Evento para pooling
-    public event System.Action OnExplode;
+    // Evento para notificar al pool (importante para el looper)
+    public event System.Action<MisilProjectile> OnExplode;
 
     private void OnEnable()
     {
-        // Iniciar conteo de vida solo si no usamos pooling externo
-        Invoke(nameof(LifetimeExpired), lifetime);
+        exploded = false;
+        // Reiniciar lifetime cada vez que se activa
+        CancelInvoke(nameof(LifetimeExpired));
+     
     }
 
     private void OnDisable()
     {
-        // Cancelar invocaciones al desactivar
-        CancelInvoke();
-        ResetMissile();
+        CancelInvoke(nameof(LifetimeExpired));
     }
 
-    public void SetTarget(Vector3 worldTarget)
+    // Método opcional: si quieres que el misil se mueva solo (por si lo usas fuera del looper)
+    // El looper ya mueve el transform, así que esto es redundante pero inofensivo
+    private void FixedUpdate()
     {
-        target = worldTarget;
-        targetSet = true;
+        // Si el movimiento lo controla el ScreenLooper, no hacemos nada aquí
+        // Pero lo dejamos por compatibilidad si se usa en otro contexto
+        // transform.position += Vector3.right * speed * Time.fixedDeltaTime;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        Explode();
+        // Colisión con suelo
+        if (collision.CompareTag("Ground"))
+        {
+            Explode();
+            return;
+        }
+
+        // Colisión con jugador (o cualquier enemigo/destructible)
+        if (collision.CompareTag("Player") || collision.CompareTag("enemigo"))
+        {
+            Explode();
+        }
     }
 
     private void LifetimeExpired()
@@ -51,41 +69,61 @@ public class MisilProjectile : MonoBehaviour
         if (exploded) return;
         exploded = true;
 
-        // Instanciar VFX si existe
+        // 1. VFX de explosión
         if (explosionPrefab != null)
+        {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        }
 
-        // Ejecutar efecto de explosi�n si existe
+        // 2. Efecto de daño en área (tu ExplosionEffect ScriptableObject)
         explosionEffect?.Execute(transform.position, gameObject);
 
-        // Notificar al pool
-        OnExplode?.Invoke();
+        // 3. Física de empuje (opcional, para ragdolls o objetos cercanos)
+        ApplyExplosionForce();
 
-        // Si no hay pool, destruir el objeto
-        if (OnExplode == null)
-            Destroy(gameObject);
+        // 4. Notificar al sistema de pooling (muy importante para el looper)
+        OnExplode?.Invoke(this);
+
+        // 5. Desactivar el misil (no destruirlo, para reutilizarlo)
+        gameObject.SetActive(false);
     }
 
+    private void ApplyExplosionForce()
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
+        foreach (Collider2D col in colliders)
+        {
+            Rigidbody2D rb = col.GetComponent<Rigidbody2D>();
+            if (rb != null && rb != GetComponent<Rigidbody2D>())
+            {
+                Vector2 direction = (col.transform.position - transform.position);
+                float distance = direction.magnitude;
+                if (distance < 0.1f) distance = 0.1f;
+
+                float force = explosionForce * (1f - distance / explosionRadius);
+                rb.AddForce(direction.normalized * force, ForceMode2D.Impulse);
+            }
+        }
+    }
+
+    // Método público para resetear el misil (llamado por el pool o looper si es necesario)
     public void ResetMissile()
     {
         exploded = false;
-        targetSet = false;
+        transform.rotation = Quaternion.identity;
 
-        // Reset Rigidbody
-        var rb = GetComponent<Rigidbody2D>();
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
-            rb.simulated = true;
         }
-
-        // Reset transform
-        transform.rotation = Quaternion.identity;
     }
 
     private void OnDrawGizmosSelected()
     {
+        Gizmos.color = new Color(1f, 0.3f, 0f, 0.35f);
+        Gizmos.DrawSphere(transform.position, explosionRadius);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, explosionRadius);
     }

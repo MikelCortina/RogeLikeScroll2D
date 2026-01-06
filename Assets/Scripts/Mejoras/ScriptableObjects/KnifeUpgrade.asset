@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeName: Knife
   description: Unlock_The_Knife
-  quality: 0
+  quality: 2
   displayedStats: 000000000000000000000000
   statsToShow: 1
   nodeToUnlock: {fileID: 11400000, guid: 64827801536bdd8498f45bf9c0e4802c, type: 2}

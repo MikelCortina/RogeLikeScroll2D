@@ -34,20 +34,20 @@ public class SpawnTwoProjectilesEmpujeEffect : ScriptableObject, IPersistentEffe
     {
         if (projectilePrefab == null)
         {
-            Debug.LogWarning("[SpawnTwoProjectilesEmpujeEffect] projectilePrefab no asignado.");
+          //  Debug.LogWarning("[SpawnTwoProjectilesEmpujeEffect] projectilePrefab no asignado.");
             return;
         }
 
         if (owner == null)
         {
-            Debug.LogWarning("[SpawnTwoProjectilesEmpujeEffect] ApplyTo recibió owner = null.");
+           // Debug.LogWarning("[SpawnTwoProjectilesEmpujeEffect] ApplyTo recibió owner = null.");
             return;
         }
 
         // Si ya está activo para ese owner, no reiniciar
         if (activeCoroutine != null)
         {
-            Debug.Log("[SpawnTwoProjectilesEmpujeEffect] Ya activo, ApplyTo ignorado.");
+           // Debug.Log("[SpawnTwoProjectilesEmpujeEffect] Ya activo, ApplyTo ignorado.");
             return;
         }
 
@@ -92,8 +92,7 @@ public class SpawnTwoProjectilesEmpujeEffect : ScriptableObject, IPersistentEffe
             ApplyTo(owner);
         else if (runtimeOwner != null)
             ApplyTo(runtimeOwner);
-        else
-            Debug.LogWarning("[SpawnTwoProjectilesEmpujeEffect] Execute sin owner. Use ApplyTo(owner).");
+     
     }
 
     #endregion
@@ -116,11 +115,11 @@ public class SpawnTwoProjectilesEmpujeEffect : ScriptableObject, IPersistentEffe
 
                 if (rb == null)
                 {
-                    Debug.LogWarning($"[SpawnTwoProjectilesEmpujeEffect] prefab no tiene Rigidbody2D (instancia {i}).");
+                  //  Debug.LogWarning($"[SpawnTwoProjectilesEmpujeEffect] prefab no tiene Rigidbody2D (instancia {i}).");
                 }
                 if (col == null)
                 {
-                    Debug.LogWarning($"[SpawnTwoProjectilesEmpujeEffect] prefab no tiene Collider2D (instancia {i}).");
+                  //  Debug.LogWarning($"[SpawnTwoProjectilesEmpujeEffect] prefab no tiene Collider2D (instancia {i}).");
                 }
 
                 // Aseguramos que tengan ProjectileEmpuje; si no, lo añadimos
@@ -223,7 +222,7 @@ public class SpawnTwoProjectilesEmpujeEffect : ScriptableObject, IPersistentEffe
         var pr = projScripts[projectileIndex];
         if (pr != null)
         {
-            Debug.Log($"[SpawnTwoProjectilesEmpujeEffect] RequestReturn recibido para {projectileIndex}");
+           // Debug.Log($"[SpawnTwoProjectilesEmpujeEffect] RequestReturn recibido para {projectileIndex}");
             pr.StartReturn(runtimeOwner);
         }
     }
@@ -249,7 +248,7 @@ public class SpawnTwoProjectilesEmpujeEffect : ScriptableObject, IPersistentEffe
         }
 
         collected[projectileIndex] = true;
-        Debug.Log($"[SpawnTwoProjectilesEmpujeEffect] Projectile {projectileIndex} recogido.");
+      //  Debug.Log($"[SpawnTwoProjectilesEmpujeEffect] Projectile {projectileIndex} recogido.");
     }
     public void ResetRuntime()
     {

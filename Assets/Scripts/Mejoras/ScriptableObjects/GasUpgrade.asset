@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeName: Gas_Grenades
   description: Unlock_The_Gas_Grenades
-  quality: 0
+  quality: 2
   displayedStats: 000000000000000000000000
   statsToShow: 1
   nodeToUnlock: {fileID: 11400000, guid: d806ffb76f7822845b3f157abfedcf43, type: 2}

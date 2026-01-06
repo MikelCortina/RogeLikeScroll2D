@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Effects/FlyingBombDropper")]
 public class FlyingBombDropper : ScriptableObject, IPersistentEffect
 {
-    [Header("Prefab y control de avión/objeto volador")]
+    [Header("Flying")]
     public GameObject flyingPrefab;
     public float speed = 5f;
     public float respawnDelay = 4f;
@@ -13,108 +13,91 @@ public class FlyingBombDropper : ScriptableObject, IPersistentEffect
     public float leftOffset = -10f;
     public float rightOffset = 10f;
 
-    [Header("Oscilación vertical")]
+    [Header("Oscillation")]
     public float oscillationAmplitude = 0.5f;
     public float oscillationFrequency = 1f;
 
-    [Header("Prefab y control de bombas")]
+    [Header("Bombs")]
     public GameObject bombPrefab;
-    public int bombPoolSize = 10;      // tamaño del pool
+    public int bombPoolSize = 10;
     public float bombDropInterval = 1f;
-    public Transform bombSpawnPoint;
 
-    // Runtime
-    private Coroutine moveCoroutine;
-    private Coroutine bombCoroutine;
+    // runtime
     private GameObject instance;
     private Camera mainCam;
-
+    private Coroutine moveCoroutine;
+    private Coroutine bombCoroutine;
     private Queue<GameObject> bombPool = new Queue<GameObject>();
-    private float instancePhase = 0f;
+    private bool runtimeActive;
 
-    #region IPersistentEffect
+    // ================= IPersistentEffect =================
 
     public void ApplyTo(GameObject owner)
     {
-        if (flyingPrefab == null || bombPrefab == null)
-        {
-            Debug.LogWarning("[FlyingBombDropper] Prefabs no asignados.");
-            return;
-        }
-
-        if (moveCoroutine != null) return;
+        if (runtimeActive) return;
+        if (flyingPrefab == null || bombPrefab == null) return;
 
         mainCam = Camera.main;
-        if (mainCam == null)
-        {
-            Debug.LogWarning("[FlyingBombDropper] Cámara principal no encontrada.");
-            return;
-        }
+        if (mainCam == null) return;
 
-        // asignar fase aleatoria para la oscilación (evita sincronía entre instancias)
-        instancePhase = Random.Range(0f, Mathf.PI * 2f);
+        runtimeActive = true;
 
-        // Instancia inicial del avión
-        if (instance == null)
-        {
-            instance = Object.Instantiate(flyingPrefab, GetLeftSpawnPos(), Quaternion.identity);
-        }
-        else
-        {
-            instance.transform.position = GetLeftSpawnPos();
-            instance.SetActive(true);
-        }
-
-        // Inicializar pool de bombas
+        instance = Instantiate(flyingPrefab, GetLeftSpawnPos(), Quaternion.identity);
         InitializeBombPool();
 
-        moveCoroutine = CoroutineRunner.Instance.StartCoroutine(MoveLoop(owner));
-        bombCoroutine = CoroutineRunner.Instance.StartCoroutine(DropBombsLoop(owner));
+        moveCoroutine = CoroutineRunner.Instance.StartCoroutine(MoveLoop());
+        bombCoroutine = CoroutineRunner.Instance.StartCoroutine(DropBombsLoop());
     }
 
     public void RemoveFrom(GameObject owner)
     {
+        ResetRuntime();
+    }
+
+    public void ResetRuntime()
+    {
+        runtimeActive = false;
+
         if (moveCoroutine != null)
         {
             CoroutineRunner.Instance.StopCoroutine(moveCoroutine);
             moveCoroutine = null;
         }
+
         if (bombCoroutine != null)
         {
             CoroutineRunner.Instance.StopCoroutine(bombCoroutine);
             bombCoroutine = null;
         }
+
         if (instance != null)
         {
-            instance.SetActive(false);
+            Destroy(instance);
+            instance = null;
         }
 
-        // Devolver todas las bombas al pool
-        foreach (var bomb in bombPool)
+        while (bombPool.Count > 0)
         {
-            bomb.SetActive(false);
+            var b = bombPool.Dequeue();
+            if (b != null) Destroy(b);
         }
+
+        mainCam = null;
     }
 
-    public void Execute(Vector2 position, GameObject owner = null)
-    {
-        ApplyTo(owner);
-    }
+    // ================= Helpers =================
 
-    #endregion
+    private Vector3 GetLeftSpawnPos()
+        => new Vector3(mainCam.transform.position.x + leftOffset, yPosition, 0);
 
-    #region Helpers
-
-    private Vector3 GetLeftSpawnPos() => new Vector3(mainCam.transform.position.x + leftOffset, yPosition, 0f);
-    private Vector3 GetRightBound() => new Vector3(mainCam.transform.position.x + rightOffset, yPosition, 0f);
+    private Vector3 GetRightBound()
+        => new Vector3(mainCam.transform.position.x + rightOffset, yPosition, 0);
 
     private void InitializeBombPool()
     {
-        if (bombPool.Count > 0) return;
-
         for (int i = 0; i < bombPoolSize; i++)
         {
-            GameObject bomb = Object.Instantiate(bombPrefab, Vector3.zero, Quaternion.identity);
+            var bomb = Instantiate(bombPrefab);
             bomb.SetActive(false);
             bombPool.Enqueue(bomb);
         }
@@ -122,128 +105,74 @@ public class FlyingBombDropper : ScriptableObject, IPersistentEffect
 
     private GameObject GetBombFromPool()
     {
-        if (bombPool.Count == 0)
+        while (bombPool.Count > 0)
         {
-            // si el pool se acaba, podemos instanciar más (opcional)
-            GameObject bomb = Object.Instantiate(bombPrefab, Vector3.zero, Quaternion.identity);
-            bomb.SetActive(false);
-            return bomb;
+            var bomb = bombPool.Dequeue();
+            if (bomb != null)
+            {
+                bomb.SetActive(true);
+                return bomb;
+            }
         }
 
-        GameObject pooledBomb = bombPool.Dequeue();
-        pooledBomb.SetActive(true);
-        return pooledBomb;
+        var extra = Instantiate(bombPrefab);
+        extra.SetActive(true);
+        return extra;
     }
 
-    private void ReturnBombToPool(GameObject bomb)
+    private void ReturnBomb(GameObject bomb)
     {
+        if (!runtimeActive || bomb == null) return;
         bomb.SetActive(false);
         bombPool.Enqueue(bomb);
     }
 
-    #endregion
+    // ================= Coroutines =================
 
-    #region Coroutines
-
-    private IEnumerator MoveLoop(GameObject owner)
+    private IEnumerator MoveLoop()
     {
-        while (instance != null)
+        while (runtimeActive && instance != null)
         {
-            Vector3 rightBound = GetRightBound();
+            Vector3 right = GetRightBound();
 
-            while (instance.transform.position.x < rightBound.x)
+            while (runtimeActive && instance != null && instance.transform.position.x < right.x)
             {
-                // avanzar en X
-                float newX = instance.transform.position.x + speed * Time.deltaTime;
+                float x = instance.transform.position.x + speed * Time.deltaTime;
+                float osc = oscillationAmplitude *
+                            Mathf.Sin(Time.time * oscillationFrequency * Mathf.PI * 2f);
 
-                // calcular oscilación en Y
-                float osc = 0f;
-                if (oscillationAmplitude != 0f && oscillationFrequency != 0f)
-                {
-                    osc = oscillationAmplitude * Mathf.Sin(Time.time * (Mathf.PI * 2f) * oscillationFrequency + instancePhase);
-                }
-
-                instance.transform.position = new Vector3(newX, yPosition + osc, 0f);
+                instance.transform.position = new Vector3(x, yPosition + osc, 0);
                 yield return null;
             }
 
-            instance.transform.position = GetLeftSpawnPos();
-           
-            float spawnRate = StatsManager.Instance.RuntimeStats.spawnRate;
+            if (instance != null)
+                instance.transform.position = GetLeftSpawnPos();
 
-            // Convertir spawnRate → tiempo entre respawns
-            float dynamicRespawnDelay = respawnDelay / spawnRate;
-
+            yield return new WaitForSeconds(respawnDelay);
         }
-
-        moveCoroutine = null;
     }
 
-    private IEnumerator DropBombsLoop(GameObject owner)
+    private IEnumerator DropBombsLoop()
     {
-        Transform spawnPoint = instance.transform.Find("BombSpawnPoint");
-        if (spawnPoint == null) spawnPoint = instance.transform;
-
-        while (instance != null)
+        while (runtimeActive && instance != null)
         {
-            Vector3 spawnPos = spawnPoint.position;
+            var bomb = GetBombFromPool();
+            bomb.transform.position = instance.transform.position;
 
-            GameObject bomb = GetBombFromPool();
-            bomb.transform.position = spawnPos;
-
-            BombProjectile bombScript = bomb.GetComponent<BombProjectile>();
-            if (bombScript != null)
+            if (bomb.TryGetComponent<BombProjectile>(out var bp))
             {
-                bombScript.owner = instance;
-                bombScript.OnExplode += () => ReturnBombToPool(bomb); // cuando explote, volver al pool
+                bp.owner = instance;
+                bp.OnExplode += () => ReturnBomb(bomb);
             }
 
-            // Obtener spawnRate dinámico del StatsManager
-            float spawnRate = StatsManager.Instance.RuntimeStats.spawnRate;
-            float dynamicDropInterval = bombDropInterval*1.3f / spawnRate;
-
-            yield return new WaitForSeconds(dynamicDropInterval);
+            yield return new WaitForSeconds(bombDropInterval);
         }
     }
 
-    public void ResetRuntime()
+    // ================= IEffect =================
+    public void Execute(Vector2 position, GameObject owner = null)
     {
-        // Parar coroutines
-        if (moveCoroutine != null)
-        {
-            CoroutineRunner.Instance.StopCoroutine(moveCoroutine);
-            moveCoroutine = null;
-        }
-
-        if (bombCoroutine != null)
-        {
-            CoroutineRunner.Instance.StopCoroutine(bombCoroutine);
-            bombCoroutine = null;
-        }
-
-        // Desactivar instancia voladora
-        if (instance != null)
-        {
-            instance.SetActive(false);
-            instance = null;
-        }
-
-        // Desactivar todas las bombas del pool
-        if (bombPool != null)
-        {
-            foreach (var bomb in bombPool)
-            {
-                if (bomb != null)
-                    bomb.SetActive(false);
-            }
-
-            bombPool.Clear();
-        }
-
-        // Limpiar referencias runtime
-        mainCam = null;
-        instancePhase = 0f;
+        if (owner != null)
+            ApplyTo(owner);
     }
-
-    #endregion
 }

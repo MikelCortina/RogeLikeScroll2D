@@ -79,7 +79,7 @@ public class ProjectileEmpuje : MonoBehaviour
         facingRight = transform.localScale.x >= 0f;
 
         gameObject.name = $"EmpujeProj_{index}_active";
-        Debug.Log($"[ProjectileEmpuje] ResetState idx={index}, owner={(owner != null ? owner.name : "NULL")}");
+      //  Debug.Log($"[ProjectileEmpuje] ResetState idx={index}, owner={(owner != null ? owner.name : "NULL")}");
     }
 
     // Inicia la fase de retorno hacia el owner
@@ -90,7 +90,7 @@ public class ProjectileEmpuje : MonoBehaviour
         this.owner = owner;
         returnRequested = true;
         isReturning = true;
-        Debug.Log($"[ProjectileEmpuje] StartReturn idx={index}");
+       // Debug.Log($"[ProjectileEmpuje] StartReturn idx={index}");
 
         // cuando empieza a volver, soltamos a todos los enemigos que estuvieran "adjuntos"
         if (attachedEnemies.Count > 0)
@@ -113,7 +113,7 @@ public class ProjectileEmpuje : MonoBehaviour
             float distToOwner = Vector2.Distance(transform.position, owner.transform.position);
             if (distToOwner > maxDistance)
             {
-                Debug.Log($"[ProjectileEmpuje] idx={index} superó maxDistance ({distToOwner} > {maxDistance}), forzando retorno");
+               // Debug.Log($"[ProjectileEmpuje] idx={index} superó maxDistance ({distToOwner} > {maxDistance}), forzando retorno");
                 StartReturn(owner);
             }
         }

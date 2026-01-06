@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeName: Penetration_Bullets
   description: Unlock_The_Penetration_Bullets
-  quality: 0
+  quality: 2
   displayedStats: 000000000000000000000000
   statsToShow: 1
   nodeToUnlock: {fileID: 11400000, guid: 8f8d9b604aed21a4a92b8fdfa18f5c83, type: 2}

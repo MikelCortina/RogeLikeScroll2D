@@ -30,13 +30,14 @@ public class BolaDeGoma : ScriptableObject, IPersistentEffect
     #region IPersistentEffect
     public void ApplyTo(GameObject owner)
     {
-        if (projectilePrefab == null)
-        {
-            Debug.LogWarning("[BolaDeGoma] projectilePrefab no asignado.");
-            return;
-        }
-
+        if (projectilePrefab == null) return;
         if (owner == null) return;
+
+      
+        if (runtimeOwner != owner)
+        {
+            ResetRuntime();
+        }
 
         if (activeCoroutine != null) return;
 
@@ -44,7 +45,6 @@ public class BolaDeGoma : ScriptableObject, IPersistentEffect
         InitializeProjectilePool();
         activeCoroutine = CoroutineRunner.Instance.StartCoroutine(ShootRoutine());
     }
-
     public void RemoveFrom(GameObject owner)
     {
         if (activeCoroutine != null)
@@ -57,7 +57,10 @@ public class BolaDeGoma : ScriptableObject, IPersistentEffect
 
     public void Execute(Vector2 position, GameObject owner = null)
     {
-        ApplyTo(owner ? owner : runtimeOwner);
+        if (owner != null)
+            ApplyTo(owner);
+        else if (runtimeOwner != null)
+            ApplyTo(runtimeOwner);
     }
     #endregion
 
@@ -180,41 +183,20 @@ public class BolaDeGoma : ScriptableObject, IPersistentEffect
 
     public void ResetRuntime()
     {
-        // Detener la coroutine principal
         if (activeCoroutine != null && CoroutineRunner.Instance != null)
         {
             CoroutineRunner.Instance.StopCoroutine(activeCoroutine);
             activeCoroutine = null;
         }
 
-        // Desactivar todos los proyectiles activos en la escena
-        foreach (var ball in projectilePool)
-        {
-            if (ball != null)
-            {
-                ball.SetActive(false);
-
-                Rigidbody2D rb = ball.GetComponent<Rigidbody2D>();
-                if (rb != null)
-                {
-                    rb.simulated = false;
-                    rb.linearVelocity = Vector2.zero;
-                    rb.angularVelocity = 0f;
-                }
-
-                var bolaScript = ball.GetComponent<BolaGoma>();
-                if (bolaScript != null)
-                {
-                    bolaScript.ResetValues();
-                }
-            }
-        }
-
-        // Limpiar la cola del pool
-        projectilePool.Clear();
-
-        // Limpiar owner
         runtimeOwner = null;
+
+        while (projectilePool.Count > 0)
+        {
+            var ball = projectilePool.Dequeue();
+            if (ball != null)
+                Object.Destroy(ball);
+        }
     }
 
 }

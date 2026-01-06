@@ -50,7 +50,7 @@ public class SpawnTwoProjectilesEffect : ScriptableObject, IPersistentEffect
 
         {
 
-            Debug.LogWarning("[SpawnTwoProjectilesEffect] Prefab o owner no asignado.");
+         //   Debug.LogWarning("[SpawnTwoProjectilesEffect] Prefab o owner no asignado.");
 
             return;
 
@@ -152,13 +152,13 @@ public class SpawnTwoProjectilesEffect : ScriptableObject, IPersistentEffect
 
             rb.linearVelocity = direction * speed;
 
-            Debug.Log("[SpawnTwoProjectilesEffect]lanzado");
+          //  Debug.Log("[SpawnTwoProjectilesEffect]lanzado");
 
         }
 
         else
 
-            Debug.LogWarning("[SpawnTwoProjectilesEffect] prefab no tiene Rigidbody2D.");
+         //   Debug.LogWarning("[SpawnTwoProjectilesEffect] prefab no tiene Rigidbody2D.");
 
 
 

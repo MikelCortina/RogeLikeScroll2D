@@ -33,20 +33,20 @@ public class SpawnTwoProjectilesReturningEffect : ScriptableObject, IPersistentE
     {
         if (projectilePrefab == null)
         {
-            Debug.LogWarning("[SpawnTwoProjectilesReturningEffect] projectilePrefab no asignado.");
+          //  Debug.LogWarning("[SpawnTwoProjectilesReturningEffect] projectilePrefab no asignado.");
             return;
         }
 
         if (owner == null)
         {
-            Debug.LogWarning("[SpawnTwoProjectilesReturningEffect] ApplyTo recibió owner = null.");
+          //  Debug.LogWarning("[SpawnTwoProjectilesReturningEffect] ApplyTo recibió owner = null.");
             return;
         }
 
         // Si ya está activo para ese owner, no reiniciar
         if (activeCoroutine != null)
         {
-            Debug.Log("[SpawnTwoProjectilesReturningEffect] Ya activo, ApplyTo ignorado.");
+           // Debug.Log("[SpawnTwoProjectilesReturningEffect] Ya activo, ApplyTo ignorado.");
             return;
         }
 
@@ -91,8 +91,7 @@ public class SpawnTwoProjectilesReturningEffect : ScriptableObject, IPersistentE
             ApplyTo(owner);
         else if (runtimeOwner != null)
             ApplyTo(runtimeOwner);
-        else
-            Debug.LogWarning("[SpawnTwoProjectilesReturningEffect] Execute sin owner. Use ApplyTo(owner).");
+      
     }
 
     #endregion
@@ -115,11 +114,11 @@ public class SpawnTwoProjectilesReturningEffect : ScriptableObject, IPersistentE
 
                 if (rb == null)
                 {
-                    Debug.LogWarning($"[SpawnTwoProjectilesReturningEffect] prefab no tiene Rigidbody2D (instancia {i}).");
+                   // Debug.LogWarning($"[SpawnTwoProjectilesReturningEffect] prefab no tiene Rigidbody2D (instancia {i}).");
                 }
                 if (col == null)
                 {
-                    Debug.LogWarning($"[SpawnTwoProjectilesReturningEffect] prefab no tiene Collider2D (instancia {i}).");
+                    //Debug.LogWarning($"[SpawnTwoProjectilesReturningEffect] prefab no tiene Collider2D (instancia {i}).");
                 }
 
                 // Aseguramos que tengan ProjectileReturn; si no, lo añadimos
@@ -222,7 +221,7 @@ public class SpawnTwoProjectilesReturningEffect : ScriptableObject, IPersistentE
         var pr = projScripts[projectileIndex];
         if (pr != null)
         {
-            Debug.Log($"[SpawnTwoProjectilesReturningEffect] RequestReturn recibido para {projectileIndex}");
+          //  Debug.Log($"[SpawnTwoProjectilesReturningEffect] RequestReturn recibido para {projectileIndex}");
             pr.StartReturn(runtimeOwner);
         }
     }
@@ -248,7 +247,7 @@ public class SpawnTwoProjectilesReturningEffect : ScriptableObject, IPersistentE
         }
 
         collected[projectileIndex] = true;
-        Debug.Log($"[SpawnTwoProjectilesReturningEffect] Projectile {projectileIndex} recogido.");
+       // Debug.Log($"[SpawnTwoProjectilesReturningEffect] Projectile {projectileIndex} recogido.");
     }
 
     #endregion

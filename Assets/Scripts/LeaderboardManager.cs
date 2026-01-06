@@ -23,14 +23,21 @@ public class LeaderboardManager : MonoBehaviour
     public async Task Initialize()
     {
         if (initialized) return;
+
         try
         {
             await UnityServices.InitializeAsync();
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            Debug.Log("✅ Autenticado: " + AuthenticationService.Instance.PlayerId);
 
-            // Opcional: Pon nombre para leaderboard (guarda entre sesiones)
-            // await AuthenticationService.Instance.UpdatePlayerNameAsync("MiJugador");
+            // Solo autenticar si no está autenticado
+            if (!AuthenticationService.Instance.IsSignedIn)
+            {
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                Debug.Log("✅ Autenticado: " + AuthenticationService.Instance.PlayerId);
+            }
+            else
+            {
+                Debug.Log("ℹ️ Ya estaba autenticado: " + AuthenticationService.Instance.PlayerId);
+            }
 
             initialized = true;
         }
@@ -39,6 +46,7 @@ public class LeaderboardManager : MonoBehaviour
             Debug.LogError("❌ Error init: " + e.Message);
         }
     }
+
 
     // Subir puntuación
     public async void SubmitScore(int score)

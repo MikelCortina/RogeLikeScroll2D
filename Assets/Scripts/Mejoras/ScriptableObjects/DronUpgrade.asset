@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeName: Dron
   description: Unlock_The_Contact_Drone
-  quality: 0
+  quality: 2
   displayedStats: 000000000000000000000000
   statsToShow: 1
   nodeToUnlock: {fileID: 11400000, guid: 8508622077dbba149aa3696f2079aa3c, type: 2}

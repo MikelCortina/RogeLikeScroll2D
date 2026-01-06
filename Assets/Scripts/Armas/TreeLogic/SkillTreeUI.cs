@@ -53,7 +53,7 @@ public class SkillTreeUI : MonoBehaviour
     // mantiene el orden en que se instanciaron las familias (para encadenar costes entre familias) [no usado en la versión simplificada]
     private List<string> spawnedFamilyOrder = new List<string>();
 
-    private HashSet<string> unlocked = new HashSet<string>();
+    public HashSet<string> unlocked = new HashSet<string>();
     public PlayerResources playerResources;
     public SkillTreePanZoom panZoom;
 
@@ -98,31 +98,62 @@ public class SkillTreeUI : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
+        Instance = this;
+
+        if (dontDestroyOnLoad)
+            DontDestroyOnLoad(gameObject);
 
         playerResources = GameObject.FindWithTag("Player")?.GetComponent<PlayerResources>();
+
+        RefreshAllInstantiatedButtons();
+        if (subscribeCoroutine == null)
+            subscribeCoroutine = StartCoroutine(SubscribeToCurrencyWhenReady());
     }
     public static SkillTreeUI GetInstance()
     {
         if (Instance == null)
         {
-            var found = FindObjectOfType<SkillTreeUI>(true); // incluye inactivos
+            var found = FindObjectOfType<SkillTreeUI>(true);
             if (found != null)
             {
                 Instance = found;
-
-                // Forzamos que corra OnEnable() aunque esté desactivado
                 if (!found.gameObject.activeInHierarchy)
                 {
-                    found.gameObject.SetActive(true);  // Esto dispara OnEnable()
-                    found.gameObject.SetActive(false); // Lo volvemos a desactivar
+                    found.gameObject.SetActive(true);
+                    found.gameObject.SetActive(false);
                 }
+            }
+            else
+            {
+                // Crear un nuevo objeto si no existe ninguno
+                GameObject go = new GameObject("SkillTreeUI");
+                Instance = go.AddComponent<SkillTreeUI>();
+                Instance.dontDestroyOnLoad = true;
+                Instance.InitializeForRun();
+                go.SetActive(false);
             }
         }
         return Instance;
     }
+    public void BeginRun()
+    {
+        StartNewRun();
 
+        // spawneo inicial
+        if (familyContainers != null && familyContainers.Count > 0)
+            ShowRandomFamilyInContainer(familyContainers[0]);
+        else
+            ShowRandomFamily();
 
+        RefreshAllInstantiatedButtons();
+        UpdateMixedNodesVisibility();
+    }
     public void InitializeForRun()
     {
         // Ya no necesitamos esto → puede hacer daño
@@ -147,11 +178,30 @@ public class SkillTreeUI : MonoBehaviour
             ShowRandomFamily();
         }
 
+        foreach (var family in skillFamilies)
+        {
+            if (family == null || family.nodes == null) continue;
+
+            foreach (var node in family.nodes)
+            {
+                if (node == null) continue;
+
+                if (UpgradeManager.Instance != null && UpgradeManager.Instance.IsNodeUnlocked(node))
+                {
+                    TryUnlock(node);
+                    ForceSpawnFamilyContainingNode(node);
+                }
+            }
+        }
+
         RefreshAllInstantiatedButtons();
         UpdateMixedNodesVisibility();
 
         // Lo dejamos desactivado hasta que el jugador lo abra
-        gameObject.SetActive(false);
+       
+            gameObject.SetActive(false);
+        
+        
     }
 
     private void OnEnable()
@@ -173,8 +223,12 @@ public class SkillTreeUI : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (Instance == this)
+            Instance = null;
+
         UnsubscribeCurrency();
     }
+
 
     private void Update()
     {
@@ -420,6 +474,9 @@ public class SkillTreeUI : MonoBehaviour
     // -------------------------
     public void Show(bool show)
     {
+        if (this == null || gameObject == null)
+            return;
+
         gameObject.SetActive(show);
         Time.timeScale = show ? 0f : 1f;
         RefreshAllInstantiatedButtons();
@@ -832,26 +889,17 @@ public class SkillTreeUI : MonoBehaviour
     {
         foreach (var kv in instantiatedButtonsPerContainer)
         {
-            var list = kv.Value;
-            for (int i = 0; i < list.Count; i++)
-            {
-                var b = list[i];
-                if (b == null) continue;
-                b.UpdateState();
-            }
-        }
+            if (kv.Key == null) continue;
 
-        if (familyContainers != null)
-        {
-            for (int i = 0; i < familyContainers.Count; i++)
+            var list = kv.Value;
+            if (list == null) continue;
+
+            for (int i = list.Count - 1; i >= 0; i--)
             {
-                var c = familyContainers[i];
-                for (int j = 0; j < c.childCount; j++)
-                {
-                    var child = c.GetChild(j);
-                    var btn = child.GetComponentInChildren<SkillNodeButton>();
-                    if (btn != null) btn.UpdateState();
-                }
+                if (list[i] == null)
+                    list.RemoveAt(i);
+                else
+                    list[i].UpdateState();
             }
         }
 
@@ -861,7 +909,7 @@ public class SkillTreeUI : MonoBehaviour
     // -------------------------
     // Mixed nodes helpers (ahora usan contenedores asignados)
     // -------------------------
-   
+
 
     private Transform GetFamilyRootForButton(Transform btnTransform)
     {

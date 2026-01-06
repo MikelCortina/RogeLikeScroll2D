@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09842fa2322351545b404d164828562b, type: 3}
   m_Name: Misil 2
   m_EditorClassIdentifier: 
-  spawnInterval: 0.5
-  bombPrefab: {fileID: 260643409928991631, guid: 702bc7ccc3a4b5b44946029067e03025, type: 3}
-  explosionPrefab: {fileID: 162584487599433031, guid: 39f852c28f9c3fd45a427c24f3564ba7, type: 3}
-  spawnHeightPercent: 1
-  spawnXPercent: 0.4
-  fallHeightPercent: 0.635
-  fallXPercent: 1
-  fallSpeed: 6
-  poolSize: 10
+  prefab: {fileID: 0}
+  droneCount: 3
+  speed: 5
+  timeBetweenWaves: 4
+  leftOffset: -0.3
+  rightOffset: 2
+  minY: -2
+  maxY: 2
+  spawnXVariation: 0.5
+  initialStaggerDistance: 1.5

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upgradeName: Rubber_Bullet
   description: Unlock_The_Rubber
-  quality: 0
+  quality: 2
   displayedStats: 000000000000000000000000
   statsToShow: 1
   nodeToUnlock: {fileID: 11400000, guid: 07ef03846bfb40e499f42698a5fe2fa8, type: 2}

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.Pool;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class BombProjectile : MonoBehaviour
@@ -20,15 +21,30 @@ public class BombProjectile : MonoBehaviour
     [Header("Tiempo de vida")]
     public float lifetime = 6f;
 
-    // Evento para pooling
     public event Action OnExplode;
 
-    // control interno
     private bool hasExploded = false;
 
-    private void Start()
+    private void OnEnable()
     {
-      
+        // Reset estado
+        hasExploded = false;
+
+        if (TryGetComponent<Rigidbody2D>(out var rb))
+        {
+            rb.simulated = true;
+            rb.AddTorque(UnityEngine.Random.Range(-500f, 500f));
+        }
+
+        // ← CLAVE: Ignorar colisiones con el owner y todos sus colliders
+        if (ignoreOwnerCollision && owner != null && TryGetComponent<Collider2D>(out var myCollider))
+        {
+            Collider2D[] ownerColliders = owner.GetComponentsInChildren<Collider2D>();
+            foreach (var col in ownerColliders)
+            {
+                Physics2D.IgnoreCollision(myCollider, col, true);
+            }
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -47,22 +63,24 @@ public class BombProjectile : MonoBehaviour
     {
         if (col == null) return;
 
+        // Ya ignoramos al owner por Physics2D.IgnoreCollision, pero por seguridad:
         if (ignoreOwnerCollision && owner != null && col.gameObject == owner) return;
 
-        if (!string.IsNullOrEmpty(enemyTag) && col.gameObject.CompareTag(enemyTag))
+        if (!string.IsNullOrEmpty(enemyTag) && col.CompareTag(enemyTag))
         {
             Explode();
             return;
         }
 
-        if (!string.IsNullOrEmpty(groundTag) && col.gameObject.CompareTag(groundTag))
+        if (!string.IsNullOrEmpty(groundTag) && col.CompareTag(groundTag))
         {
             Explode();
             return;
         }
 
-        int colLayerMask = 1 << col.gameObject.layer;
-        if ((enemyLayerMask & colLayerMask) != 0 || (groundLayerMask & colLayerMask) != 0)
+        int colLayer = col.gameObject.layer;
+        if (((enemyLayerMask.value & (1 << colLayer)) != 0) ||
+            ((groundLayerMask.value & (1 << colLayer)) != 0))
         {
             Explode();
         }
@@ -88,25 +106,7 @@ public class BombProjectile : MonoBehaviour
             Debug.LogWarning("[BombProjectile] explosionEffect no asignado.");
         }
 
-        // Invocar evento para pooling antes de "desaparecer"
         OnExplode?.Invoke();
-
-        // Para pooling, no destruimos si vamos a reutilizar
         gameObject.SetActive(false);
-
-        // Si quieres destrucción definitiva (sin pooling) descomenta:
-        // Destroy(gameObject);
-    }
-
-    private void OnEnable()
-    {
-        // Resetear estado para reutilización desde el pool
-        hasExploded = false;
-        if (TryGetComponent<Rigidbody2D>(out var rb))
-        {
-            rb.simulated = true;
-        }
-        rb.AddTorque(UnityEngine.Random.Range(-500f, 500f));
-
     }
 }

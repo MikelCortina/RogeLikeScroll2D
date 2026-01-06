@@ -115,6 +115,7 @@ public class BulletRainEffect : ScriptableObject, IPersistentEffect, IEffect
     // ---------------- Loop ----------------
     private IEnumerator BulletRainLoop()
     {
+        float spawnRate = StatsManager.Instance.RuntimeStats.spawnRate;
         while (true)
         {
             Camera cam = Camera.main;
@@ -123,7 +124,7 @@ public class BulletRainEffect : ScriptableObject, IPersistentEffect, IEffect
                 SpawnWave(cam);
             }
 
-            yield return new WaitForSeconds(spawnInterval);
+            yield return new WaitForSeconds(spawnInterval/ spawnRate);
         }
     }
 

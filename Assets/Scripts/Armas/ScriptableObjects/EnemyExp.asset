@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionEffect: {fileID: 11400000, guid: 0a0969c6e553def4ea738686ba6a5964, type: 2}
   radiusMultiplier: 2
-  flatRadiusBonus: 0.2
-  chainDelay: 0.15
+  flatRadiusBonus: 0.5
+  chainDelay: 0.1

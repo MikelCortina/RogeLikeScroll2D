@@ -43,6 +43,8 @@ public class RunResetter : MonoBehaviour
 
         // Sube score (actualiza si ya existe, toma el más alto)
          lbManager.SubmitScore(finalScore);
+       //  SkillTreeUI.Instance.InitializeForRun();
+
 
         // Opcional: Muestra tu rank personal
         int miScore = await lbManager.GetPlayerScoreSafe();

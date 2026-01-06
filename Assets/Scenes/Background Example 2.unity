@@ -25715,17 +25715,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e03e4ad1c2630d64dab263f0a71c62fd, type: 2}
   - {fileID: 11400000, guid: 4fb7c83ed876d5c478e1022b1923491a, type: 2}
   - {fileID: 11400000, guid: a6c0c7974271fe445afec55e3ec5b990, type: 2}
-  - {fileID: 11400000, guid: 20d4db2bc0c73bd4793942e09f96e2a2, type: 2}
   mixedNodeContainers:
   - {fileID: 181393122}
   - {fileID: 553164067}
   - {fileID: 1055013480}
   precioRefresh: {fileID: 1193635067}
-  spawnBaseCost: 0
+  spawnBaseCost: 100
   weaponCostMultiplier: 1.6
   unlockedWeaponsCount: 0
   maxSpawnCost: 1000000000
-  defaultFirstNodeCost: 0
+  defaultFirstNodeCost: 100
   playerResources: {fileID: 362480665}
   panZoom: {fileID: 1720464087}
   mixedNodes:
@@ -25744,7 +25743,19 @@ MonoBehaviour:
   - mixedNode: {fileID: 11400000, guid: 66ea7c78a1df62343bff881631cd039e, type: 2}
     requiredNodeIds:
     - 5BombaParabolicaNode
-    - Misil3
+    - Gas3Node
+  - mixedNode: {fileID: 11400000, guid: 14231fd517e0de84eb54586565825a76, type: 2}
+    requiredNodeIds:
+    - pene3
+    - EmpujeKnifeNode
+  - mixedNode: {fileID: 11400000, guid: 7e0d9944b94a1a4429fe779f80ef90ff, type: 2}
+    requiredNodeIds:
+    - pene3
+    - Gas3Node
+  - mixedNode: {fileID: 11400000, guid: 9a8d056f35b9fa64e9838d8fd566a6f2, type: 2}
+    requiredNodeIds:
+    - EmpujeKnifeNode
+    - DropperDroneNode
   dontDestroyOnLoad: 0
 --- !u!1001 &1417757715
 PrefabInstance:
@@ -30965,6 +30976,10 @@ PrefabInstance:
       propertyPath: 'hurtSounds.Array.data[1]'
       value: 
       objectReference: {fileID: 8300000, guid: 7adbbccf85098eb42a5183d6ce869d8e, type: 3}
+    - target: {fileID: 4810394507729764308, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4817661715489401492, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -31079,7 +31094,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.spawnRate
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.towerLuck
@@ -31132,6 +31147,10 @@ PrefabInstance:
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.rangeDodgeChance
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
+      propertyPath: templateStats.xpGainMultiplier
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5459818279690751530, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: horseTransform
@@ -31223,7 +31242,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6691761208895853350, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6691761208895853350, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: effects.Array.size
@@ -36023,7 +36042,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6402667970336888279, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: upgradeGroups.Array.size
-      value: 14
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 6402667970336888279, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'allUpgrades.Array.data[0]'
@@ -36416,7 +36435,7 @@ PrefabInstance:
     - target: {fileID: 6402667970336888279, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'upgradeGroups.Array.data[12].upgrades.Array.data[0]'
       value: 
-      objectReference: {fileID: 11400000, guid: 85eb3ebdabcf5cb45b70c33328b54a94, type: 2}
+      objectReference: {fileID: 11400000, guid: 9ff3b695b9a3ac74ca2bd2ae444777d0, type: 2}
     - target: {fileID: 6402667970336888279, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: 'upgradeGroups.Array.data[13].upgrades.Array.data[0]'
       value: 

@@ -14,11 +14,11 @@ public class Bomba : ScriptableObject, IPersistentEffect
     [SerializeField] private float spawnDelay = 0.15f;
     [SerializeField] private float respawnDelay = 4f;
 
-
     [Header("Parábola & posición")]
     [SerializeField] private float arcHeight = 2f;
     [SerializeField] private float randomRadius = 3f;
-    [SerializeField] private Vector2 localFireOffset = Vector2.zero;
+    [Tooltip("Offset local desde el centro del owner. Recomendado un pequeño Y positivo para evitar colisión inicial.")]
+    [SerializeField] private Vector2 localFireOffset = new Vector2(0f, 0.8f); // ← Cambiado para evitar spawn dentro del jugador
 
     [Header("Pooling")]
     [SerializeField] private int poolSize = 30;
@@ -26,33 +26,27 @@ public class Bomba : ScriptableObject, IPersistentEffect
     // runtime
     private Coroutine activeCoroutine;
     private GameObject runtimeOwner;
-
     private Queue<GameObject> projectilePool = new Queue<GameObject>();
 
     #region IPersistentEffect / IEffect
-
     public void ApplyTo(GameObject owner)
     {
-        if (projectilePrefab == null)
-        {
-            Debug.LogWarning("[Bomba] projectilePrefab no asignado.");
-            return;
-        }
+        if (projectilePrefab == null) return;
+        if (owner == null) return;
 
-        if (owner == null)
+        // 🔑 owner murió → reinicio completo
+        if (runtimeOwner == null || runtimeOwner != owner)
         {
-            Debug.LogWarning("[Bomba] ApplyTo recibió owner = null.");
-            return;
+            ResetRuntime();
         }
 
         if (activeCoroutine != null) return;
 
         runtimeOwner = owner;
-
         InitializeProjectilePool();
-
         activeCoroutine = CoroutineRunner.Instance.StartCoroutine(ShootParabolicFan());
     }
+
     public void ResetRuntime()
     {
         if (activeCoroutine != null)
@@ -62,8 +56,14 @@ public class Bomba : ScriptableObject, IPersistentEffect
         }
 
         runtimeOwner = null;
-        projectilePool.Clear();
+
+        while (projectilePool.Count > 0)
+        {
+            var p = projectilePool.Dequeue();
+            if (p != null) Object.Destroy(p);
+        }
     }
+
     public void RemoveFrom(GameObject owner)
     {
         if (activeCoroutine != null)
@@ -83,19 +83,14 @@ public class Bomba : ScriptableObject, IPersistentEffect
         else
             Debug.LogWarning("[Bomba] Execute llamado sin owner disponible.");
     }
-
     #endregion
 
     #region Coroutine & spawn
-
     private IEnumerator ShootParabolicFan()
     {
         while (runtimeOwner != null)
         {
-            // Delay entre bursts basado en stats
             float spawnRate = StatsManager.Instance.RuntimeStats.spawnRate;
-
-            // Si spawnRate es 0 o negativo, no disparamos nada hasta que suba
             if (spawnRate <= 0f)
             {
                 yield return null;
@@ -104,7 +99,6 @@ public class Bomba : ScriptableObject, IPersistentEffect
 
             float burstIntervalDynamic = respawnDelay / spawnRate;
 
-            // Disparar todos los proyectiles del burst
             for (int i = 0; i < projectilesPerShot; i++)
             {
                 if (runtimeOwner == null) break;
@@ -125,10 +119,8 @@ public class Bomba : ScriptableObject, IPersistentEffect
                     yield return null;
             }
 
-            // Esperar según el spawnRate del jugador
             yield return new WaitForSeconds(burstIntervalDynamic);
         }
-
         activeCoroutine = null;
     }
 
@@ -137,7 +129,6 @@ public class Bomba : ScriptableObject, IPersistentEffect
         GameObject proj = GetProjectileFromPool();
         if (proj == null) return;
 
-        // Reset completo
         proj.SetActive(true);
         proj.transform.position = origin;
         proj.transform.rotation = Quaternion.identity;
@@ -147,7 +138,7 @@ public class Bomba : ScriptableObject, IPersistentEffect
         {
             prb.linearVelocity = Vector2.zero;
             prb.angularVelocity = 0f;
-            prb.simulated = true; // activar física antes de aplicar velocidad
+            prb.simulated = true;
         }
 
         var projScript = proj.GetComponent<BombProjectile>();
@@ -157,7 +148,7 @@ public class Bomba : ScriptableObject, IPersistentEffect
             projScript.OnExplode += () => ReturnProjectileToPool(proj);
         }
 
-        // recalcular parámetros de la parábola
+        // Cálculo de parábola
         float g = Mathf.Abs(Physics2D.gravity.y) * Mathf.Max(0.0001f, prb.gravityScale);
         float dx = targetPos.x - origin.x;
         float dy = targetPos.y - origin.y;
@@ -167,21 +158,16 @@ public class Bomba : ScriptableObject, IPersistentEffect
         float tUp = vy / g;
         float tDown = Mathf.Sqrt(Mathf.Max(0.0001f, 2f * (apexAboveOrigin - dy) / g));
         float totalTime = tUp + tDown;
-
         float vx = (Mathf.Abs(totalTime) > 1e-6f) ? dx / totalTime : 0f;
 
-        // Aplicar velocidad después de activar Rigidbody
         prb.linearVelocity = new Vector2(vx, vy);
 
-        // Rotar sprite según velocidad
         float angle = Mathf.Atan2(vy, vx) * Mathf.Rad2Deg;
         proj.transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
-
     #endregion
 
     #region Pooling
-
     private void InitializeProjectilePool()
     {
         if (projectilePool.Count > 0) return;
@@ -202,7 +188,6 @@ public class Bomba : ScriptableObject, IPersistentEffect
             proj.SetActive(false);
             return proj;
         }
-
         return projectilePool.Dequeue();
     }
 
@@ -210,7 +195,6 @@ public class Bomba : ScriptableObject, IPersistentEffect
     {
         proj.SetActive(false);
 
-        // Reset Rigidbody y otros valores si es necesario
         if (proj.TryGetComponent<Rigidbody2D>(out var rb))
         {
             rb.linearVelocity = Vector2.zero;
@@ -226,6 +210,5 @@ public class Bomba : ScriptableObject, IPersistentEffect
 
         projectilePool.Enqueue(proj);
     }
-
     #endregion
 }
