@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using Unity.Services.Authentication;
+using Unity.Services.Leaderboards.Models;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.Services.Leaderboards.Models;
-using System.Linq;  // Para LINQ si hace falta
 
 public class LeaderboardUI : MonoBehaviour
 {
-    [Header("Config UI")]
-    [SerializeField] private Transform contentParent;      // Content del Scroll View
-    [SerializeField] private GameObject entryPrefab;       // Prefab EXACTO
-    [SerializeField] private TextMeshProUGUI titleText;    // "Top Leaderboard"
+    [Header("UI Config")]
+    [SerializeField] private Transform contentParent;
+    [SerializeField] private GameObject entryPrefab;
+    [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private Button refreshButton;
-    [SerializeField] private ScrollRect scrollRect;        // ← ¡AÑADE! ScrollRect del Scroll View
+    [SerializeField] private ScrollRect scrollRect;
 
     private LeaderboardManager lbManager;
 
@@ -24,31 +25,18 @@ public class LeaderboardUI : MonoBehaviour
 
     public async void RefreshLeaderboard(int limit = 50)
     {
-        Debug.Log("🔄 Refresh leaderboard iniciado...");
-
-        if (lbManager == null)
-        {
-            Debug.LogError("❌ LeaderboardManager no encontrado!");
-            return;
-        }
-
-        // Limpia TODO
         foreach (Transform child in contentParent)
-            if (child != null) Destroy(child.gameObject);
-        Debug.Log("🧹 Content limpiado");
+            Destroy(child.gameObject);
 
         if (titleText) titleText.text = "Cargando...";
-        if (scrollRect) scrollRect.normalizedPosition = new Vector2(0, 1f);  // Scroll arriba
+        if (scrollRect) scrollRect.normalizedPosition = new Vector2(0, 1f);
 
-        // Carga
         var entries = await lbManager.LoadTopScores(limit);
-        Debug.Log($"📊 Entries cargados: {entries?.Count ?? 0}");  // ← DEBUG CLAVE
 
         if (titleText) titleText.text = $"Top {limit} Leaderboard";
 
         if (entries == null || entries.Count == 0)
         {
-            Debug.Log("📭 No hay scores, creando mensaje vacío");
             var emptyGo = new GameObject("NoScores");
             emptyGo.transform.SetParent(contentParent, false);
             var txt = emptyGo.AddComponent<TextMeshProUGUI>();
@@ -61,56 +49,66 @@ public class LeaderboardUI : MonoBehaviour
             return;
         }
 
-        // Pobla entries
         for (int i = 0; i < entries.Count; i++)
         {
             var entry = entries[i];
-            var go = Instantiate(entryPrefab, contentParent, false);  // false = no world pos
+            var go = Instantiate(entryPrefab, contentParent, false);
 
-            Debug.Log($"🎨 Creando entry #{entry.Rank} {entry.PlayerName ?? "Anon"}: {entry.Score}");
-
-            // NOMBRES EXACTOS en prefab hijos
             var rankTxt = go.transform.Find("RankText")?.GetComponent<TextMeshProUGUI>();
             var nameTxt = go.transform.Find("NameText")?.GetComponent<TextMeshProUGUI>();
             var scoreTxt = go.transform.Find("ScoreText")?.GetComponent<TextMeshProUGUI>();
+            if (nameTxt)
+            {
+                string displayName = string.IsNullOrEmpty(entry.PlayerName)
+                    ? "Anónimo"
+                    : entry.PlayerName;
 
-            // DEBUG si no encuentra
-            if (rankTxt == null) Debug.LogWarning($"⚠️ Prefab sin 'RankText' en {go.name}");
-            if (nameTxt == null) Debug.LogWarning($"⚠️ Prefab sin 'NameText' en {go.name}");
-            if (scoreTxt == null) Debug.LogWarning($"⚠️ Prefab sin 'ScoreText' en {go.name}");
+                // Fallback muy útil: si parece nombre generado y es nuestro jugador → usamos el nombre local
+                if (displayName.Contains("#") && entry.PlayerId == AuthenticationService.Instance.PlayerId)
+                {
+                    var usernameManager = FindObjectOfType<UsernameManager>();
+                    if (usernameManager != null)
+                    {
+                        string localName = usernameManager.GetUsername();
+                        if (!string.IsNullOrWhiteSpace(localName) && localName != "Anónimo")
+                        {
+                            displayName = $"{localName} ★"; // Indicador visual de que es fallback
+                            Debug.Log($"Usando nombre local como fallback: {localName}");
+                        }
+                    }
+                }
 
+                nameTxt.text = displayName;
+            }
             if (rankTxt) rankTxt.text = $"#{entry.Rank}";
             if (nameTxt) nameTxt.text = string.IsNullOrEmpty(entry.PlayerName) ? "Anónimo" : entry.PlayerName;
             if (scoreTxt) scoreTxt.text = ((int)entry.Score).ToString("N0");
 
-            // Colores top 3 (¡esto pinta AMARILLO el #1!)
             var color = i switch
             {
-                0 => Color.yellow,      // Oro
-                1 => new Color(0.8f, 0.8f, 0.8f),  // Plata
-                2 => new Color(0.8f, 0.5f, 0.3f),  // Bronce
+                0 => Color.yellow,
+                1 => new Color(0.8f, 0.8f, 0.8f),
+                2 => new Color(0.8f, 0.5f, 0.3f),
                 _ => Color.white
             };
+
             if (rankTxt) rankTxt.color = color;
             if (nameTxt) nameTxt.color = color;
             if (scoreTxt) scoreTxt.color = color;
         }
 
-        Debug.Log("✅ Entries poblados, rebuild...");
         RebuildLayout();
-        Debug.Log("🏁 Refresh completado!");
     }
 
     private void RebuildLayout()
     {
-        // Doble rebuild para asegurar
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent as RectTransform);
         if (contentParent.GetComponent<VerticalLayoutGroup>())
         {
-            contentParent.GetComponent<VerticalLayoutGroup>().enabled = false;
-            contentParent.GetComponent<VerticalLayoutGroup>().enabled = true;
+            var vlg = contentParent.GetComponent<VerticalLayoutGroup>();
+            vlg.enabled = false;
+            vlg.enabled = true;
         }
-        // Scroll arriba
         if (scrollRect) scrollRect.normalizedPosition = new Vector2(0, 1f);
     }
 }

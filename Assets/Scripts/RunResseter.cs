@@ -16,6 +16,17 @@ public class RunResetter : MonoBehaviour
     /// <summary>
     /// Reinicia absolutamente todo, como detener y volver a iniciar Play en editor.
     /// </summary>
+    /// 
+    public void Awake()
+    {
+        lbManager = FindObjectOfType<LeaderboardManager>();
+        if (lbManager == null)
+            Debug.LogWarning("No se encontró ningún LeaderboardManager en la escena");
+
+        leaderboardUI = FindObjectOfType<LeaderboardUI>();
+        if (leaderboardUI == null)
+            Debug.LogWarning("No se encontró ningún LeaderboardUI en la escena");
+    }
     public void ResetRun()
     {
         scoreManager.score = 0;
@@ -39,27 +50,25 @@ public class RunResetter : MonoBehaviour
     // Método de ejemplo para llamar desde PlayerDeath
     public async void OnPlayerDeath()
     {
-        int finalScore = scoreManager.score;  // O tu variable de puntuación
+        int finalScore = scoreManager.score;
 
-        // Sube score (actualiza si ya existe, toma el más alto)
-         lbManager.SubmitScore(finalScore);
-       //  SkillTreeUI.Instance.InitializeForRun();
+        // Subir score
+        string playerName = FindObjectOfType<UsernameManager>().GetUsername();
 
+        lbManager.SubmitScore(finalScore);
 
-        // Opcional: Muestra tu rank personal
-        int miScore = await lbManager.GetPlayerScoreSafe();
+        // Obtener tu score y rank
+        int miScore = await lbManager.GetPlayerScoreAsync();
 
-        Debug.Log($"¡Subido! Tu rank: ~{miScore} pts");  // O en UI
+        Debug.Log($"¡Subido! Tu rank: ~{miScore} pts");
 
-        // Opcional: Refresca leaderboard para ver cambios
+        // Refrescar leaderboard
         if (leaderboardUI) leaderboardUI.RefreshLeaderboard();
 
-     
         EndGameScreen();
-
     }
 
-   public void EndGameScreen()
+    public void EndGameScreen()
     {
         panel.SetActive(true);
         panelPrefab.SetActive(true);

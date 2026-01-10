@@ -12377,7 +12377,7 @@ MonoBehaviour:
   statLinePrefab: {fileID: 6041157655701851867, guid: a23be467206eb5849992909739daf1f7, type: 3}
   bordes: {fileID: 1924625551}
   contentParent: {fileID: 2021262559}
-  skillTreeUI: {fileID: 1413463052}
+  skillTreeUI: {fileID: 0}
   panelArbol: {fileID: 1694023999}
   startVisible: 0
   pauseOnOpen: 1
@@ -16417,9 +16417,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1413463052}
+      - m_Target: {fileID: 1720464090}
         m_TargetAssemblyTypeName: SkillTreeUI, Assembly-CSharp
-        m_MethodName: TrySpawnRandomFamilyWithCost
+        m_MethodName: SpawnRandomFamilyInNextContainer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -25680,83 +25680,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eadb6e8e93fe5d241924dc234d77c79e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillTreeUI: {fileID: 1413463052}
---- !u!114 &1413463052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1413463046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03d31ec49f5ab3d46b732d3a817e5a35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultNodeButtonPrefab: {fileID: 1133420799726215917, guid: 6f9f9d681cdce3a43984eb4898fd16fd, type: 3}
-  familySlots:
-  - {fileID: 1112149071}
-  - {fileID: 647853650}
-  - {fileID: 859251955}
-  familyContainers:
-  - {fileID: 1524599162}
-  - {fileID: 505365890}
-  - {fileID: 96683056}
-  - {fileID: 2072211439}
-  - {fileID: 1450005824}
-  - {fileID: 1996398178}
-  - {fileID: 533290157}
-  - {fileID: 1886337245}
-  - {fileID: 1418168594}
-  skillFamilies:
-  - {fileID: 11400000, guid: 6a87d4a419fac6542ab49853f11b05eb, type: 2}
-  - {fileID: 11400000, guid: dc597d837423f4f4cb5403058b972b90, type: 2}
-  - {fileID: 11400000, guid: 0bc6e82c23a834e4bbf682bf9fcffbfb, type: 2}
-  - {fileID: 11400000, guid: e03e4ad1c2630d64dab263f0a71c62fd, type: 2}
-  - {fileID: 11400000, guid: 4fb7c83ed876d5c478e1022b1923491a, type: 2}
-  - {fileID: 11400000, guid: a6c0c7974271fe445afec55e3ec5b990, type: 2}
-  mixedNodeContainers:
-  - {fileID: 181393122}
-  - {fileID: 553164067}
-  - {fileID: 1055013480}
-  precioRefresh: {fileID: 1193635067}
-  spawnBaseCost: 100
-  weaponCostMultiplier: 1.6
-  unlockedWeaponsCount: 0
-  maxSpawnCost: 1000000000
-  defaultFirstNodeCost: 100
-  playerResources: {fileID: 362480665}
-  panZoom: {fileID: 1720464087}
-  mixedNodes:
-  - mixedNode: {fileID: 11400000, guid: 3698b012b028a4d478d90739b7f9062b, type: 2}
-    requiredNodeIds:
-    - 5BombaParabolicaNode
-    - DropperDroneNode
-  - mixedNode: {fileID: 11400000, guid: 285760119accef8479b7768075f7510e, type: 2}
-    requiredNodeIds:
-    - EmpujeKnifeNode
-    - 5BombaParabolicaNode
-  - mixedNode: {fileID: 11400000, guid: 211c8e01930d3b946962e2844de8fe94, type: 2}
-    requiredNodeIds:
-    - DropperDroneNode
-    - pene3
-  - mixedNode: {fileID: 11400000, guid: 66ea7c78a1df62343bff881631cd039e, type: 2}
-    requiredNodeIds:
-    - 5BombaParabolicaNode
-    - Gas3Node
-  - mixedNode: {fileID: 11400000, guid: 14231fd517e0de84eb54586565825a76, type: 2}
-    requiredNodeIds:
-    - pene3
-    - EmpujeKnifeNode
-  - mixedNode: {fileID: 11400000, guid: 7e0d9944b94a1a4429fe779f80ef90ff, type: 2}
-    requiredNodeIds:
-    - pene3
-    - Gas3Node
-  - mixedNode: {fileID: 11400000, guid: 9a8d056f35b9fa64e9838d8fd566a6f2, type: 2}
-    requiredNodeIds:
-    - EmpujeKnifeNode
-    - DropperDroneNode
-  dontDestroyOnLoad: 0
+  skillTreeUI: {fileID: 1720464090}
 --- !u!1001 &1417757715
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28010,6 +27934,82 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15eeda69f2787b44fb535a9a4b07ef2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1720464090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694023999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03d31ec49f5ab3d46b732d3a817e5a35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultNodeButtonPrefab: {fileID: 1133420799726215917, guid: 6f9f9d681cdce3a43984eb4898fd16fd, type: 3}
+  familySlots:
+  - {fileID: 1112149071}
+  - {fileID: 647853650}
+  - {fileID: 859251955}
+  familyContainers:
+  - {fileID: 1524599162}
+  - {fileID: 505365890}
+  - {fileID: 96683056}
+  - {fileID: 2072211439}
+  - {fileID: 1450005824}
+  - {fileID: 1996398178}
+  - {fileID: 533290157}
+  - {fileID: 1886337245}
+  - {fileID: 1418168594}
+  skillFamilies:
+  - {fileID: 11400000, guid: 6a87d4a419fac6542ab49853f11b05eb, type: 2}
+  - {fileID: 11400000, guid: dc597d837423f4f4cb5403058b972b90, type: 2}
+  - {fileID: 11400000, guid: 0bc6e82c23a834e4bbf682bf9fcffbfb, type: 2}
+  - {fileID: 11400000, guid: e03e4ad1c2630d64dab263f0a71c62fd, type: 2}
+  - {fileID: 11400000, guid: 4fb7c83ed876d5c478e1022b1923491a, type: 2}
+  - {fileID: 11400000, guid: a6c0c7974271fe445afec55e3ec5b990, type: 2}
+  mixedNodeContainers:
+  - {fileID: 181393122}
+  - {fileID: 553164067}
+  - {fileID: 1055013480}
+  precioRefresh: {fileID: 1193635067}
+  spawnBaseCost: 100
+  weaponCostMultiplier: 1.6
+  unlockedWeaponsCount: 0
+  maxSpawnCost: 1000000000
+  defaultFirstNodeCost: 0
+  playerResources: {fileID: 362480665}
+  panZoom: {fileID: 1720464087}
+  mixedNodes:
+  - mixedNode: {fileID: 11400000, guid: 3698b012b028a4d478d90739b7f9062b, type: 2}
+    requiredNodeIds:
+    - 5BombaParabolicaNode
+    - DropperDroneNode
+  - mixedNode: {fileID: 11400000, guid: 285760119accef8479b7768075f7510e, type: 2}
+    requiredNodeIds:
+    - EmpujeKnifeNode
+    - 5BombaParabolicaNode
+  - mixedNode: {fileID: 11400000, guid: 211c8e01930d3b946962e2844de8fe94, type: 2}
+    requiredNodeIds:
+    - DropperDroneNode
+    - pene3
+  - mixedNode: {fileID: 11400000, guid: 66ea7c78a1df62343bff881631cd039e, type: 2}
+    requiredNodeIds:
+    - 5BombaParabolicaNode
+    - Gas3Node
+  - mixedNode: {fileID: 11400000, guid: 14231fd517e0de84eb54586565825a76, type: 2}
+    requiredNodeIds:
+    - pene3
+    - EmpujeKnifeNode
+  - mixedNode: {fileID: 11400000, guid: 7e0d9944b94a1a4429fe779f80ef90ff, type: 2}
+    requiredNodeIds:
+    - pene3
+    - Gas3Node
+  - mixedNode: {fileID: 11400000, guid: 9a8d056f35b9fa64e9838d8fd566a6f2, type: 2}
+    requiredNodeIds:
+    - EmpujeKnifeNode
+    - DropperDroneNode
+  dontDestroyOnLoad: 0
 --- !u!4 &1722755869 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8430463103156234699, guid: 265c97465e0e7594e89a1e5b0fbc43f7, type: 3}
@@ -31054,7 +31054,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.maxHP
-      value: 100
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.currency
@@ -31074,7 +31074,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.currentHP
-      value: 100
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5431273179025485363, guid: 11895ebbad5a7b647b6bf765df09d52c, type: 3}
       propertyPath: templateStats.gunDamage
@@ -32025,6 +32025,55 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &1821046601
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1821046602}
+  - component: {fileID: 1821046604}
+  m_Layer: 0
+  m_Name: LeaderboardManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1821046602
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1821046601}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 856.7469, y: 56.946243, z: -1.7711358}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2052182031}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1821046604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1821046601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 771331d8877d1814dbd1854f5e2779d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contentParent: {fileID: 1015857251}
+  entryPrefab: {fileID: 5105685640299790250, guid: 67b7aff5adc0ac2458a95ef4cf7fde75, type: 3}
+  titleText: {fileID: 0}
+  refreshButton: {fileID: 1423502231}
+  scrollRect: {fileID: 1468468859}
 --- !u!1 &1822952100
 GameObject:
   m_ObjectHideFlags: 0
@@ -32947,6 +32996,52 @@ ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 1301697207402410478, guid: 18ef97b0f03bcd542b04e5848033d471, type: 3}
   m_PrefabInstance: {fileID: 1219430243}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1943365156
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1943365157}
+  - component: {fileID: 1943365158}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1943365157
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943365156}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2052182031}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1943365158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943365156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7007ddf71e69c5f48b9d19c650b26b89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSimultaneousDeathSounds: 1
+  maxSimultaneousImpactSounds: 1
 --- !u!1 &1948173843
 GameObject:
   m_ObjectHideFlags: 0
@@ -33673,8 +33768,8 @@ MonoBehaviour:
   panel2: {fileID: 576757527}
   panel3: {fileID: 1907570953}
   scoreManager: {fileID: 2052182037}
-  leaderboardUI: {fileID: 2052182035}
-  lbManager: {fileID: 2052182036}
+  leaderboardUI: {fileID: 0}
+  lbManager: {fileID: 0}
 --- !u!114 &2052182033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33700,36 +33795,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c123efe28f8e20a4a97b4c9ae1f666d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2052182035
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1796160034}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 771331d8877d1814dbd1854f5e2779d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  contentParent: {fileID: 1015857251}
-  entryPrefab: {fileID: 5105685640299790250, guid: 67b7aff5adc0ac2458a95ef4cf7fde75, type: 3}
-  titleText: {fileID: 0}
-  refreshButton: {fileID: 1423502231}
-  scrollRect: {fileID: 1468468859}
---- !u!114 &2052182036
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1796160034}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a9c15ba1cb5e294eba7a0d3139ef043, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  LeaderboardId: Puntuacion
 --- !u!114 &2052182037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34380,7 +34445,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7718156489955705013, guid: bbcdb23bdd138ce4d90d88e145acf58d, type: 3}
       insertIndex: 8
       addedObject: {fileID: 1418168594}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3233852086158362571, guid: bbcdb23bdd138ce4d90d88e145acf58d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1720464090}
   m_SourcePrefab: {fileID: 100100000, guid: bbcdb23bdd138ce4d90d88e145acf58d, type: 3}
 --- !u!1001 &881032440805321994
 PrefabInstance:
@@ -35604,6 +35672,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4391945339323393512, guid: c0c1f98e4e0fc0b429a6d9097beb14c5, type: 3}
+      propertyPath: m_Volume
+      value: 0.295
+      objectReference: {fileID: 0}
+    - target: {fileID: 4391945339323393512, guid: c0c1f98e4e0fc0b429a6d9097beb14c5, type: 3}
       propertyPath: OutputAudioMixerGroup
       value: 
       objectReference: {fileID: -2344138320283214766, guid: bd96fa40c4f1f2142a2b8526a4f503df, type: 2}
@@ -36041,6 +36113,10 @@ PrefabInstance:
       value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 6402667970336888279, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      propertyPath: skillNodeUpgradeQuality
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6402667970336888279, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: upgradeGroups.Array.size
       value: 13
       objectReference: {fileID: 0}
@@ -36146,7 +36222,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 7972ca0a4ff4e7042b7ced017049a945, type: 2}
     - target: {fileID: 6402667970336888279, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: chanceToOfferSkillNodeUnlock
-      value: 10
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6402667970336888279, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       propertyPath: upgradeGroups.Array.data[1].category
@@ -36854,6 +36930,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1569037755031406978, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1159324065}
+    - targetCorrespondingSourceObject: {fileID: 1569037755031406978, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1943365157}
+    - targetCorrespondingSourceObject: {fileID: 1569037755031406978, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1821046602}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 24776288539050120, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       insertIndex: -1
@@ -36864,12 +36946,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 24776288539050120, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2052182034}
-    - targetCorrespondingSourceObject: {fileID: 24776288539050120, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2052182036}
-    - targetCorrespondingSourceObject: {fileID: 24776288539050120, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2052182035}
     - targetCorrespondingSourceObject: {fileID: 24776288539050120, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2052182037}
@@ -36885,9 +36961,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6798877912674172622, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1413463049}
-    - targetCorrespondingSourceObject: {fileID: 6798877912674172622, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1413463052}
     - targetCorrespondingSourceObject: {fileID: 5872719463112004229, guid: ed8e26cb45f3ff74bb9cdad1a6d6b7e3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1391414747}

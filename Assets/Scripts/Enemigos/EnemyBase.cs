@@ -238,11 +238,11 @@ public class EnemyBase : MonoBehaviour
             Die();
         else if (impactSound != null && sound)
         {
-            audioSource.PlayOneShot(impactSound);
+            AudioManager.Instance.PlayImpactSound(impactSound, transform.position);
         }
 
-       // StartCoroutine(HitPause(0.02f));
-       //ConsoleManager.Instance.Log($"You made {amount} damage");
+        // StartCoroutine(HitPause(0.02f));
+        //ConsoleManager.Instance.Log($"You made {amount} damage");
     }
 
     IEnumerator HitPause(float duration)
@@ -254,12 +254,12 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void Die()
     {
-      
+
 
         // 🔊 Sonido de muerte (no se corta al destruir el enemigo)
         if (killSound != null)
         {
-            AudioSource.PlayClipAtPoint(killSound, transform.position);
+            AudioManager.Instance.PlayDeathSound(killSound, transform.position);
         }
 
         canMove = false;

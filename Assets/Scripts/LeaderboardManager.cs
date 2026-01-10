@@ -1,23 +1,33 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.Services.Core;
 using Unity.Services.Authentication;
 using Unity.Services.Leaderboards;
-using Unity.Services.Leaderboards.Models;  // Para LeaderboardEntry, LeaderboardScoresPage
-using UnityEngine;
 using Unity.Services.Leaderboards.Models;
-using System.Linq;  // Para .FirstOrDefault()
+using UnityEngine;
 
 public class LeaderboardManager : MonoBehaviour
 {
+    public static event System.Action OnServicesInitialized;  // ← AÑADE ESTO
     [Header("Config")]
-    [SerializeField] private string LeaderboardId = "mi-leaderboard-simple"; // ¡Pon TU ID aquí!
+    [SerializeField] private string LeaderboardId = "mi-leaderboard-simple";
 
     private bool initialized = false;
+    public bool IsInitialized => initialized;
 
-    async void Start()
+    private void Awake()
     {
-        await Initialize();
+        // DDOL
+        if (FindObjectsOfType<LeaderboardManager>().Length > 1)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(gameObject);
+
+        // Inicializa Unity Services al inicio
+        _ = Initialize();
     }
 
     public async Task Initialize()
@@ -28,30 +38,27 @@ public class LeaderboardManager : MonoBehaviour
         {
             await UnityServices.InitializeAsync();
 
-            // Solo autenticar si no está autenticado
+            // ← Solo aquí se hace login anónimo, en ningún otro sitio del proyecto
             if (!AuthenticationService.Instance.IsSignedIn)
             {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
-                Debug.Log("✅ Autenticado: " + AuthenticationService.Instance.PlayerId);
-            }
-            else
-            {
-                Debug.Log("ℹ️ Ya estaba autenticado: " + AuthenticationService.Instance.PlayerId);
+                Debug.Log("✅ Login anónimo completado - PlayerId: " + AuthenticationService.Instance.PlayerId);
             }
 
             initialized = true;
+            OnServicesInitialized?.Invoke();  // ← Dispara el evento cuando todo está 100% listo
         }
         catch (System.Exception e)
         {
-            Debug.LogError("❌ Error init: " + e.Message);
+            Debug.LogError("❌ Error crítico inicializando Unity Services: " + e);
         }
     }
 
-
-    // Subir puntuación
+    // Subir score
     public async void SubmitScore(int score)
     {
-        if (!initialized) { await Initialize(); return; }
+        if (!initialized) await Initialize();
+
         try
         {
             var response = await LeaderboardsService.Instance.AddPlayerScoreAsync(LeaderboardId, score);
@@ -59,64 +66,48 @@ public class LeaderboardManager : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogError("❌ Error submit: " + e.Message);
+            Debug.LogError("❌ Error submit score: " + e.Message);
         }
     }
 
-    // Cargar top N (global)
+    // Obtener top N
     public async Task<List<LeaderboardEntry>> LoadTopScores(int limit = 10)
     {
-        if (!initialized) { await Initialize(); return null; }
+        if (!initialized) await Initialize();
+
         try
         {
             var options = new GetScoresOptions { Limit = limit };
             var response = await LeaderboardsService.Instance.GetScoresAsync(LeaderboardId, options);
-
-            Debug.Log($"✅ Top {limit} cargados (Total results: {response.Total}):");
-            foreach (var entry in response.Results)  // ← ¡Results, no Entries!
-            {
-                string name = entry.PlayerName ?? "Anónimo";
-                Debug.Log($"   #{entry.Rank} {name}: {entry.Score}");
-            }
-            return response.Results;  // ← List<LeaderboardEntry> directo
+            return response.Results;
         }
         catch (System.Exception e)
         {
-            Debug.LogError("❌ Error load: " + e.Message);
+            Debug.LogError("❌ Error LoadTopScores: " + e.Message);
             return null;
         }
     }
 
-    // Tu puntuación
-    public async Task<int> GetPlayerScoreSafe()
+    // Obtener score del jugador, devuelve 0 si aún no subió ninguno
+    public async Task<int> GetPlayerScoreAsync()
     {
-        if (!initialized) { await Initialize(); return 0; }
+        if (!initialized) await Initialize();
 
         try
         {
-            // Pedimos solo 1: el jugador actual (mínimo permitido)
             var options = new GetPlayerRangeOptions { RangeLimit = 1 };
             var response = await LeaderboardsService.Instance.GetPlayerRangeAsync(LeaderboardId, options);
 
-            // Buscamos nuestra entry en los resultados
-            var playerEntry = response.Results.FirstOrDefault(e => e.PlayerId == AuthenticationService.Instance.PlayerId);
+            var playerEntry = response.Results.FirstOrDefault(
+                e => e.PlayerId == AuthenticationService.Instance.PlayerId
+            );
 
-            if (playerEntry != null)
-            {
-                int score = (int)playerEntry.Score;
-                Debug.Log($"✅ Mi score (safe): {score} (Rank: {playerEntry.Rank})");
-                return score;
-            }
-            else
-            {
-                // Esto pasa si el jugador NUNCA ha subido un score
-                Debug.Log("ℹ️ Mi score: Aún no tiene puntuación subida (nuevo jugador)");
-                return 0;
-            }
+            return playerEntry != null ? (int)playerEntry.Score : 0;
         }
-        catch (System.Exception e)
+        catch
         {
-            Debug.LogError("❌ Error GetPlayerRange: " + e.Message);
+            // Cualquier error → asumimos que no hay score (el caso más común)
+            Debug.Log("ℹ️ No se encontró puntuación del jugador (o error de conexión)");
             return 0;
         }
     }

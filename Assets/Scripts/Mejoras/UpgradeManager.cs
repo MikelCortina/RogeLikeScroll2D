@@ -29,7 +29,7 @@ public class UpgradeGroup
 public class UpgradeManager : MonoBehaviour
 {
     [SerializeField] private float chanceToOfferSkillNodeUnlock = 0.25f; // 25%
-    [SerializeField] private UpgradeQuality skillNodeUpgradeQuality = UpgradeQuality.Epic; // o Legendary
+    [SerializeField] private UpgradeQuality skillNodeUpgradeQuality = UpgradeQuality.Legendary; // o Legendary
 
     public static UpgradeManager Instance { get; private set; }
 
